@@ -1,0 +1,80 @@
+/* Zero Football theme library — 47 palettes grouped by visual category. */
+.game-layout[data-theme="pure-black"]{--bg:#000000;--panel:#050505;--panel2:#0b0b0b;--panel3:#111111;--text:#ffffff;--muted:#a3a3a3;--line:#ffffff18;--lime:#ffffff;--lime2:#d4d4d4;}
+.game-layout[data-theme="deep-black"]{--bg:#050505;--panel:#0c0c0c;--panel2:#151515;--panel3:#202020;--text:#f8f8f8;--muted:#a8a8a8;--line:#ffffff18;--lime:#d4d4d4;--lime2:#a3a3a3;}
+.game-layout[data-theme="obsidian"]{--bg:#0b0c0e;--panel:#141619;--panel2:#1d2024;--panel3:#292d32;--text:#f2f4f6;--muted:#a3aab2;--line:#ffffff1b;--lime:#b9c5d2;--lime2:#8996a5;}
+.game-layout[data-theme="carbon"]{--bg:#111214;--panel:#1a1c1f;--panel2:#24272b;--panel3:#30343a;--text:#f2f3f4;--muted:#a7abb1;--line:#ffffff18;--lime:#c4c9cf;--lime2:#969da6;}
+.game-layout[data-theme="graphite"]{--bg:#17191d;--panel:#22252b;--panel2:#2c3038;--panel3:#383e48;--text:#f3f5f8;--muted:#b0b7c2;--line:#ffffff1b;--lime:#d0d6df;--lime2:#aab3c1;}
+.game-layout[data-theme="slate"]{--bg:#242a31;--panel:#303943;--panel2:#3b4652;--panel3:#485563;--text:#f5f7fa;--muted:#c0c9d2;--line:#ffffff20;--lime:#d5e0eb;--lime2:#aebdca;}
+.game-layout[data-theme="steel"]{--bg:#39434d;--panel:#46525e;--panel2:#53616e;--panel3:#63727f;--text:#ffffff;--muted:#d0d8df;--line:#ffffff24;--lime:#e4edf4;--lime2:#bdcbd7;}
+.game-layout[data-theme="silver"]{--bg:#d7dce1;--panel:#e4e8ec;--panel2:#edf0f3;--panel3:#f5f6f8;--text:#1b2229;--muted:#59636e;--line:#17202a20;--lime:#536779;--lime2:#3b5265;}
+.game-layout[data-theme="pearl"]{--bg:#e7e6e2;--panel:#f0efeb;--panel2:#f7f6f2;--panel3:#ffffff;--text:#20201e;--muted:#66645e;--line:#22222218;--lime:#77756b;--lime2:#59574f;}
+.game-layout[data-theme="ivory"]{--bg:#f0eadc;--panel:#f6f1e7;--panel2:#fbf8f1;--panel3:#fffdf8;--text:#29251e;--muted:#756d60;--line:#332a1d20;--lime:#8b7655;--lime2:#6f5c40;}
+.game-layout[data-theme="pure-white"]{--bg:#ffffff;--panel:#ffffff;--panel2:#f7f7f7;--panel3:#eeeeee;--text:#111111;--muted:#555555;--line:#00000018;--lime:#222222;--lime2:#555555;}
+.game-layout[data-theme="stadium-night"]{--bg:#101820;--panel:#192631;--panel2:#233543;--panel3:#2e4352;--text:#eff8ff;--muted:#a9c0d0;--line:#ffffff1a;--lime:#63d8a5;--lime2:#36b987;}
+.game-layout[data-theme="stadium-day"]{--bg:#eaf4ef;--panel:#f4faf6;--panel2:#ffffff;--panel3:#e4f1e9;--text:#14251d;--muted:#60776b;--line:#173b2b20;--lime:#16865b;--lime2:#0b6c48;}
+.game-layout[data-theme="forest-night"]{--bg:#09170f;--panel:#12251a;--panel2:#1c3525;--panel3:#294632;--text:#eff9f0;--muted:#a7c4ac;--line:#ffffff18;--lime:#77df91;--lime2:#4fbd70;}
+.game-layout[data-theme="forest-day"]{--bg:#e8f3e8;--panel:#f2f8f0;--panel2:#ffffff;--panel3:#e3f0e1;--text:#1b3020;--muted:#66816a;--line:#244a2b20;--lime:#338d49;--lime2:#216c36;}
+.game-layout[data-theme="ocean-night"]{--bg:#071722;--panel:#102936;--panel2:#183847;--panel3:#214b5e;--text:#eafaff;--muted:#9fc5d3;--line:#ffffff1b;--lime:#4bd4ef;--lime2:#22aeca;}
+.game-layout[data-theme="ocean-day"]{--bg:#e7f5f9;--panel:#f2fbfd;--panel2:#ffffff;--panel3:#e0f2f7;--text:#122b35;--muted:#5e7c87;--line:#164b5c20;--lime:#168da9;--lime2:#0d6d86;}
+.game-layout[data-theme="royal-night"]{--bg:#160e25;--panel:#241735;--panel2:#302148;--panel3:#3e2c5c;--text:#f7f0ff;--muted:#c0acd4;--line:#ffffff1c;--lime:#c48aff;--lime2:#a56ae6;}
+.game-layout[data-theme="royal-day"]{--bg:#f0eafa;--panel:#f8f4ff;--panel2:#ffffff;--panel3:#ebe2f8;--text:#281c38;--muted:#77658e;--line:#3d245b20;--lime:#8050bd;--lime2:#63399a;}
+.game-layout[data-theme="burgundy-night"]{--bg:#210e17;--panel:#321722;--panel2:#44202f;--panel3:#572a3c;--text:#fff0f4;--muted:#d0a6b4;--line:#ffffff1c;--lime:#f0789a;--lime2:#d85279;}
+.game-layout[data-theme="burgundy-day"]{--bg:#f8e9ed;--panel:#fff4f6;--panel2:#ffffff;--panel3:#f4e0e7;--text:#351b25;--muted:#886573;--line:#55263820;--lime:#b13f65;--lime2:#8f2e50;}
+.game-layout[data-theme="neon-night"]{--bg:#090d20;--panel:#141a32;--panel2:#20294a;--panel3:#2b3761;--text:#f1f5ff;--muted:#a9b8e5;--line:#ffffff20;--lime:#7c8cff;--lime2:#b36bff;}
+.game-layout[data-theme="neon-day"]{--bg:#edf0ff;--panel:#f6f7ff;--panel2:#ffffff;--panel3:#e7eaff;--text:#1d2445;--muted:#68729b;--line:#2a367020;--lime:#5c65d8;--lime2:#824bd1;}
+.game-layout[data-theme="sand-night"]{--bg:#211b12;--panel:#302719;--panel2:#403522;--panel3:#51432c;--text:#fff8e9;--muted:#c9b995;--line:#ffffff1b;--lime:#e8bf72;--lime2:#c99a4c;}
+.game-layout[data-theme="sand-day"]{--bg:#f4ecd9;--panel:#fbf5e8;--panel2:#ffffff;--panel3:#eee3ca;--text:#332a1b;--muted:#81745b;--line:#51401f20;--lime:#aa8242;--lime2:#86642f;}
+.game-layout[data-theme="arctic-night"]{--bg:#101b29;--panel:#19293b;--panel2:#233950;--panel3:#2e4965;--text:#f0f8ff;--muted:#adc4d9;--line:#ffffff20;--lime:#9ddcff;--lime2:#6cb7eb;}
+.game-layout[data-theme="arctic-day"]{--bg:#e9f4ff;--panel:#f4faff;--panel2:#ffffff;--panel3:#e1effb;--text:#1b2c3e;--muted:#637d94;--line:#244b6b20;--lime:#3986bd;--lime2:#236b9f;}
+.game-layout[data-theme="lavender-night"]{--bg:#1a1424;--panel:#292037;--panel2:#382b49;--panel3:#49375d;--text:#faf3ff;--muted:#c6b4d5;--line:#ffffff1c;--lime:#d6a2ff;--lime2:#b77ce8;}
+.game-layout[data-theme="lavender-day"]{--bg:#f2eafa;--panel:#faf5ff;--panel2:#ffffff;--panel3:#ecdef7;--text:#30213c;--muted:#7d688b;--line:#4b2a6020;--lime:#9a62bf;--lime2:#77439b;}
+.game-layout[data-theme="copper-night"]{--bg:#1d1511;--panel:#2c2019;--panel2:#3c2b21;--panel3:#4d382a;--text:#fff4ea;--muted:#cbb19d;--line:#ffffff1c;--lime:#e5a16d;--lime2:#c77b49;}
+
+/* Club crest builder */
+.crest-builder{display:grid;grid-template-columns:minmax(118px,160px) 1fr;gap:14px;align-items:start;background:var(--panel-2,#111611);border:1px solid var(--line);border-radius:14px;padding:14px}
+.crest-builder-preview{position:relative;width:140px;height:156px;display:block;overflow:hidden;touch-action:none;clip-path:polygon(8% 0,92% 0,88% 72%,50% 100%,12% 72%);box-shadow:0 12px 28px #0004}
+.crest-builder-preview.shape-round{clip-path:circle(48% at 50% 50%)}
+.crest-builder-preview.shape-square{clip-path:inset(3% round 12px)}
+.crest-builder-preview.shape-diamond{clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.crest-builder-preview.shape-classic{clip-path:polygon(0 0,100% 0,100% 72%,50% 100%,0 72%)}
+.crest-layer{position:absolute;transform:translate(-50%,-50%);font-weight:900;line-height:1;white-space:nowrap;cursor:grab;user-select:none;touch-action:none;text-shadow:0 1px 2px #ffffff55}
+.crest-layer:active{cursor:grabbing}
+.crest-tools{min-width:0;display:grid;gap:10px}
+.logo-layer-list{display:grid;gap:5px;max-height:130px;overflow:auto}
+.logo-layer-row{display:flex;align-items:center;gap:5px;padding:5px 7px;border:1px solid var(--line);border-radius:8px;background:#ffffff05}
+.logo-layer-row>span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800}
+.logo-layer-row .btn{min-width:27px;padding:4px 7px}
+@media(max-width:620px){.crest-builder{grid-template-columns:1fr}.crest-builder-preview{margin:0 auto;width:128px;height:142px}}
+.club-crest.shape-round,.banner-crest.shape-round{clip-path:circle(48% at 50% 50%)}
+.club-crest.shape-square,.banner-crest.shape-square{clip-path:inset(3% round 8px)}
+.club-crest.shape-diamond,.banner-crest.shape-diamond{clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.club-crest.shape-classic,.banner-crest.shape-classic{clip-path:polygon(0 0,100% 0,100% 72%,50% 100%,0 72%)}
+.club-crest .crest-layer,.banner-crest .crest-layer{position:absolute;transform:translate(-50%,-50%);line-height:1;white-space:nowrap}
+.club-crest,.banner-crest{position:relative;overflow:hidden}
+
+
+/* v30: daily offers reuse collection cards and expose a distinct purchase price. */
+.daily-player-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:stretch}
+.daily-offer{min-width:0;border:1px solid var(--line);border-radius:16px;padding:10px;background:var(--panel);display:flex;flex-direction:column;gap:8px}
+.daily-offer-label{font-size:9px;font-weight:900;letter-spacing:1.3px;color:var(--lime);padding:2px 4px}
+.daily-offer .player-card{width:100%;height:100%;min-width:0}
+.daily-offer-buy{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 3px 1px}
+.daily-offer-price{font-weight:900;color:var(--gold);font-size:14px;white-space:nowrap}
+.daily-offer-buy .btn{white-space:nowrap}
+.sponsor-tier{display:inline-flex;align-self:flex-start;padding:4px 7px;margin:4px 0 8px;border:1px solid var(--line);border-radius:20px;color:var(--lime);font-size:9px;font-weight:800;letter-spacing:.25px;background:rgba(255,255,255,.035)}
+.opponent-star-card{min-width:0;overflow:hidden;text-align:center}
+.opponent-star-photo{height:90px;position:relative;overflow:hidden;border-radius:8px;background:linear-gradient(145deg,var(--panel2),var(--panel3));display:grid;place-items:center;margin-bottom:7px}
+.opponent-star-photo .portrait-photo{position:absolute;inset:0;width:100%;height:100%;min-width:0;object-fit:cover;object-position:center 22%;transform:none}
+.opponent-star-initials{font-size:22px;font-weight:900;color:var(--muted)}
+.opponent-star-card b{display:block;overflow-wrap:anywhere;line-height:1.25}
+.match-agreement-timer{margin:14px auto 10px;padding:10px 14px;width:max-content;max-width:100%;border:1px solid var(--line);border-radius:10px;background:var(--panel2);font-size:12px;color:var(--muted)}
+.match-agreement-timer strong{color:var(--lime);font-variant-numeric:tabular-nums}
+@media(max-width:720px){.daily-player-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:460px){.daily-player-grid{grid-template-columns:1fr}.daily-offer{display:grid;grid-template-columns:minmax(0,1fr)}.opponent-star-row{gap:6px}.opponent-star-card{padding:8px 4px}.opponent-star-photo{height:75px}.match-agreement-timer{font-size:11px}}
+
+/* v31 crest silhouettes */
+.crest-builder-preview.shape-shield,.club-crest.shape-shield{clip-path:polygon(8% 0,92% 0,100% 16%,94% 72%,50% 100%,6% 72%,0 16%)}
+.crest-builder-preview.shape-hexagon,.club-crest.shape-hexagon{clip-path:polygon(25% 3%,75% 3%,100% 50%,75% 97%,25% 97%,0 50%)}
+.crest-builder-preview.shape-rounded,.club-crest.shape-rounded{clip-path:inset(2% round 22%)}
+.crest-builder-preview.shape-banner,.club-crest.shape-banner{clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%)}
+.crest-builder-preview.shape-circle-crest,.club-crest.shape-circle-crest{clip-path:circle(48% at 50% 50%);border:4px double var(--crest-color)}

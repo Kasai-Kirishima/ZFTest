@@ -1,7 +1,7 @@
 /* Zero Football data module. Keep data-only edits in this file. */
 window.ZF_DATA = window.ZF_DATA || {};
 Object.assign(window.ZF_DATA, {
-  SYMBOLS: ['🦅','⚡','🐺','🦁','🐉','⭐','🔥','🛡️','🦈','👑','🐻','🌪️'],
+  SYMBOLS: ['★','✦','✧','◆','◇','⬟','⬢','◈','◉','◎','●','○','▲','△','▼','▽','✚','✜','✣','✥','⚑','⚒','⚔','♜','♞','♟','♛','♚','☼','☾','⌘','∞','⟁','⬡','⬠','✪','✫','✬','✭','✮','✯','✰'],
   RARITY: [
     {name:'Бронза',min:50,max:64,color:'#c58a60'},
     {name:'Серебро',min:65,max:74,color:'#cbd5d8'},

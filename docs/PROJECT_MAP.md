@@ -1,4 +1,4 @@
-# Карта проекта Zero Football v30
+# Карта проекта Zero Football v31
 
 - `index.html` — точка входа и подключение модулей.
 - `css/01..09` — базовые стили, сетки, карточки, поле, модальные окна и 47 палитр тем.
@@ -25,3 +25,9 @@
 ## Эмблема
 
 `club.logo.shape` задаёт форму эмблемы, а `club.logo.layers` — графические слои с координатами `x/y`, размером и цветом.
+
+## v31 additions
+- Crest symbol sanitization and additional silhouettes: `js/app.js`, `js/data/gameplay.js`, `css/06-visual-refinements.css`, `css/09-theme-library.css`.
+- Additional starter countries: `js/data/players.js`.
+- Player stamina, daily free pack, weighted pack rarity and mandatory in-match substitutions: `js/app.js`.
+- Pack-opening animation restored by removing the conflicting override in `css/04-layout-economy.css`.

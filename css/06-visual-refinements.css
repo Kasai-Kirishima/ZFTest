@@ -10,3 +10,10 @@
 .energy-panel{display:flex;align-items:center;gap:12px;padding:13px 15px;border:1px solid var(--line);border-radius:13px;background:var(--panel);margin:12px 0}.energy-pips{display:flex;gap:5px;margin-top:7px}.energy-pip{width:24px;height:9px;border-radius:9px;background:var(--line)}.energy-pip.on{background:var(--lime);box-shadow:0 0 10px #c8ff4466}.energy-copy{font-size:11px;color:var(--muted)}.energy-copy b{color:var(--text)}
 .sponsor-card{position:relative;overflow:hidden}.sponsor-logo{display:flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:17px;background:linear-gradient(145deg,#ffffff18,#ffffff05);border:1px solid var(--line);font-weight:1000}.sponsor-requirement{font-size:10px;color:var(--gold);margin:8px 0 12px;line-height:1.5}
 @media(max-width:760px){.squad-list{grid-template-columns:1fr!important}.player-portrait{height:130px!important}}
+/* v31: stamina feedback and additional crest silhouettes */
+.stamina-line{display:grid;grid-template-columns:1fr auto;gap:4px 8px;margin-top:7px;font-size:9px;color:var(--muted)}
+.stamina-line b{color:var(--text)}.stamina-line i{grid-column:1/-1;height:4px;border-radius:8px;background:rgba(255,255,255,.1);overflow:hidden}.stamina-line u{display:block;height:100%;background:var(--lime);border-radius:8px;text-decoration:none}
+.shape-hexagon{clip-path:polygon(25% 3%,75% 3%,100% 50%,75% 97%,25% 97%,0 50%)}
+.shape-rounded{clip-path:inset(2% round 22%)}
+.shape-banner{clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%)}
+.shape-circle-crest{clip-path:circle(48% at 50% 50%);border:4px double var(--crest-color)}

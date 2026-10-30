@@ -1,15 +1,15 @@
 {
   "project": "Zero Football",
-  "version": "v30",
-  "description": "Balanced starter squad, daily player-card purchases, 32 sponsors, 60-second match timers, final-event validation, corrected formation layouts and 47 categorized themes",
+  "version": "v31",
+  "description": "Heraldic crests, 20 starter countries, player stamina, daily free pack, weighted loot odds, restored pack animation and mandatory in-match substitutions",
   "files": {
     "CHANGELOG.md": {
-      "bytes": 7920,
-      "sha256": "92754c2962581e8ab2bbd8a916e33d8c6d5d12dd813636c79b42b6014ce2f48f"
+      "bytes": 8940,
+      "sha256": "f2d71d3efef6cd370d41d93226548dcfa576069251c74ba4f785a3ead232245f"
     },
     "README.md": {
-      "bytes": 7880,
-      "sha256": "1ab661eab1dd66139a2de6975e02a0b81ef05ffef74084fce2ab3955bbb4a80c"
+      "bytes": 9235,
+      "sha256": "1453c6152db1cd4b1e8d2e315eb564050bae33bb9c856d1f1262223ebebc00da"
     },
     "assets/README.md": {
       "bytes": 397,
@@ -55,6 +55,30 @@
       "bytes": 2165,
       "sha256": "b4e0ea3fa95f922680c5242bb1095c3f44151d7cd8d3f003627e3c1b82969f76"
     },
+    "backup/v30-04-layout-economy.css": {
+      "bytes": 2808,
+      "sha256": "ba0afad0c2d04317f48e5426cd14c185d682001f50877d63394d6b6643aa9724"
+    },
+    "backup/v30-06-visual-refinements.css": {
+      "bytes": 4888,
+      "sha256": "c23e8b3e63efe06484903bb530e0d9f486d1992a620f97822a51d7e69df9467a"
+    },
+    "backup/v30-09-theme-library.css": {
+      "bytes": 10468,
+      "sha256": "8154547b8a7e131aa7675d4f2f46e9d7e20576c225c9752713820675f59a1620"
+    },
+    "backup/v30-app.js": {
+      "bytes": 154574,
+      "sha256": "b0a54473a1400a9d20eae90f02c02f8b78f2b9e82bcd97a41cb18e76ea201287"
+    },
+    "backup/v30-gameplay.js": {
+      "bytes": 11871,
+      "sha256": "c1c1d585728246f8aea0c00864690310451fad4c134410f790e50399a63e02a9"
+    },
+    "backup/v30-players.js": {
+      "bytes": 30756,
+      "sha256": "97464ee6db6f718f4c0b14da8bfdccad02f1e263c2c7106a9484ecf92f009273"
+    },
     "css/01-base.css": {
       "bytes": 48500,
       "sha256": "828f3b89b7c9207c2c154396eebde50bc33502671cad84ac158776cc189fd562"
@@ -68,16 +92,16 @@
       "sha256": "b14d1b6da97128122d92abe6ad349b508382ed43eb325aeb562c8ec11ed02bc2"
     },
     "css/04-layout-economy.css": {
-      "bytes": 2899,
-      "sha256": "face033dd12a213b2fdff9e76a7c348a5b9bfe29c3307c5369b121ec8c7ea821"
+      "bytes": 2808,
+      "sha256": "ba0afad0c2d04317f48e5426cd14c185d682001f50877d63394d6b6643aa9724"
     },
     "css/05-pitch-and-mobile.css": {
       "bytes": 2725,
       "sha256": "66a6f1c9ba96fe7174a336cfbba9edd77b59bb2905c06cb1182eb7921a3c45f3"
     },
     "css/06-visual-refinements.css": {
-      "bytes": 4173,
-      "sha256": "9b3089225f82664d875b93458cd3539c6a45b97f8ffc5a9b411de09c69d8edf0"
+      "bytes": 4888,
+      "sha256": "c23e8b3e63efe06484903bb530e0d9f486d1992a620f97822a51d7e69df9467a"
     },
     "css/07-unified-card-crop.css": {
       "bytes": 3458,
@@ -88,40 +112,40 @@
       "sha256": "06c0a2c89a05713fc3c38ad2eee2d30f34e06ddc37e54a9ec347e86b913682da"
     },
     "css/09-theme-library.css": {
-      "bytes": 9826,
-      "sha256": "ed1008d94ddf4acda07b075fe27c70d8ee6beac2532fd7c347e54125436ac96e"
+      "bytes": 10468,
+      "sha256": "8154547b8a7e131aa7675d4f2f46e9d7e20576c225c9752713820675f59a1620"
     },
     "docs/EDITING_RULES.md": {
       "bytes": 1651,
       "sha256": "cd5c11ab4a3b5653874e5bd363fc534a8e979b24aa86b86ab10a95d70918e834"
     },
     "docs/PROJECT_MAP.md": {
-      "bytes": 2775,
-      "sha256": "2d5f6e62ac461cae8eeaf8f08c072432ca48658145dd75866266651705e44c3d"
+      "bytes": 3210,
+      "sha256": "3e64d1b1feeb9b9aed9acddc0d8bd05a489f236f45bcb6bd7a7169206c981fe9"
     },
     "index.html": {
       "bytes": 1490,
       "sha256": "d2656ebf133cdc91ea6faa6c94182cfd207d99346c5084119601ad16c694b050"
     },
     "js/app.js": {
-      "bytes": 150381,
-      "sha256": "af0d874811bc8c966e4ceedec79f9cfa3ae5805a35f7ff9c933fff8d3de9fe76"
+      "bytes": 154731,
+      "sha256": "dd78af6788e0ba0d8968de7373f00410ac9ad93a38459965186ee1d6769614f9"
     },
     "js/data/economy.js": {
       "bytes": 6913,
       "sha256": "3883feb2d911d2d4d3a8f6f5cc802be199a36a16761a362cd9b67967b90bfa0d"
     },
     "js/data/gameplay.js": {
-      "bytes": 11707,
-      "sha256": "64a999f1e45dfae24352680638136ca0328dc233222b728ce9e72e291001979f"
+      "bytes": 11871,
+      "sha256": "c1c1d585728246f8aea0c00864690310451fad4c134410f790e50399a63e02a9"
     },
     "js/data/localization.js": {
       "bytes": 121054,
       "sha256": "8ef01f6a79fc7cb17711d333f4a82290f29e88e3e365e60be020fecdd8f02f6f"
     },
     "js/data/players.js": {
-      "bytes": 28030,
-      "sha256": "ebb04c57004b23bd4a36d868dfb50afb6b6e1932bda0c0cadae225727f4cb3dd"
+      "bytes": 30756,
+      "sha256": "97464ee6db6f718f4c0b14da8bfdccad02f1e263c2c7106a9484ecf92f009273"
     },
     "js/data/ui-config.js": {
       "bytes": 3685,

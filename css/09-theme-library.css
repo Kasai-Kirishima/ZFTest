@@ -71,3 +71,10 @@
 .match-agreement-timer strong{color:var(--lime);font-variant-numeric:tabular-nums}
 @media(max-width:720px){.daily-player-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:460px){.daily-player-grid{grid-template-columns:1fr}.daily-offer{display:grid;grid-template-columns:minmax(0,1fr)}.opponent-star-row{gap:6px}.opponent-star-card{padding:8px 4px}.opponent-star-photo{height:75px}.match-agreement-timer{font-size:11px}}
+
+/* v31 crest silhouettes */
+.crest-builder-preview.shape-shield,.club-crest.shape-shield{clip-path:polygon(8% 0,92% 0,100% 16%,94% 72%,50% 100%,6% 72%,0 16%)}
+.crest-builder-preview.shape-hexagon,.club-crest.shape-hexagon{clip-path:polygon(25% 3%,75% 3%,100% 50%,75% 97%,25% 97%,0 50%)}
+.crest-builder-preview.shape-rounded,.club-crest.shape-rounded{clip-path:inset(2% round 22%)}
+.crest-builder-preview.shape-banner,.club-crest.shape-banner{clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%)}
+.crest-builder-preview.shape-circle-crest,.club-crest.shape-circle-crest{clip-path:circle(48% at 50% 50%);border:4px double var(--crest-color)}
