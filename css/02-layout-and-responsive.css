@@ -1,0 +1,41 @@
+/* v19 layout repair */
+.main-area{min-width:0;padding-bottom:calc(120px + env(safe-area-inset-bottom))!important;scroll-padding-bottom:170px}
+.pitch{min-height:510px!important;overflow:visible!important;margin-top:12px;padding:0 8px}
+.player-slot-wrap{width:78px;z-index:3;max-width:11%;}
+.player-slot{width:78px!important}
+.slot-card{width:54px!important;height:68px!important}
+.slot-rating-below{margin-top:2px;font-size:14px!important}
+.slot-name{max-width:78px!important;font-size:9px!important;line-height:1.1!important}
+.player-grid{width:100%!important;grid-template-columns:repeat(auto-fill,minmax(155px,1fr))!important;gap:14px!important;justify-content:stretch!important;align-items:stretch!important}
+.player-card{width:100%!important;min-width:0!important;justify-self:stretch!important;display:flex!important;flex-direction:column!important}
+.player-card-head{position:relative!important;inset:auto!important;display:flex!important;padding:9px 10px 6px!important;align-items:center!important}
+.player-overall{font-size:22px!important;background:var(--panel3)!important;color:var(--rarity-color,var(--lime))!important;border:1px solid var(--line)!important;min-width:42px;text-align:center}
+.player-portrait{aspect-ratio:3/4!important;width:100%!important;height:auto!important;min-height:0!important;position:relative!important;display:block!important}
+.player-portrait .portrait-photo{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center 18%!important}
+.player-card-body{width:100%!important;padding:10px 11px 12px!important;flex:1!important}
+.player-card-body strong{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important}
+.player-position,.rarity-badge{display:block!important}
+.player-market-value{display:inline-block;margin-top:7px;padding:4px 7px;border-radius:6px;background:rgba(200,255,68,.1);font-size:12px;font-weight:900;color:var(--lime)}
+.squad-list{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(145px,1fr))!important;gap:12px!important;align-items:stretch!important;width:100%!important}
+.squad-item{display:flex!important;flex-direction:column!important;align-items:stretch!important;min-width:0!important;padding:8px!important;gap:0!important}
+.squad-item .mini-player{width:100%!important;height:auto!important;aspect-ratio:3/4!important;flex:0 0 auto!important}
+.squad-photo{object-fit:cover!important;object-position:center 18%!important}
+.squad-info{padding:8px 2px 2px!important}
+.squad-info strong{white-space:normal!important;overflow-wrap:anywhere!important}
+.collection-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.collection-search{flex:1;min-width:150px;background:#111611;border:1px solid var(--line);color:var(--text);border-radius:9px;padding:10px 12px}
+.collection-grid{width:100%!important;display:grid!important;grid-template-columns:repeat(auto-fill,minmax(155px,1fr))!important;gap:14px!important;align-items:stretch!important;justify-content:stretch!important}.collection-grid .player-card{width:100%!important;max-width:none!important;min-width:0!important;justify-self:stretch!important;transform:none!important}.collection-grid .player-card:active{transform:none!important}
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:9px}
+.theme-option{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;padding:12px;text-align:left;display:grid;gap:5px}
+.theme-option span{font-size:22px}.theme-option strong{font-size:11px}.theme-option small{font-size:9px;color:var(--muted)}.theme-option.active{border-color:var(--lime);box-shadow:0 0 0 1px var(--lime)}
+.theme-group-title{font-size:10px;font-weight:900;color:var(--muted);letter-spacing:1px;margin:12px 0}
+.setting-toggle,.contract-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.setting-toggle span,.contract-row>div{display:grid;gap:4px}.setting-toggle b,.contract-row b{font-size:12px}.setting-toggle small,.contract-row small{font-size:10px;color:var(--muted)}
+.contract-days{font-size:12px;font-weight:900;color:var(--lime);white-space:nowrap}.contract-days.danger{color:#ff8b83}.settings-actions{display:flex;gap:8px;flex-wrap:wrap}
+.game-layout[data-theme="light"],.game-layout[data-theme="paper"],.game-layout[data-theme="sky"],.game-layout[data-theme="mint"],.game-layout[data-theme="sand"]{--bg:#edf1ed;--panel:#fff;--panel2:#f4f7f4;--panel3:#e7ede7;--text:#182219;--muted:#647064;--line:rgba(20,40,20,.14);--lime:#387c22;--lime2:#2c681b}
+.game-layout[data-theme="paper"]{--bg:#f4f0e7;--panel:#fffdf7;--panel2:#f2eee4;--panel3:#e8e1d2;--lime:#8a6422;--lime2:#75531b}
+.game-layout[data-theme="sky"]{--bg:#eaf3fa;--panel:#fff;--panel2:#edf5fb;--panel3:#dcebf5;--lime:#176b9b;--lime2:#125b86}
+.game-layout[data-theme="mint"]{--bg:#e9f4ee;--panel:#fff;--panel2:#eef8f2;--panel3:#dcefe3;--lime:#18734c;--lime2:#125e3e}
+.game-layout[data-theme="sand"]{--bg:#f4eee3;--panel:#fffaf1;--panel2:#f4ead9;--panel3:#eaddc7;--lime:#9a6426;--lime2:#80521e}
+@media(max-width:760px){.main-area{padding-bottom:calc(180px + env(safe-area-inset-bottom))!important}.mobile-nav{position:fixed!important;left:0!important;right:0!important;bottom:0!important;z-index:100!important;padding:8px 8px calc(12px + env(safe-area-inset-bottom))!important;min-height:76px!important;background:rgba(15,20,15,.98)!important}.pitch{min-height:550px!important}.player-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}.player-slot-wrap{width:66px}.player-slot{width:66px!important}.slot-card{width:46px!important;height:58px!important}.slot-name{max-width:66px!important;font-size:8px!important}.squad-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:390px){.pitch{min-height:565px!important}.player-slot-wrap{width:59px}.player-slot{width:59px!important}.slot-card{width:42px!important;height:54px!important}.slot-name{max-width:59px!important;font-size:7px!important}.player-grid{gap:7px!important}.player-card-body{padding:8px!important}}

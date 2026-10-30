@@ -1,0 +1,14 @@
+/* v24: clickable player cards and the compact sell-only action modal */
+.squad-item[data-action="open-player-card"],.player-card[data-action="open-player-card"]{cursor:pointer}
+.squad-item[data-action="open-player-card"]:hover,.player-card[data-action="open-player-card"]:hover{border-color:var(--lime);box-shadow:0 0 0 1px rgba(200,255,68,.2)}
+.modal.player-card-modal{max-width:440px}
+.player-modal-summary{display:flex;align-items:center;gap:16px;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.player-modal-summary>div:last-child{display:grid;gap:5px;min-width:0}
+.player-modal-summary strong{font-size:14px}
+.player-modal-summary small{font-size:11px;color:var(--muted)}
+.player-modal-rating{width:68px;height:76px;flex:0 0 68px;display:grid;place-content:center;text-align:center;border-radius:12px;background:color-mix(in srgb,var(--rarity-color) 15%,transparent);border:1px solid color-mix(in srgb,var(--rarity-color) 45%,transparent);color:var(--rarity-color);font:900 30px 'Barlow Condensed',sans-serif}
+.player-modal-rating small{font:800 9px Inter,sans-serif;letter-spacing:1px;color:inherit}
+.player-modal-status{line-height:1.5}
+.player-modal-actions{display:flex;justify-content:flex-end;padding-top:16px}
+.status-tag.yellow{background:#6b541d;color:#ffe39a}
+@media(max-width:520px){.player-card-modal{padding:18px}.player-modal-rating{width:60px;height:68px;flex-basis:60px}}
