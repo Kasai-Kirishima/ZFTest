@@ -1,4 +1,4 @@
-# Карта проекта Zero Football v33
+# Карта проекта Zero Football v34
 
 - `index.html` — точка входа и подключение модулей.
 - `css/01..09` — базовые стили, сетки, карточки, поле, модальные окна и 47 палитр тем.
@@ -49,3 +49,9 @@
 - Emblem layer size controls: `logo-layer-size-up/down` actions in `js/app.js`; drag and z-order controls stay in the same builder.
 - Secure club login modal: `renderClubLoginModal` and delegated `clubLoginForm` handler in `js/app.js`.
 - Legacy stat normalization and idempotent match finalization: `loadDB()` and `finishMatch()` in `js/app.js`.
+
+
+## v34 additions
+- Pack animation lifecycle: `runPackOpeningAnimations()` in `js/app.js`; conflicting legacy CSS keyframes disabled in `css/06-visual-refinements.css`.
+- Opponent top three: `renderFound()` reuses `renderPlayerCard()` for identical visual treatment.
+- Final match decision: `resolveChoice()` completes the tenth episode directly; `finishMatch(true)` is the final-decision path with a fallback result screen.

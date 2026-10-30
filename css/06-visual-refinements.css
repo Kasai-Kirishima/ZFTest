@@ -97,24 +97,20 @@
 @media(prefers-reduced-motion:reduce){.pack-opening,.opening-pack-box,.opening-pack-glow,.opening-flash,.revealed-card{animation-duration:.5s!important;animation-delay:0s!important}.revealed-card{opacity:0!important;animation-name:packDrop!important}}
 
 
-/* v33.1: robust card behavior and pack opening sequence. */
+/* v34: animations are driven after DOM insertion with the Web Animations API.
+   Disable older competing CSS keyframes so they cannot cancel or hide the reveal. */
 .player-card,.opponent-star-card,.squad-item{cursor:default!important;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .player-card{pointer-events:auto}
 .player-card-actions button{pointer-events:auto;cursor:pointer;user-select:auto;-webkit-user-select:auto}
-.pack-opening{animation:zfOverlayIn .32s ease-out both!important}
-.pack-opening .opening-box{animation:zfBoxEntrance .42s cubic-bezier(.2,.8,.2,1) both}
-.pack-opening .opening-pack-box{animation:zfPackRattle 1.1s cubic-bezier(.2,.8,.2,1) both!important}
-.pack-opening .opening-pack-glow{animation:zfPackGlow 1.35s ease-out both!important}
-.pack-opening .opening-flash{animation:zfFlashIn .55s .25s ease-out both!important}
-.pack-opening .revealed-card{opacity:0;animation:packDrop .72s cubic-bezier(.18,.85,.25,1) forwards!important}
-.pack-opening .revealed-card:nth-child(1){animation-delay:.65s!important}
-.pack-opening .revealed-card:nth-child(2){animation-delay:1.05s!important}
-.pack-opening .revealed-card:nth-child(3){animation-delay:1.45s!important}
-.pack-opening .revealed-card:nth-child(4){animation-delay:1.85s!important}
-.pack-opening .revealed-card:nth-child(5){animation-delay:2.25s!important}
-.pack-opening .revealed-card:nth-child(6){animation-delay:2.65s!important}
-@keyframes zfBoxEntrance{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){.pack-opening .opening-box{animation-duration:.25s!important}.pack-opening .opening-pack-box{animation-duration:.55s!important}.pack-opening .revealed-card{opacity:1!important;animation-duration:.45s!important;animation-delay:0s!important}}
+.pack-opening{animation:none!important}
+.pack-opening .opening-box,.pack-opening .opening-pack-box,.pack-opening .opening-pack-glow,.pack-opening .opening-flash,.pack-opening .revealed-card{animation:none!important}
+.pack-opening .revealed-card{opacity:0;will-change:transform,opacity}
+.opponent-best-grid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;max-width:850px;margin:12px auto 0;text-align:left}
+.opponent-best-grid .player-card{min-width:0;pointer-events:none}
+.opponent-best-grid .player-card-body>strong{white-space:normal;min-height:2.4em;overflow-wrap:anywhere}
+.opponent-best-grid .player-portrait{height:145px}
+@media(max-width:620px){.opponent-best-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){.opponent-best-grid{grid-template-columns:1fr}}
 
 .symbol-pick .crest-glyph-svg{width:1.35em;height:1.35em}
 .symbol-pick{display:inline-grid;place-items:center}

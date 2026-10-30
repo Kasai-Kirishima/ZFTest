@@ -1,19 +1,15 @@
 {
   "project": "Zero Football",
-  "version": "v33.1",
-  "description": "Club creation recovery, local password hardening, player name localization, resizable SVG emblems, 30 kit patterns, pack animations, opponent portrait fallbacks and robust match finalization",
+  "version": "v34",
+  "description": "Reliable Web Animations API pack opening, full opponent top-player cards and guaranteed final whistle after episode ten",
   "files": {
     "CHANGELOG.md": {
-      "bytes": 13005,
-      "sha256": "b9171af99afd2001c1027236cab32e4c58641c231db6b94488971936f130a681"
+      "bytes": 14331,
+      "sha256": "5097fa47f5615a0234add3f69cae5724d7428ef2d04c0ac7045cdef7413c500f"
     },
     "README.md": {
-      "bytes": 14353,
-      "sha256": "0944322e9caa06578a7747cea34c46dc42fb3cd04a25eb7c940a03ba8a006188"
-    },
-    "index.html": {
-      "bytes": 1490,
-      "sha256": "d2656ebf133cdc91ea6faa6c94182cfd207d99346c5084119601ad16c694b050"
+      "bytes": 14960,
+      "sha256": "0adb61c8e5ba2690fac22cb4ef5a594341d405cd4c3aeaf78b59c0bf34382045"
     },
     "assets/README.md": {
       "bytes": 397,
@@ -107,6 +103,14 @@
       "bytes": 30756,
       "sha256": "97464ee6db6f718f4c0b14da8bfdccad02f1e263c2c7106a9484ecf92f009273"
     },
+    "backup/v33-06-visual-refinements.css": {
+      "bytes": 15756,
+      "sha256": "d46b6686f841087d14d109b2cc0215d38e8ca74974fffaf8564e4b9e20eaaabb"
+    },
+    "backup/v33-app.js": {
+      "bytes": 174626,
+      "sha256": "092d5a622a9378f284ff399e82b349d360bd4aca4e51d962328b128db5e6d5f3"
+    },
     "css/01-base.css": {
       "bytes": 48680,
       "sha256": "018b7ec6950e68f19e085a9a3660e2ff329cfc6de7758e10b3076839b84d4704"
@@ -128,8 +132,8 @@
       "sha256": "66a6f1c9ba96fe7174a336cfbba9edd77b59bb2905c06cb1182eb7921a3c45f3"
     },
     "css/06-visual-refinements.css": {
-      "bytes": 15756,
-      "sha256": "d46b6686f841087d14d109b2cc0215d38e8ca74974fffaf8564e4b9e20eaaabb"
+      "bytes": 15300,
+      "sha256": "516c8070a55b0f2e88490eec17440d99f5474b319ed55ed90bf1b063af0ca62a"
     },
     "css/07-unified-card-crop.css": {
       "bytes": 3458,
@@ -148,12 +152,16 @@
       "sha256": "cd5c11ab4a3b5653874e5bd363fc534a8e979b24aa86b86ab10a95d70918e834"
     },
     "docs/PROJECT_MAP.md": {
-      "bytes": 4361,
-      "sha256": "0e01c7476fdacef261920def10e556f39642d944d7d6669a318447f6f5daf883"
+      "bytes": 4787,
+      "sha256": "e4e5ccbdd77f47414f445f6ba887e3e132c6c5ed40c5e0d2bd803642fdea5644"
+    },
+    "index.html": {
+      "bytes": 1490,
+      "sha256": "d2656ebf133cdc91ea6faa6c94182cfd207d99346c5084119601ad16c694b050"
     },
     "js/app.js": {
-      "bytes": 174626,
-      "sha256": "092d5a622a9378f284ff399e82b349d360bd4aca4e51d962328b128db5e6d5f3"
+      "bytes": 178157,
+      "sha256": "9db5f025d576cea78861a0e6125524db21dd795d333b70926537a012afc801c0"
     },
     "js/data/economy.js": {
       "bytes": 6913,

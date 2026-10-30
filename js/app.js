@@ -19,7 +19,7 @@
   let PLAYER_IMAGE_OBSERVER=null;
   function resolvePlayerImages(){
     const cards=$$('.player-card[data-portrait-key],.squad-item[data-portrait-key],.modal-player[data-portrait-key],.opponent-star-card[data-portrait-key]');
-    cards.filter(card=>card.classList.contains('opponent-star-card')).forEach(loadPlayerImage);
+    cards.filter(card=>card.classList.contains('opponent-star-card')||card.closest('.opponent-best-grid')).forEach(loadPlayerImage);
     if(!PLAYER_IMAGE_OBSERVER&&'IntersectionObserver' in window)PLAYER_IMAGE_OBSERVER=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){PLAYER_IMAGE_OBSERVER.unobserve(entry.target);loadPlayerImage(entry.target);}}),{rootMargin:'320px'});
     cards.forEach(card=>{if(PLAYER_IMAGE_OBSERVER){if(!card.dataset.imageObserved){card.dataset.imageObserved='1';PLAYER_IMAGE_OBSERVER.observe(card);}}else loadPlayerImage(card);});
   }
@@ -339,6 +339,7 @@
     if(editSlotIndex!==null)$('#app').insertAdjacentHTML('beforeend',renderAssignModal(club,editSlotIndex));
     if(playerModalRef)$('#app').insertAdjacentHTML('beforeend',renderPlayerModal(club));
     resolvePlayerImages();
+    if(reveal)runPackOpeningAnimations();
     applyLanguage();
     syncMatchCountdownUI();
   }
@@ -509,8 +510,8 @@
   </style>`;}
   function renderFound(club){
     const opp=matchState.opponent;
-    const stars=(opp.players||[]).slice().sort((a,b)=>(b.rating||0)-(a.rating||0)).slice(0,3);
-    return `<div class="section-heading"><div><div class="eyebrow">Opponent found</div><h1 class="h1">СОПЕРНИК НАЙДЕН</h1><p class="page-subtitle">Разминка закончена. Пора выходить на поле.</p></div><span class="pill pill-lime">✓ Найден</span></div><div class="match-shell"><div class="card" style="text-align:center;padding:25px"><span class="pill pill-lime">СОПОСТАВЛЕНИЕ ЗАВЕРШЕНО</span><div class="found-vs"><div class="found-side"><div class="club-crest ${crestShape(club.logo)}" style="--crest-color:${esc(club.logo.color)}">${crestContent(club.logo,.9)}</div><strong>${esc(club.name)}</strong><small>${teamRating(club)} OVR · Твой клуб</small></div><div class="vs-word">VS</div><div class="found-side"><div class="club-crest" style="--crest-color:${esc(opp.color)}">${esc(opp.symbol)}</div><strong>${esc(opp.name)}</strong><small>${opp.rating} OVR · Бот</small></div></div><div class="opponent-stars"><div class="eyebrow">⭐ ЛУЧШИЕ ИГРОКИ СОПЕРНИКА</div><div class="opponent-star-row">${stars.map((p,i)=>`<div class="opponent-star-card" data-portrait-key="${esc(p.wiki||p.name)}" ${p.wiki?`data-wiki="${esc(p.wiki)}"`:''} style="--delay:${i*180}ms"><div class="opponent-star-photo"><div class="opponent-star-initials">${esc(avatarLetters(p.name))}</div><img class="portrait-photo" alt="${esc(p.name)}" src="${esc(makeFallbackPortrait(p.wiki||p.name))}" loading="eager" style="display:block"/></div><b>${esc(p.name)}</b><small>${p.rating} OVR · ${esc(p.position||'')}</small></div>`).join('')}</div></div><div class="divider"></div><div class="stat-grid" style="margin-bottom:18px"><div class="metric-card"><div class="metric-top">Твой состав</div><div class="metric-value">${teamRating(club)}</div><div class="metric-note">Общий рейтинг</div></div><div class="metric-card"><div class="metric-top">Соперник</div><div class="metric-value">${opp.rating}</div><div class="metric-note">Общий рейтинг</div></div><div class="metric-card"><div class="metric-top">Формат</div><div class="metric-value">10</div><div class="metric-note">Эпизодов</div></div><div class="metric-card"><div class="metric-top">Награда</div><div class="metric-value">€0.35 млн</div><div class="metric-note">Минимальная выплата</div></div></div><div class="match-agreement-timer">⏱ Осталось принять матч: <strong data-countdown-deadline="${matchState.agreementDeadline||Date.now()}">60 сек.</strong></div><button class="btn btn-primary" data-action="start-match" style="min-width:230px">Принять матч →</button><div style="margin-top:12px"><button class="btn btn-quiet btn-sm" data-action="cancel-search">Отменить</button></div></div></div>`;
+    const stars=(opp.players||[]).slice().sort((a,b)=>(b.rating||0)-(a.rating||0)).slice(0,3).map(p=>({...p,id:null,realClub:p.realClub||p.club,contractUntil:Date.now()+30*86400000,stamina:100}));
+    return `<div class="section-heading"><div><div class="eyebrow">Opponent found</div><h1 class="h1">СОПЕРНИК НАЙДЕН</h1><p class="page-subtitle">Разминка закончена. Пора выходить на поле.</p></div><span class="pill pill-lime">✓ Найден</span></div><div class="match-shell"><div class="card" style="text-align:center;padding:25px"><span class="pill pill-lime">СОПОСТАВЛЕНИЕ ЗАВЕРШЕНО</span><div class="found-vs"><div class="found-side"><div class="club-crest ${crestShape(club.logo)}" style="--crest-color:${esc(club.logo.color)}">${crestContent(club.logo,.9)}</div><strong>${esc(club.name)}</strong><small>${teamRating(club)} OVR · Твой клуб</small></div><div class="vs-word">VS</div><div class="found-side"><div class="club-crest" style="--crest-color:${esc(opp.color)}">${esc(opp.symbol)}</div><strong>${esc(opp.name)}</strong><small>${opp.rating} OVR · Бот</small></div></div><div class="opponent-stars"><div class="eyebrow">⭐ ТРИ ЛУЧШИЕ КАРТОЧКИ СОПЕРНИКА</div><div class="player-grid opponent-best-grid">${stars.map(p=>renderPlayerCard(p,false,false)).join('')}</div></div><div class="divider"></div><div class="stat-grid" style="margin-bottom:18px"><div class="metric-card"><div class="metric-top">Твой состав</div><div class="metric-value">${teamRating(club)}</div><div class="metric-note">Общий рейтинг</div></div><div class="metric-card"><div class="metric-top">Соперник</div><div class="metric-value">${opp.rating}</div><div class="metric-note">Общий рейтинг</div></div><div class="metric-card"><div class="metric-top">Формат</div><div class="metric-value">10</div><div class="metric-note">Эпизодов</div></div><div class="metric-card"><div class="metric-top">Награда</div><div class="metric-value">€0.35 млн</div><div class="metric-note">Минимальная выплата</div></div></div><div class="match-agreement-timer">⏱ Осталось принять матч: <strong data-countdown-deadline="${matchState.agreementDeadline||Date.now()}">60 сек.</strong></div><button class="btn btn-primary" data-action="start-match" style="min-width:230px">Принять матч →</button><div style="margin-top:12px"><button class="btn btn-quiet btn-sm" data-action="cancel-search">Отменить</button></div></div></div>`;
   }
   function matchBoard(club){const opp=matchState.opponent;return `<div class="match-scoreboard"><div class="match-team"><div class="club-crest ${crestShape(club.logo)}" style="--crest-color:${esc(club.logo.color)}">${crestContent(club.logo,.9)}</div><strong>${esc(club.name)}</strong><span class="pill" style="margin-top:7px">${teamRating(club)} OVR</span></div><div class="match-center"><div class="match-minute">${matchState.minute||0}′</div><div class="match-score">${matchState.score[0]} : ${matchState.score[1]}</div><div class="match-status">${matchState.stage==='result'?'МАТЧ ОКОНЧЕН':'ZERO LEAGUE · MATCH'}</div></div><div class="match-team"><div class="club-crest" style="--crest-color:${esc(opp.color)}">${esc(opp.symbol)}</div><strong>${esc(opp.name)}</strong><span class="pill" style="margin-top:7px">${opp.rating} OVR</span></div></div>`;}
   function renderLiveMatch(club){
@@ -548,6 +549,38 @@
   function renderMatchResult(club){
     const m=matchState;const won=m.score[0]>m.score[1],draw=m.score[0]===m.score[1];const title=won?'ПОБЕДА!':draw?'БОЕВАЯ НИЧЬЯ':'В ЭТОТ РАЗ НЕ ПОВЕЗЛО';const result=won?'W':draw?'D':'L';
     return `<div class="section-heading"><div><div class="eyebrow">Full time</div><h1 class="h1">ФИНАЛЬНЫЙ СВИСТОК</h1><p class="page-subtitle">Матч закончен. Результат записан в историю клуба.</p></div><span class="pill ${won?'pill-lime':''}">${won?'🏆 Победа':draw?'🤝 Ничья':'Матч завершён'}</span></div><div class="match-shell">${matchBoard(club)}<section class="card" style="text-align:center;padding:29px"><div class="eyebrow">Full-time report</div><h2 class="h1" style="font-size:44px;margin-top:9px">${title}</h2><div class="result-stamp">${m.score[0]} : ${m.score[1]}</div><p class="muted small" style="max-width:470px;margin:0 auto">${won?'Отличная работа! Твои решения помогли забрать три очка.':draw?'Равная игра — ни одна команда не смогла дожать соперника.':'Поражение — повод разобрать решения и вернуться сильнее.'}</p><div class="result-details"><div class="result-metric"><span>Награда</span><strong style="color:var(--gold)">+${formatMoney(m.reward)}</strong></div></div><div class="divider"></div><div class="match-log" style="text-align:left;margin-bottom:20px">${m.log.map(l=>`<div class="log-row"><span class="log-minute">${l.minute}′</span><span>${esc(l.text)}</span></div>`).join('')}</div><div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap"><button class="btn btn-primary" data-action="match-again">Играть ещё раз ↗</button><button class="btn btn-secondary" data-action="nav" data-view="home">В главное меню</button></div></section></div>`;
+  }
+  function runPackOpeningAnimations(){
+    const root=$('#app .pack-opening');if(!root)return;
+    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches===true;
+    const timing=reduced?{overlay:220,pack:520,card:420,step:180}:{overlay:360,pack:1150,card:720,step:420};
+    const play=(el,frames,options)=>{
+      if(!el)return;
+      const showFinalFrame=()=>{const final=frames[frames.length-1]||{};Object.entries(final).forEach(([key,value])=>{if(key==='offset'||key==='easing'||key==='composite')return;try{el.style[key]=String(value);}catch(_){}});};
+      try{if(typeof el.animate==='function')el.animate(frames,{fill:'both',...options});else showFinalFrame();}
+      catch(err){console.warn('Pack animation fallback:',err);showFinalFrame();}
+    };
+    play(root,[{opacity:0},{opacity:1}],{duration:timing.overlay,easing:'ease-out'});
+    play(root.querySelector('.opening-box'),[{opacity:0,transform:'translateY(22px) scale(.94)'},{opacity:1,transform:'translateY(0) scale(1)'}],{duration:420,easing:'cubic-bezier(.2,.8,.2,1)'});
+    play(root.querySelector('.opening-pack-box'),[
+      {opacity:0,transform:'translateY(24px) rotate(0) scale(.68)'},
+      {opacity:1,transform:'translateY(0) rotate(-12deg) scale(1.08)',offset:.2},
+      {transform:'rotate(10deg) scale(1.02)',offset:.38},
+      {transform:'rotate(-8deg) scale(1.04)',offset:.55},
+      {transform:'translateY(-7px) rotate(2deg) scale(1.12)',filter:'brightness(1.55)',offset:.78},
+      {opacity:1,transform:'translateY(0) rotate(0) scale(1)',filter:'none'}
+    ],{duration:timing.pack,easing:'cubic-bezier(.2,.8,.2,1)'});
+    play(root.querySelector('.opening-pack-glow'),[{opacity:0,transform:'scale(.25)'},{opacity:.9,transform:'scale(1.18)',offset:.65},{opacity:.6,transform:'scale(1)'}],{duration:timing.pack,easing:'ease-out'});
+    play(root.querySelector('.opening-flash'),[{opacity:0,transform:'translateY(16px) scale(.9)',filter:'blur(5px)'},{opacity:1,transform:'translateY(0) scale(1)',filter:'blur(0)'}],{duration:520,delay:reduced?80:260,easing:'ease-out'});
+    root.querySelectorAll('.revealed-card').forEach((card,index)=>{
+      card.style.opacity='0';
+      play(card,[
+        {opacity:0,transform:'translateY(-72px) rotate(8deg) scale(.78)',filter:'brightness(1.8)'},
+        {opacity:1,transform:'translateY(7px) rotate(-2deg) scale(1.035)',filter:'brightness(1.2)',offset:.68},
+        {opacity:1,transform:'translateY(-3px) rotate(1deg) scale(.99)',offset:.84},
+        {opacity:1,transform:'translateY(0) rotate(0) scale(1)',filter:'none'}
+      ],{duration:timing.card,delay:(reduced?420:900)+index*timing.step,easing:'cubic-bezier(.18,.85,.25,1)'});
+    });
   }
   function renderReveal(){
     if(!reveal)return '';
@@ -758,12 +791,21 @@
     m.availableChoices=[];
     m.log.push({minute:ev.minute,text:`🎲 Кубик ${dice} · модификаторы команды ${teamMod>=0?'+':''}${teamMod}, тактики ${tacticalMod>=0?'+':''}${tacticalMod}, игрока ${playerMod>=0?'+':''}${playerMod} = ${diceTotal}. ${text}`});
     m.completedEvents=(m.completedEvents||0)+1;
-    if(m.eventIndex===9){m.eventIndex=10;m.resolvingEvent=null;if(m.pendingForcedSub){render();return;}finishMatch();return;}
+    if(m.eventIndex===9){
+      // The tenth decision is the final whistle. Incidents in this last episode
+      // remain recorded on the player for the next match, but must not trap the user
+      // on the mandatory-substitution screen after the match has already ended.
+      m.eventIndex=10;m.completedEvents=Math.max(10,Number(m.completedEvents)||0);m.pendingForcedSub=null;m.resolvingEvent=null;
+      finishMatch(true);return;
+    }
     m.eventIndex++;m.resolvingEvent=null;makeCurrentEvent();render();
   }
-  function finishMatch(){
+  function finishMatch(fromFinalDecision=false){
     const club=currentClub();const m=matchState;
-    if(!club||!m||m.finalized||m.pendingForcedSub||Math.max(Number(m.completedEvents)||0,Number(m.eventIndex)||0)<10)return false;
+    if(!club||!m||m.finalized)return false;
+    const completed=Math.max(Number(m.completedEvents)||0,Number(m.eventIndex)||0);
+    if(!fromFinalDecision&&completed<10)return false;
+    if(fromFinalDecision&&m.stage!=='live')return false;
     // Normalize older or partially migrated club saves before applying match statistics.
     const statDefaults={matches:0,wins:0,draws:0,losses:0,goalsFor:0,goalsAgainst:0,packsOpened:0};
     club.stats={...statDefaults,...(club.stats&&typeof club.stats==='object'?club.stats:{})};
@@ -780,7 +822,11 @@
     (club.players||[]).forEach(p=>{p.stamina=Math.min(100,(p.stamina??100)+35);const prior=m.preMatchStatuses?.[p.id];if(prior?.injury>0)p.injuryMatches=Math.max(0,(p.injuryMatches||0)-1);if(prior?.red>0)p.redCardMatches=Math.max(0,(p.redCardMatches||0)-1);if(prior?.yellowBan>0)p.yellowBanMatches=Math.max(0,(p.yellowBanMatches||0)-1);});
     const result=won?'W':draw?'D':'L';club.history=Array.isArray(club.history)?club.history:[];club.history.unshift({opponent:m.opponent.name||'Соперник',score:`${m.score[0]} : ${m.score[1]}`,result,date:new Date().toLocaleDateString('ru-RU')});club.history=club.history.slice(0,12);
     if(!m.log.some(entry=>entry.minute===90&&String(entry.text||'').startsWith('Финальный свисток.')))m.log.push({minute:90,text:`Финальный свисток. ${won?'Победа твоего клуба!':draw?'Ничья — команды разделили очки.':'Поражение. В следующем матче можно отыграться.'} Награда: ${formatMoney(m.reward)}.${m.sponsorBonus?` Спонсорский бонус: +${m.sponsorBonus}.`:''}`});
-    view='match';recordTrophies(club);const saved=saveDB();render();if(!saved)toast('Матч завершён, но браузер не смог сохранить результат. Освободи место в хранилище.','error');return true;
+    view='match';
+    try{recordTrophies(club);}catch(trophyError){console.warn('Could not record match trophies:',trophyError);}
+    const saved=saveDB();
+    try{render();}catch(renderError){console.error('Could not render match result:',renderError);const root=$('#app');if(root){root.innerHTML=`<main class="main-area"><section class="card" style="text-align:center"><h1 class="h1">ФИНАЛЬНЫЙ СВИСТОК</h1><div class="result-stamp">${m.score[0]} : ${m.score[1]}</div><p>Матч завершён. Результат сохранён в истории клуба.</p><button class="btn btn-primary" data-action="nav" data-view="match">Открыть матч</button></section></main>`;}}
+    if(!saved)toast('Матч завершён, но браузер не смог сохранить результат. Освободи место в хранилище.','error');return true;
   }
 
   function vibrate(pattern=18){if(db.vibration!==false&&navigator.vibrate){try{navigator.vibrate(pattern);}catch(_){}}}
