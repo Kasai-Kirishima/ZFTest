@@ -1,23 +1,59 @@
 {
   "project": "Zero Football",
-  "version": "v27",
-  "description": "10 interface languages and 30 original themes",
+  "version": "v30",
+  "description": "Balanced starter squad, daily player-card purchases, 32 sponsors, 60-second match timers, final-event validation, corrected formation layouts and 47 categorized themes",
   "files": {
     "CHANGELOG.md": {
-      "bytes": 1876,
-      "sha256": "fd0f2ecdf766cbc8a45751da5f49a31fa1b00e6c02e91610f83b7a62d5209edb"
+      "bytes": 7920,
+      "sha256": "92754c2962581e8ab2bbd8a916e33d8c6d5d12dd813636c79b42b6014ce2f48f"
     },
     "README.md": {
-      "bytes": 4385,
-      "sha256": "d2db15915455648f030086430f19762cd2bc536c3cdfd67cc88ba7bed7006ee1"
+      "bytes": 7880,
+      "sha256": "1ab661eab1dd66139a2de6975e02a0b81ef05ffef74084fce2ab3955bbb4a80c"
     },
     "assets/README.md": {
-      "bytes": 276,
-      "sha256": "008963c50670fd02d5d9cee5332dd2c1ca184639fd1d8625263f452ad52514ce"
+      "bytes": 397,
+      "sha256": "1ab03f9db7f216b5371617238ed3c4b7dacc2874808a743b95f0de25e720f2fd"
     },
     "backup/Zero_Football_v25_original.html": {
       "bytes": 358082,
       "sha256": "057645c7a1d8ce08357990382b7839c9b8675b9c11d80664de27ebf25cd873bc"
+    },
+    "backup/v27-09-theme-library.css": {
+      "bytes": 5506,
+      "sha256": "b5b73e308951913dfaf996c119b81efa50f445b41f790122e1a95b01ac6a21f0"
+    },
+    "backup/v27-app.js": {
+      "bytes": 141792,
+      "sha256": "786c75c1d2c7f85478fb023d142ca8f2877bfa8e765570b24e41f991b535d241"
+    },
+    "backup/v29-01-base.css": {
+      "bytes": 48500,
+      "sha256": "828f3b89b7c9207c2c154396eebde50bc33502671cad84ac158776cc189fd562"
+    },
+    "backup/v29-02-layout-and-responsive.css": {
+      "bytes": 6240,
+      "sha256": "a4c60079760e5858a58ba7a5a84cd2972f62f54ef5b7e5e6a6ce13bb0c5d8ed8"
+    },
+    "backup/v29-app.js": {
+      "bytes": 146248,
+      "sha256": "a40c153a3bcc8140dd6137a834db1ada1df20fb71d63cf855df50258e360ef27"
+    },
+    "backup/v29-economy.js": {
+      "bytes": 3546,
+      "sha256": "b5814c090db960eb3b58166b57c66cddbf5cf8850887ff1a723c28cbb5c31f3f"
+    },
+    "backup/v29-gameplay.js": {
+      "bytes": 11707,
+      "sha256": "64a999f1e45dfae24352680638136ca0328dc233222b728ce9e72e291001979f"
+    },
+    "backup/v29-players.js": {
+      "bytes": 27916,
+      "sha256": "7489d719214f46043584094a2bc817836d1ceceaf5ab9f14dc82ffc2b0a6c887"
+    },
+    "backup/v29-ui-config.js": {
+      "bytes": 2165,
+      "sha256": "b4e0ea3fa95f922680c5242bb1095c3f44151d7cd8d3f003627e3c1b82969f76"
     },
     "css/01-base.css": {
       "bytes": 48500,
@@ -52,28 +88,28 @@
       "sha256": "06c0a2c89a05713fc3c38ad2eee2d30f34e06ddc37e54a9ec347e86b913682da"
     },
     "css/09-theme-library.css": {
-      "bytes": 5506,
-      "sha256": "b5b73e308951913dfaf996c119b81efa50f445b41f790122e1a95b01ac6a21f0"
+      "bytes": 9826,
+      "sha256": "ed1008d94ddf4acda07b075fe27c70d8ee6beac2532fd7c347e54125436ac96e"
     },
     "docs/EDITING_RULES.md": {
-      "bytes": 1687,
-      "sha256": "d15568035bdafb34394f3ad2e568afdd35bb33e0a6a7418f93fbaa0bbd34a549"
+      "bytes": 1651,
+      "sha256": "cd5c11ab4a3b5653874e5bd363fc534a8e979b24aa86b86ab10a95d70918e834"
     },
     "docs/PROJECT_MAP.md": {
-      "bytes": 1946,
-      "sha256": "9abd2dcda19dfc54bc7b2e57240785794faf0e6aa70f36c0120b0f4da6559140"
+      "bytes": 2775,
+      "sha256": "2d5f6e62ac461cae8eeaf8f08c072432ca48658145dd75866266651705e44c3d"
     },
     "index.html": {
       "bytes": 1490,
       "sha256": "d2656ebf133cdc91ea6faa6c94182cfd207d99346c5084119601ad16c694b050"
     },
     "js/app.js": {
-      "bytes": 141792,
-      "sha256": "786c75c1d2c7f85478fb023d142ca8f2877bfa8e765570b24e41f991b535d241"
+      "bytes": 150381,
+      "sha256": "af0d874811bc8c966e4ceedec79f9cfa3ae5805a35f7ff9c933fff8d3de9fe76"
     },
     "js/data/economy.js": {
-      "bytes": 3546,
-      "sha256": "b5814c090db960eb3b58166b57c66cddbf5cf8850887ff1a723c28cbb5c31f3f"
+      "bytes": 6913,
+      "sha256": "3883feb2d911d2d4d3a8f6f5cc802be199a36a16761a362cd9b67967b90bfa0d"
     },
     "js/data/gameplay.js": {
       "bytes": 11707,
@@ -84,18 +120,12 @@
       "sha256": "8ef01f6a79fc7cb17711d333f4a82290f29e88e3e365e60be020fecdd8f02f6f"
     },
     "js/data/players.js": {
-      "bytes": 25104,
-      "sha256": "2518cd60d0145115319e9bc3cf2a6f58337915a9396868eaa41153ba0b663155"
+      "bytes": 28030,
+      "sha256": "ebb04c57004b23bd4a36d868dfb50afb6b6e1932bda0c0cadae225727f4cb3dd"
     },
     "js/data/ui-config.js": {
-      "bytes": 2165,
-      "sha256": "b4e0ea3fa95f922680c5242bb1095c3f44151d7cd8d3f003627e3c1b82969f76"
+      "bytes": 3685,
+      "sha256": "b7bc3cc55f83bd079d112510f25a5883ad9656c344ac6b2d931dfa747842fee8"
     }
-  },
-  "updates": [
-    {
-      "version": "v27",
-      "description": "Added 20 user-supplied player portrait URLs in PLAYER_PHOTOS; no gameplay logic changed."
-    }
-  ]
+  }
 }
