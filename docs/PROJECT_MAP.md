@@ -1,4 +1,4 @@
-# Карта проекта Zero Football v31
+# Карта проекта Zero Football v33
 
 - `index.html` — точка входа и подключение модулей.
 - `css/01..09` — базовые стили, сетки, карточки, поле, модальные окна и 47 палитр тем.
@@ -31,3 +31,21 @@
 - Additional starter countries: `js/data/players.js`.
 - Player stamina, daily free pack, weighted pack rarity and mandatory in-match substitutions: `js/app.js`.
 - Pack-opening animation restored by removing the conflicting override in `css/04-layout-economy.css`.
+
+
+## v33 additions
+- Password KDF / verification: `js/app.js` (`hashPassword`, `verifyClubPassword`).
+- Emblem symbols: `crestSymbolSvg`, `crestLayerMarkup` in `js/app.js`; icon list in `js/data/gameplay.js`.
+- Kit pattern library: `KIT_PATTERNS` in `js/app.js`, visual recipes in `css/06-visual-refinements.css`.
+- Pack open animation and opponent portrait fallback: `renderReveal`, `renderFound`, `resolvePlayerImages` in `js/app.js`.
+- Card actions: cards are read-only; selling is a dedicated action button.
+
+
+## v33.1 additions
+- Creation commit and recovery UI: `createClubFromForm` in `js/app.js`.
+- Vector rendering and persisted emblem changes: `crestSymbolSvg`, `crestLayerMarkup`, editor submit handler in `js/app.js`.
+- Password lockout: `AUTH_FAILURES`, `verifyClubPassword` in `js/app.js`.
+
+- Emblem layer size controls: `logo-layer-size-up/down` actions in `js/app.js`; drag and z-order controls stay in the same builder.
+- Secure club login modal: `renderClubLoginModal` and delegated `clubLoginForm` handler in `js/app.js`.
+- Legacy stat normalization and idempotent match finalization: `loadDB()` and `finishMatch()` in `js/app.js`.

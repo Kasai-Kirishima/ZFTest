@@ -1,15 +1,19 @@
 {
   "project": "Zero Football",
-  "version": "v31",
-  "description": "Heraldic crests, 20 starter countries, player stamina, daily free pack, weighted loot odds, restored pack animation and mandatory in-match substitutions",
+  "version": "v33.1",
+  "description": "Club creation recovery, local password hardening, player name localization, resizable SVG emblems, 30 kit patterns, pack animations, opponent portrait fallbacks and robust match finalization",
   "files": {
     "CHANGELOG.md": {
-      "bytes": 8940,
-      "sha256": "f2d71d3efef6cd370d41d93226548dcfa576069251c74ba4f785a3ead232245f"
+      "bytes": 13005,
+      "sha256": "b9171af99afd2001c1027236cab32e4c58641c231db6b94488971936f130a681"
     },
     "README.md": {
-      "bytes": 9235,
-      "sha256": "1453c6152db1cd4b1e8d2e315eb564050bae33bb9c856d1f1262223ebebc00da"
+      "bytes": 14353,
+      "sha256": "0944322e9caa06578a7747cea34c46dc42fb3cd04a25eb7c940a03ba8a006188"
+    },
+    "index.html": {
+      "bytes": 1490,
+      "sha256": "d2656ebf133cdc91ea6faa6c94182cfd207d99346c5084119601ad16c694b050"
     },
     "assets/README.md": {
       "bytes": 397,
@@ -79,9 +83,33 @@
       "bytes": 30756,
       "sha256": "97464ee6db6f718f4c0b14da8bfdccad02f1e263c2c7106a9484ecf92f009273"
     },
+    "backup/v32-04-layout-economy.css": {
+      "bytes": 2808,
+      "sha256": "ba0afad0c2d04317f48e5426cd14c185d682001f50877d63394d6b6643aa9724"
+    },
+    "backup/v32-06-visual-refinements.css": {
+      "bytes": 9344,
+      "sha256": "f3f996c84c018c44d704666a7dfc7004703a869e08182c6ff20ea6ce70f06442"
+    },
+    "backup/v32-09-theme-library.css": {
+      "bytes": 10965,
+      "sha256": "8329684b4bd4a08f46fb525bd208c6130b96d2f14286efc4fd0bd605d29320db"
+    },
+    "backup/v32-app.js": {
+      "bytes": 158222,
+      "sha256": "2923d3a553b9f27ce2f0aa7397ae03a996eb4b16d1847b03ed002d3397478f3e"
+    },
+    "backup/v32-gameplay.js": {
+      "bytes": 11736,
+      "sha256": "c3e8fed656db0fb5418843cb5cc66f370352f66712decdd2329f36368e6d3a32"
+    },
+    "backup/v32-players.js": {
+      "bytes": 30756,
+      "sha256": "97464ee6db6f718f4c0b14da8bfdccad02f1e263c2c7106a9484ecf92f009273"
+    },
     "css/01-base.css": {
-      "bytes": 48500,
-      "sha256": "828f3b89b7c9207c2c154396eebde50bc33502671cad84ac158776cc189fd562"
+      "bytes": 48680,
+      "sha256": "018b7ec6950e68f19e085a9a3660e2ff329cfc6de7758e10b3076839b84d4704"
     },
     "css/02-layout-and-responsive.css": {
       "bytes": 6240,
@@ -100,8 +128,8 @@
       "sha256": "66a6f1c9ba96fe7174a336cfbba9edd77b59bb2905c06cb1182eb7921a3c45f3"
     },
     "css/06-visual-refinements.css": {
-      "bytes": 4888,
-      "sha256": "c23e8b3e63efe06484903bb530e0d9f486d1992a620f97822a51d7e69df9467a"
+      "bytes": 15756,
+      "sha256": "d46b6686f841087d14d109b2cc0215d38e8ca74974fffaf8564e4b9e20eaaabb"
     },
     "css/07-unified-card-crop.css": {
       "bytes": 3458,
@@ -112,40 +140,36 @@
       "sha256": "06c0a2c89a05713fc3c38ad2eee2d30f34e06ddc37e54a9ec347e86b913682da"
     },
     "css/09-theme-library.css": {
-      "bytes": 10468,
-      "sha256": "8154547b8a7e131aa7675d4f2f46e9d7e20576c225c9752713820675f59a1620"
+      "bytes": 11150,
+      "sha256": "924771ba7aa5b3aaa6a90506a61572ccbbbbaa34eaf2fe138657186b1a52dad3"
     },
     "docs/EDITING_RULES.md": {
       "bytes": 1651,
       "sha256": "cd5c11ab4a3b5653874e5bd363fc534a8e979b24aa86b86ab10a95d70918e834"
     },
     "docs/PROJECT_MAP.md": {
-      "bytes": 3210,
-      "sha256": "3e64d1b1feeb9b9aed9acddc0d8bd05a489f236f45bcb6bd7a7169206c981fe9"
-    },
-    "index.html": {
-      "bytes": 1490,
-      "sha256": "d2656ebf133cdc91ea6faa6c94182cfd207d99346c5084119601ad16c694b050"
+      "bytes": 4361,
+      "sha256": "0e01c7476fdacef261920def10e556f39642d944d7d6669a318447f6f5daf883"
     },
     "js/app.js": {
-      "bytes": 154731,
-      "sha256": "dd78af6788e0ba0d8968de7373f00410ac9ad93a38459965186ee1d6769614f9"
+      "bytes": 174626,
+      "sha256": "092d5a622a9378f284ff399e82b349d360bd4aca4e51d962328b128db5e6d5f3"
     },
     "js/data/economy.js": {
       "bytes": 6913,
       "sha256": "3883feb2d911d2d4d3a8f6f5cc802be199a36a16761a362cd9b67967b90bfa0d"
     },
     "js/data/gameplay.js": {
-      "bytes": 11871,
-      "sha256": "c1c1d585728246f8aea0c00864690310451fad4c134410f790e50399a63e02a9"
+      "bytes": 11892,
+      "sha256": "078cd33cb42fc05879f1bc5c6ea9ec6da533e5ebee99f64bf588f0ee73167f19"
     },
     "js/data/localization.js": {
       "bytes": 121054,
       "sha256": "8ef01f6a79fc7cb17711d333f4a82290f29e88e3e365e60be020fecdd8f02f6f"
     },
     "js/data/players.js": {
-      "bytes": 30756,
-      "sha256": "97464ee6db6f718f4c0b14da8bfdccad02f1e263c2c7106a9484ecf92f009273"
+      "bytes": 30631,
+      "sha256": "9c070e21a2c1c5208b30caf9adbe167fc62b48c2997a779ff30fd5be7d9ede81"
     },
     "js/data/ui-config.js": {
       "bytes": 3685,

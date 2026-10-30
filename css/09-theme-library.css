@@ -78,3 +78,13 @@
 .crest-builder-preview.shape-rounded,.club-crest.shape-rounded{clip-path:inset(2% round 22%)}
 .crest-builder-preview.shape-banner,.club-crest.shape-banner{clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%)}
 .crest-builder-preview.shape-circle-crest,.club-crest.shape-circle-crest{clip-path:circle(48% at 50% 50%);border:4px double var(--crest-color)}
+
+/* v32: additional heraldic silhouettes */
+.crest-builder-preview.shape-hexagon,.banner-crest.shape-hexagon{clip-path:polygon(25% 3%,75% 3%,100% 50%,75% 97%,25% 97%,0 50%)}
+.crest-builder-preview.shape-rounded,.banner-crest.shape-rounded{clip-path:inset(2% round 22%)}
+.crest-builder-preview.shape-banner,.banner-crest.shape-banner{clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%)}
+.crest-builder-preview.shape-circle-crest,.banner-crest.shape-circle-crest{clip-path:circle(48% at 50% 50%)}
+
+/* v33: extra pattern choices */
+.pattern-options{grid-template-columns:repeat(auto-fit,minmax(105px,1fr));max-height:420px;overflow:auto;padding:2px}
+.pattern-option{min-height:42px}

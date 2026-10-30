@@ -17,3 +17,110 @@
 .shape-rounded{clip-path:inset(2% round 22%)}
 .shape-banner{clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%)}
 .shape-circle-crest{clip-path:circle(48% at 50% 50%);border:4px double var(--crest-color)}
+
+
+/* v32: safer heraldic glyphs, resize controls, kit-pattern library and pack animation */
+.crest-layer,.symbol-pick,.club-crest .crest-layer,.banner-crest .crest-layer{
+  font-family:"Arial Unicode MS","Segoe UI Symbol","Noto Sans Symbols 2",Arial,sans-serif;
+  font-variant-emoji:text;
+}
+.logo-layer-row{flex-wrap:nowrap;gap:4px;min-width:0}
+.logo-layer-row>span{min-width:24px;max-width:84px}
+.logo-layer-row .layer-size{font-size:9px;color:var(--lime);white-space:nowrap;font-variant-numeric:tabular-nums}
+.logo-layer-row .btn{min-width:24px;padding:3px 6px;line-height:1.15}
+.opponent-star-photo.has-photo .opponent-star-initials{display:none!important}
+.opponent-star-photo .portrait-photo{display:block;opacity:1;transition:opacity .2s ease}
+
+.kit-shirt.pattern-pinstripes{background:repeating-linear-gradient(90deg,var(--kit-primary) 0 10px,var(--kit-secondary) 10px 13px)}
+.kit-shirt.pattern-sash{background:linear-gradient(145deg,var(--kit-primary) 0 39%,var(--kit-secondary) 39% 56%,var(--kit-primary) 56% 100%)}
+.kit-shirt.pattern-chevron{background:repeating-linear-gradient(135deg,var(--kit-primary) 0 12px,var(--kit-secondary) 12px 19px,var(--kit-primary) 19px 29px)}
+.kit-shirt.pattern-quartered{background:conic-gradient(from 90deg,var(--kit-primary) 0 25%,var(--kit-secondary) 0 50%,var(--kit-primary) 0 75%,var(--kit-secondary) 0)}
+.kit-shirt.pattern-cross{background:linear-gradient(90deg,var(--kit-primary) 0 38%,var(--kit-secondary) 38% 62%,var(--kit-primary) 62% 100%),linear-gradient(0deg,var(--kit-primary) 0 38%,var(--kit-secondary) 38% 62%,var(--kit-primary) 62% 100%);background-blend-mode:normal}
+.kit-shirt.pattern-thin-hoops{background:repeating-linear-gradient(0deg,var(--kit-primary) 0 10px,var(--kit-secondary) 10px 13px)}
+.kit-shirt.pattern-gradient{background:linear-gradient(135deg,var(--kit-primary),var(--kit-secondary) 52%,var(--kit-primary))}
+.pattern-options{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pattern-option{min-height:38px;line-height:1.25}
+
+.pack-opening{animation:zfOverlayIn .32s ease-out both}
+.opening-pack-scene{height:112px;display:grid;place-items:center;position:relative;margin:0 auto 4px;isolation:isolate}
+.opening-pack-box{width:66px;height:84px;display:grid;place-items:center;position:relative;z-index:1;border-radius:9px 9px 13px 13px;background:linear-gradient(145deg,#f4d76c,#a46a27 70%);color:#241708;font:1000 23px "Barlow Condensed",sans-serif;box-shadow:0 12px 35px #0009;transform-origin:50% 85%;animation:zfPackRattle .95s cubic-bezier(.2,.8,.2,1) both}
+.opening-pack-box:before{content:"";position:absolute;left:-5px;right:-5px;top:12px;height:12px;border-radius:4px;background:linear-gradient(90deg,#8b551e,#ffe69a,#8b551e);box-shadow:0 2px 5px #0005}
+.opening-pack-box:after{content:"";position:absolute;inset:30px 0 auto;height:3px;background:#fff9;box-shadow:0 0 13px #fff}
+.opening-pack-box span{margin-top:16px;letter-spacing:1px}
+.opening-pack-glow{position:absolute;z-index:0;width:150px;height:54px;bottom:3px;border-radius:50%;background:radial-gradient(ellipse,#d9ff5e77,transparent 70%);filter:blur(5px);animation:zfPackGlow 1.2s ease-out both}
+.opening-flash{animation:zfTitleReveal .55s .42s both}
+.revealed-card{animation:packDrop .68s cubic-bezier(.2,.8,.2,1) forwards}
+.revealed-card:nth-child(1){animation-delay:.75s}
+.revealed-card:nth-child(2){animation-delay:1.15s}
+.revealed-card:nth-child(3){animation-delay:1.55s}
+.revealed-card:nth-child(4){animation-delay:1.95s}
+.revealed-card:nth-child(5){animation-delay:2.35s}
+.revealed-card:nth-child(6){animation-delay:2.75s}
+@keyframes zfOverlayIn{from{opacity:0}to{opacity:1}}
+@keyframes zfPackRattle{0%{opacity:0;transform:translateY(25px) rotate(0) scale(.7)}18%{opacity:1;transform:translateY(0) rotate(-12deg) scale(1.08)}34%{transform:rotate(10deg) scale(1.03)}50%{transform:rotate(-8deg) scale(1.04)}66%{transform:rotate(5deg) scale(1.02)}82%{transform:translateY(-5px) rotate(0) scale(1.12);filter:brightness(1.6)}100%{transform:translateY(0) rotate(0) scale(1);filter:none}}
+@keyframes zfPackGlow{0%{opacity:0;transform:scale(.3)}65%{opacity:1;transform:scale(1.15)}100%{opacity:.65;transform:scale(1)}}
+@keyframes zfTitleReveal{0%{opacity:0;transform:translateY(14px) scale(.94)}100%{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.pack-opening,.opening-pack-box,.opening-pack-glow,.opening-flash,.revealed-card{animation-duration:.01ms!important;animation-delay:0ms!important}}
+
+
+/* v33: deterministic emblem glyphs, expanded kit patterns, and visible pack animations */
+.crest-glyph-svg{display:block;width:1em;height:1em;overflow:visible;color:currentColor;flex:none}
+.crest-layer{display:grid;place-items:center;font-family:Arial,"Segoe UI Symbol","Noto Sans Symbols 2",sans-serif;font-variant-emoji:text;line-height:1}
+.symbol-pick{font-family:Arial,"Segoe UI Symbol","Noto Sans Symbols 2",sans-serif;font-variant-emoji:text;min-width:32px;min-height:34px}
+.kit-shirt.pattern-center-stripe{background:linear-gradient(90deg,var(--kit-primary) 0 39%,var(--kit-secondary) 39% 61%,var(--kit-primary) 61%)}
+.kit-shirt.pattern-side-stripes{background:linear-gradient(90deg,var(--kit-secondary) 0 15%,var(--kit-primary) 15% 85%,var(--kit-secondary) 85%)}
+.kit-shirt.pattern-three-stripes{background:repeating-linear-gradient(90deg,var(--kit-primary) 0 23px,var(--kit-secondary) 23px 31px,var(--kit-primary) 31px 45px)}
+.kit-shirt.pattern-wide-hoops{background:repeating-linear-gradient(0deg,var(--kit-primary) 0 28px,var(--kit-secondary) 28px 54px)}
+.kit-shirt.pattern-shoulders{background:linear-gradient(180deg,var(--kit-secondary) 0 22%,var(--kit-primary) 22% 100%)}
+.kit-shirt.pattern-v-shape{background:linear-gradient(135deg,transparent 0 42%,var(--kit-secondary) 42% 49%,transparent 49%),linear-gradient(225deg,transparent 0 42%,var(--kit-secondary) 42% 49%,transparent 49%),var(--kit-primary)}
+.kit-shirt.pattern-checker{background:repeating-conic-gradient(var(--kit-primary) 0 25%,var(--kit-secondary) 0 50%) 0 0/32px 32px}
+.kit-shirt.pattern-dots{background:radial-gradient(var(--kit-secondary) 3px,transparent 4px) 0 0/18px 18px,var(--kit-primary)}
+.kit-shirt.pattern-split-diagonal{background:linear-gradient(155deg,var(--kit-secondary) 0 48%,var(--kit-primary) 48% 100%)}
+.kit-shirt.pattern-vertical-blocks{background:linear-gradient(90deg,var(--kit-primary) 0 33.3%,var(--kit-secondary) 33.3% 66.6%,var(--kit-primary) 66.6%)}
+.kit-shirt.pattern-horizontal-blocks{background:linear-gradient(0deg,var(--kit-primary) 0 33.3%,var(--kit-secondary) 33.3% 66.6%,var(--kit-primary) 66.6%)}
+.kit-shirt.pattern-wave{background:repeating-radial-gradient(ellipse at 50% 0%,var(--kit-secondary) 0 8px,var(--kit-primary) 9px 18px)}
+.kit-shirt.pattern-double-sash{background:linear-gradient(135deg,var(--kit-primary) 0 34%,var(--kit-secondary) 34% 42%,var(--kit-primary) 42% 54%,var(--kit-secondary) 54% 62%,var(--kit-primary) 62%)}
+.kit-shirt.pattern-collar{background:linear-gradient(180deg,var(--kit-secondary) 0 12%,var(--kit-primary) 12% 100%)}
+.kit-shirt.pattern-sleeve-bars{background:linear-gradient(90deg,var(--kit-secondary) 0 18%,var(--kit-primary) 18% 82%,var(--kit-secondary) 82%)}
+.kit-shirt.pattern-asymmetric{background:linear-gradient(115deg,var(--kit-secondary) 0 32%,var(--kit-primary) 32% 100%)}
+.kit-shirt.pattern-diamond-grid{background:repeating-linear-gradient(45deg,transparent 0 12px,var(--kit-secondary) 12px 15px,transparent 15px 28px),repeating-linear-gradient(-45deg,var(--kit-primary) 0 12px,var(--kit-secondary) 12px 15px,var(--kit-primary) 15px 28px)}
+.kit-shirt.pattern-pin-center{background:repeating-linear-gradient(90deg,var(--kit-primary) 0 45px,var(--kit-secondary) 45px 49px,var(--kit-primary) 49px 55px)}
+.player-card{cursor:default!important;user-select:none;-webkit-user-select:none}
+.player-card-actions{display:flex;justify-content:center;margin-top:10px}
+.opponent-star-card{cursor:default;user-select:none;-webkit-user-select:none}
+.opponent-star-photo .portrait-photo{display:block!important;opacity:1;object-fit:cover}
+.revealed-card{opacity:0;will-change:transform,opacity;animation:packDrop .72s cubic-bezier(.18,.85,.25,1) both!important}
+.pack-opening .opening-pack-box{animation:zfPackRattle 1.1s cubic-bezier(.2,.8,.2,1) both!important}
+.pack-opening .opening-pack-glow{animation:zfPackGlow 1.35s ease-out both!important}
+.pack-opening .opening-flash{animation:zfFlashIn .55s .25s ease-out both}
+@keyframes zfFlashIn{0%{opacity:0;transform:translateY(12px) scale(.88);filter:blur(5px)}100%{opacity:1;transform:none;filter:none}}
+@media(prefers-reduced-motion:reduce){.pack-opening,.opening-pack-box,.opening-pack-glow,.opening-flash,.revealed-card{animation-duration:.5s!important;animation-delay:0s!important}.revealed-card{opacity:0!important;animation-name:packDrop!important}}
+
+
+/* v33.1: robust card behavior and pack opening sequence. */
+.player-card,.opponent-star-card,.squad-item{cursor:default!important;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.player-card{pointer-events:auto}
+.player-card-actions button{pointer-events:auto;cursor:pointer;user-select:auto;-webkit-user-select:auto}
+.pack-opening{animation:zfOverlayIn .32s ease-out both!important}
+.pack-opening .opening-box{animation:zfBoxEntrance .42s cubic-bezier(.2,.8,.2,1) both}
+.pack-opening .opening-pack-box{animation:zfPackRattle 1.1s cubic-bezier(.2,.8,.2,1) both!important}
+.pack-opening .opening-pack-glow{animation:zfPackGlow 1.35s ease-out both!important}
+.pack-opening .opening-flash{animation:zfFlashIn .55s .25s ease-out both!important}
+.pack-opening .revealed-card{opacity:0;animation:packDrop .72s cubic-bezier(.18,.85,.25,1) forwards!important}
+.pack-opening .revealed-card:nth-child(1){animation-delay:.65s!important}
+.pack-opening .revealed-card:nth-child(2){animation-delay:1.05s!important}
+.pack-opening .revealed-card:nth-child(3){animation-delay:1.45s!important}
+.pack-opening .revealed-card:nth-child(4){animation-delay:1.85s!important}
+.pack-opening .revealed-card:nth-child(5){animation-delay:2.25s!important}
+.pack-opening .revealed-card:nth-child(6){animation-delay:2.65s!important}
+@keyframes zfBoxEntrance{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.pack-opening .opening-box{animation-duration:.25s!important}.pack-opening .opening-pack-box{animation-duration:.55s!important}.pack-opening .revealed-card{opacity:1!important;animation-duration:.45s!important;animation-delay:0s!important}}
+
+.symbol-pick .crest-glyph-svg{width:1.35em;height:1.35em}
+.symbol-pick{display:inline-grid;place-items:center}
+
+.login-modal-backdrop{z-index:80}
+.login-modal{width:min(100%,430px)}
+.login-modal .field input{width:100%}
+.login-modal .settings-actions{display:grid;gap:8px;margin-top:16px}
+.login-modal .form-error{color:#ff8f8f;font-size:12px}
