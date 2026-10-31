@@ -1,4 +1,4 @@
-# Карта проекта Zero Football v34
+# Карта проекта Zero Football v35
 
 - `index.html` — точка входа и подключение модулей.
 - `css/01..09` — базовые стили, сетки, карточки, поле, модальные окна и 47 палитр тем.
@@ -55,3 +55,9 @@
 - Pack animation lifecycle: `runPackOpeningAnimations()` in `js/app.js`; conflicting legacy CSS keyframes disabled in `css/06-visual-refinements.css`.
 - Opponent top three: `renderFound()` reuses `renderPlayerCard()` for identical visual treatment.
 - Final match decision: `resolveChoice()` completes the tenth episode directly; `finishMatch(true)` is the final-decision path with a fallback result screen.
+
+
+## v35 additions
+- Pack reveal CSS-only animation pipeline: `css/06-visual-refinements.css`.
+- The `runPackOpeningAnimations()` Web Animations API helper and its render hook were removed from `js/app.js`; the modal's CSS animations start automatically on DOM insertion.
+- v34 versions of the app and visual refinements are preserved in `backup/v34-app.js` and `backup/v34-06-visual-refinements.css`.
