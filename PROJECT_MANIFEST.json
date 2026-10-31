@@ -1,15 +1,15 @@
 {
   "project": "Zero Football",
-  "version": "v38",
-  "description": "30 starter countries; club crest builder with separate collapsible symbol and 30-emoji pickers, per-layer color controls, and full existing-club editing.",
+  "version": "v39",
+  "description": "Start-screen language selector; rebuilt animated pack reveal with three speeds, skip/replay, pack-specific sound and vibration settings; game-wide motion polish.",
   "files": {
     "CHANGELOG.md": {
-      "bytes": 19043,
-      "sha256": "491265e85318ce1eff444cd81ea644616ca85030571f3ecb12d09916286ddc73"
+      "bytes": 21610,
+      "sha256": "df9fa163ca4f4045a2085eba4e5155cf14c35ad9c05f46869cef331bfe34b1a0"
     },
     "README.md": {
-      "bytes": 16672,
-      "sha256": "a8b0bc6d515c81f6b575f7943a5f761092fcb9b1f72c66c7746a3b706b329e5d"
+      "bytes": 19013,
+      "sha256": "474b6146cd0db08b72e5c4620bb8c663254502b783f70368d80c54533b2eee1a"
     },
     "assets/README.md": {
       "bytes": 397,
@@ -135,6 +135,30 @@
       "bytes": 175845,
       "sha256": "455f48d4f9f1e9e6b5724f6c2efedecf3e02a0c17fef04a9e9dfcf2d500ef3ba"
     },
+    "backup/v38-01-base.css": {
+      "bytes": 48680,
+      "sha256": "018b7ec6950e68f19e085a9a3660e2ff329cfc6de7758e10b3076839b84d4704"
+    },
+    "backup/v38-06-visual-refinements.css": {
+      "bytes": 9477,
+      "sha256": "a68a986db346fbb8f7c056e3d0353efe95c40bc08044f3f4250d72afe9531b76"
+    },
+    "backup/v38-CHANGELOG.md": {
+      "bytes": 19043,
+      "sha256": "491265e85318ce1eff444cd81ea644616ca85030571f3ecb12d09916286ddc73"
+    },
+    "backup/v38-README.md": {
+      "bytes": 16672,
+      "sha256": "a8b0bc6d515c81f6b575f7943a5f761092fcb9b1f72c66c7746a3b706b329e5d"
+    },
+    "backup/v38-app.js": {
+      "bytes": 179759,
+      "sha256": "59b94703538dbfa221f0ea359d47db500bea3ccd6fa9bdbbcffa11f9727c766d"
+    },
+    "backup/v38-gameplay.js": {
+      "bytes": 11892,
+      "sha256": "078cd33cb42fc05879f1bc5c6ea9ec6da533e5ebee99f64bf588f0ee73167f19"
+    },
     "css/01-base.css": {
       "bytes": 48680,
       "sha256": "018b7ec6950e68f19e085a9a3660e2ff329cfc6de7758e10b3076839b84d4704"
@@ -171,6 +195,10 @@
       "bytes": 12999,
       "sha256": "cf74e8f6b18f89f0a9e70401419b734ce2313370a29aee2bc00d0d9a97eecc7d"
     },
+    "css/10-motion-and-pack-opening.css": {
+      "bytes": 21899,
+      "sha256": "e49794e9d090c2130a9cddaacb012a885aa664c73cd00663ffb7d05962e60485"
+    },
     "docs/EDITING_RULES.md": {
       "bytes": 1651,
       "sha256": "cd5c11ab4a3b5653874e5bd363fc534a8e979b24aa86b86ab10a95d70918e834"
@@ -180,20 +208,20 @@
       "sha256": "0b8c07517e388f982368b75734c1669d2d89437b856e9ae681915ea180cb378a"
     },
     "index.html": {
-      "bytes": 1490,
-      "sha256": "d2656ebf133cdc91ea6faa6c94182cfd207d99346c5084119601ad16c694b050"
+      "bytes": 1560,
+      "sha256": "7b4b52fc95d6ec132b922016372cf49c06960eeac4a44f01da4cfb94bcceb5d7"
     },
     "js/app.js": {
-      "bytes": 179759,
-      "sha256": "59b94703538dbfa221f0ea359d47db500bea3ccd6fa9bdbbcffa11f9727c766d"
+      "bytes": 190400,
+      "sha256": "87e21eabc4b362d682ecb562e720568615eaea4c0fb08458f3767adef3b5fe1b"
     },
     "js/data/economy.js": {
       "bytes": 6913,
       "sha256": "3883feb2d911d2d4d3a8f6f5cc802be199a36a16761a362cd9b67967b90bfa0d"
     },
     "js/data/gameplay.js": {
-      "bytes": 11892,
-      "sha256": "078cd33cb42fc05879f1bc5c6ea9ec6da533e5ebee99f64bf588f0ee73167f19"
+      "bytes": 12452,
+      "sha256": "5930627961b09170a10af02a98990c285527ee9274362a750cd94df0d956f51b"
     },
     "js/data/localization.js": {
       "bytes": 121054,
