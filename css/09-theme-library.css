@@ -88,3 +88,24 @@
 /* v33: extra pattern choices */
 .pattern-options{grid-template-columns:repeat(auto-fit,minmax(105px,1fr));max-height:420px;overflow:auto;padding:2px}
 .pattern-option{min-height:42px}
+
+
+/* v38: expandable crest catalogues and per-layer colour controls */
+.crest-picker{border:1px solid var(--line);border-radius:10px;background:#ffffff04;overflow:hidden}
+.crest-picker>summary{cursor:pointer;list-style:none;padding:10px 12px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.crest-picker>summary::-webkit-details-marker{display:none}
+.crest-picker>summary:after{content:'＋';color:var(--lime);font-size:16px}
+.crest-picker[open]>summary:after{content:'−'}
+.crest-picker[open]>summary{border-bottom:1px solid var(--line)}
+.crest-picker .symbol-picks,.crest-picker .emoji-picks{padding:10px;max-height:190px;overflow:auto}
+.emoji-picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px}
+.emoji-pick{min-height:38px;border:1px solid var(--line);border-radius:9px;background:#ffffff08;color:var(--text);font-size:23px;cursor:pointer;display:grid;place-items:center}
+.emoji-pick:hover,.symbol-pick:hover{border-color:var(--lime);background:#c8ff4415;transform:translateY(-1px)}
+.logo-layer-list{max-height:210px}
+.logo-layer-row{display:grid;grid-template-columns:minmax(36px,1fr) 34px auto repeat(5,26px);align-items:center;gap:4px}
+.logo-layer-row>.layer-value{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logo-layer-row .layer-color-input{width:30px;height:27px;padding:1px;border:1px solid var(--line);border-radius:6px;background:transparent;cursor:pointer}
+.logo-layer-row .layer-size{font-size:10px;white-space:nowrap;color:var(--lime);font-variant-numeric:tabular-nums}
+.logo-layer-row .btn{min-width:25px;padding:3px 5px}
+.crest-layer-emoji{font-variant-emoji:text}
+@media(max-width:460px){.logo-layer-row{grid-template-columns:minmax(26px,1fr) 30px auto repeat(5,23px);gap:2px}.logo-layer-row .btn{min-width:22px;padding:3px 2px}}
