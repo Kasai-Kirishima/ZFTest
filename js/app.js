@@ -507,9 +507,18 @@
       if(playerModalRef)$('#app').insertAdjacentHTML('beforeend',renderPlayerModal(club));
       resolvePlayerImages();applyLanguage();syncMatchCountdownUI();
     } catch(error) {
-      console.error('Club render failed; showing safe recovery view:',error);
+      console.error('Club screen render failed; opening compatibility dashboard:',error);
       const root=$('#app');
-      if(root)root.innerHTML=`<main class="main-area"><section class="card" style="max-width:680px;margin:8vh auto;text-align:center"><h1 class="h1">Не удалось открыть экран клуба</h1><p>Данные клуба сохранены. Можно повторить открытие или вернуться к списку клубов.</p><div class="settings-actions"><button class="btn btn-primary" data-action="retry-club-render">Повторить</button><button class="btn btn-secondary" data-action="switch-club">К списку клубов</button></div></section></main>`;
+      if(root) {
+        const players=Array.isArray(club.players)?club.players.filter(Boolean):[];
+        const lineup=Array.isArray(club.lineup)?club.lineup:[];
+        const safeName=esc(club.name||'Мой клуб');
+        const safeCoins=formatMoney(Number.isFinite(Number(club.coins))?Number(club.coins):0);
+        const rosterPreview=players.slice(0,8).map(p=>`<div class="list-row" style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)"><span>${esc(p.name||'Игрок')}</span><b>${Math.max(1,Math.min(99,Number(p.rating)||1))} OVR</b></div>`).join('');
+        const emergencyNav=[['home','Главная'],['team','Команда'],['packs','Паки'],['collection','Коллекция'],['sponsors','Спонсоры'],['match','Матч'],['trophies','Трофеи'],['settings','Настройки']];
+        root.innerHTML=`<div class="game-layout" data-theme="${esc(db.theme||'classic')}" style="--crest-color:${esc(club.logo?.color||'#c8ff44')}"><aside class="sidebar"><div class="sidebar-brand"><div class="brand-mark">ZF</div><div class="brand-name">ZERO <span>FOOTBALL</span></div></div><div class="nav-label">Игровой центр</div><nav class="nav-menu">${emergencyNav.map(([id,label])=>`<button class="nav-item ${view===id?'active':''}" data-action="nav" data-view="${id}">${label}</button>`).join('')}</nav><div class="nav-label" style="margin-top:12px">Управление</div><nav class="nav-menu"><button class="nav-item" data-action="switch-club">⇄ Сменить клуб</button></nav></aside><main class="main-area"><header class="topbar"><div class="crumb"><span>ZERO FOOTBALL</span><span>／</span><b>${safeName}</b></div><div class="top-actions"><div class="coin-chip">${safeCoins}</div></div></header><section class="section-heading"><div><div class="eyebrow">КЛУБ ОТКРЫТ</div><h1 class="h1">${safeName}</h1><p class="page-subtitle">Совместимый режим отображения. Данные клуба не затронуты.</p></div></section><section class="stat-grid"><div class="metric-card"><div class="metric-top">Состав</div><div class="metric-value">${players.length}</div><div class="metric-note">игроков</div></div><div class="metric-card"><div class="metric-top">Стартовый состав</div><div class="metric-value">${lineup.length}</div><div class="metric-note">слотов</div></div><div class="metric-card"><div class="metric-top">Рейтинг клуба</div><div class="metric-value">${teamRating(club)}</div><div class="metric-note">OVR</div></div></section><section class="card" style="margin-top:18px"><h2 class="h2">Игроки клуба</h2>${rosterPreview||'<p class="muted">Состав пока пуст.</p>'}<div class="settings-actions" style="margin-top:16px"><button class="btn btn-primary" data-action="nav" data-view="team">Открыть команду</button><button class="btn btn-secondary" data-action="nav" data-view="match">Перейти к матчу</button><button class="btn btn-quiet" data-action="retry-club-render">Повторить обычный экран</button></div></section></main><nav class="mobile-nav">${emergencyNav.map(([id,label])=>`<button class="nav-item ${view===id?'active':''}" data-action="nav" data-view="${id}">${label}</button>`).join('')}</nav></div>`;
+        try{applyLanguage();}catch(languageError){console.warn('Compatibility dashboard language pass skipped:',languageError);}
+      }
     }
   }
   function energyCountdownText(club){
