@@ -158,3 +158,30 @@
 - Добавлена индивидуальная настройка цвета каждого слоя эмблемы.
 - Размер, порядок, удаление и перетаскивание слоёв работают как при создании клуба, так и в редакторе существующего клуба.
 - Эмодзи хранятся в слое отдельного типа и не очищаются миграцией локального сохранения.
+
+
+## v42 — стартовый язык и финальная компоновка поля
+- Исправлено переключение языка в стартовом меню и расширен перевод главного экрана.
+- Пересчитаны тактические линии и размеры карточек на поле для ПК, планшетов и телефонов.
+- Выносливость вынесена из изображения игрока в компактную подпись под позицией.
+- Добавлен отдельный выбор капитана по всему составу, включая запасных.
+- Исправлены обрезка и вертикальное выравнивание портретов в окне выбора замены.
+- Настройки музыки и 25 синтезируемых тем сохранены; предпрослушивание больше не включает звук самовольно после отключения общего звука.
+
+
+## Version 43 — match action photography
+- Added the 33 user-supplied football action/event photographs to the live match interface.
+- Action choice buttons now show the matching photo where a corresponding action exists; incident log entries show photos for injuries, substitutions and cards.
+- Replaced the generic match episode illustration with a relevant action/event photograph.
+- Unified all image crops to a fixed 16:9 landscape frame using `object-fit: cover` and centered positioning, with responsive dimensions for mobile.
+- Added a dedicated final stylesheet for the match image gallery.
+- Images are referenced from the supplied HTTPS hosts and load when the player is online.
+
+## Version 44 — energy clock, ad placements and localization pass
+- Added a live mm:ss countdown to the next energy point; it updates once per second and refreshes the energy pips automatically when energy regenerates.
+- Added non-intrusive partner-ad placements on the dashboard and match lobby, populated from active club sponsorship contracts or marked as an available ad slot.
+- Added a rewarded-ad button for +3 energy. It only grants the reward after an external ad provider confirms `{ completed: true }`; without a configured provider it reports that the ad network is not connected rather than pretending a video was watched.
+- Added the `window.ZF_AD_PROVIDER.showRewardedAd({ placement, reward })` integration contract; provider credentials and SDK remain deployment-specific.
+- Extended localized labels for the energy countdown, ad UI and match-action names across the 10 selectable interface languages.
+- Retained the v43 match-action photo gallery and its consistent 16:9 `object-fit: cover` crop on desktop and mobile.
+- Retained the existing 25 original browser-synthesized music themes across five styles, with language-independent music controls.

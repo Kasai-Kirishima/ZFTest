@@ -1,15 +1,15 @@
 {
   "project": "Zero Football",
-  "version": "v40",
-  "description": "Position-aware team and player OVR; actual bot roster rating and top player cards; improved portrait fallbacks; localized player data; expanded theme propagation; stamina on tactical lineup; forced substitution recommendations; pack-only player acquisition; removed coin achievements and visible price ranges.",
+  "version": "v44",
+  "description": "Consistent match action photography plus live energy recovery countdown, sponsor ad placements, rewarded-ad provider hook, and expanded localization.",
   "files": {
     "CHANGELOG.md": {
-      "bytes": 25072,
-      "sha256": "0a69f8657a989298affc1c635d2ed0b29fdea543e844868e5de93633577bbafb"
+      "bytes": 28027,
+      "sha256": "7cef46a6941b3fb4b81424b121ae8b82afb3d9980596bb93b59c0d475d6d8851"
     },
     "README.md": {
-      "bytes": 21616,
-      "sha256": "84c9ec149e75c2ffc828682b09ed870b4bb0dcd8271f9dc1164ee66aafe576f0"
+      "bytes": 24715,
+      "sha256": "7959c7fe759d98489b7d65f0e7db0656520f55cc376cd5f2ad6ca6025acadffa"
     },
     "assets/README.md": {
       "bytes": 397,
@@ -195,6 +195,94 @@
       "bytes": 38329,
       "sha256": "a56f334e0525f14bb587af0d5c2ad6f5d3a62f6afbd70cea2d545a1f37a5ff03"
     },
+    "backup/v40-01-base.css": {
+      "bytes": 48680,
+      "sha256": "018b7ec6950e68f19e085a9a3660e2ff329cfc6de7758e10b3076839b84d4704"
+    },
+    "backup/v40-02-layout-and-responsive.css": {
+      "bytes": 6240,
+      "sha256": "a4c60079760e5858a58ba7a5a84cd2972f62f54ef5b7e5e6a6ce13bb0c5d8ed8"
+    },
+    "backup/v40-11-theme-and-squad-fixes.css": {
+      "bytes": 16681,
+      "sha256": "aa55477f400d0d056a911070824096744bf99479698f8a1d0bde80d3d6b68d9f"
+    },
+    "backup/v40-CHANGELOG.md": {
+      "bytes": 25072,
+      "sha256": "0a69f8657a989298affc1c635d2ed0b29fdea543e844868e5de93633577bbafb"
+    },
+    "backup/v40-PROJECT_MANIFEST.json": {
+      "bytes": 10315,
+      "sha256": "303efb5160135addd6bd9b500c2f4d26e40c9671378d8a4aad57a630b3be97d7"
+    },
+    "backup/v40-README.md": {
+      "bytes": 21616,
+      "sha256": "84c9ec149e75c2ffc828682b09ed870b4bb0dcd8271f9dc1164ee66aafe576f0"
+    },
+    "backup/v40-app.js": {
+      "bytes": 225196,
+      "sha256": "d6e5ea320ba8a8176e73a825f65fbb57f569bc9d794698dc79c180a21ef424f7"
+    },
+    "backup/v40-gameplay.js": {
+      "bytes": 12723,
+      "sha256": "bdac52bd5576262dfc41821d837cf1b84771606fc2835c7a940cdc3d968d78e7"
+    },
+    "backup/v40-index.html": {
+      "bytes": 1628,
+      "sha256": "17203db835c0a3b12d883d4cd75d20ddfa5ea6ab6c56bdbf0b82aa1bab800356"
+    },
+    "backup/v41-CHANGELOG.md": {
+      "bytes": 25072,
+      "sha256": "0a69f8657a989298affc1c635d2ed0b29fdea543e844868e5de93633577bbafb"
+    },
+    "backup/v41-PROJECT_MANIFEST.json": {
+      "bytes": 10315,
+      "sha256": "303efb5160135addd6bd9b500c2f4d26e40c9671378d8a4aad57a630b3be97d7"
+    },
+    "backup/v41-README.md": {
+      "bytes": 21616,
+      "sha256": "84c9ec149e75c2ffc828682b09ed870b4bb0dcd8271f9dc1164ee66aafe576f0"
+    },
+    "backup/v41-css-12-v41-audio-and-pitch.css": {
+      "bytes": 6957,
+      "sha256": "8b87ed0d7fede974817e1793d63d0511a5ffc8701149bd7ed30ba8a77bb6f1cc"
+    },
+    "backup/v41-docs-PROJECT_MAP.md": {
+      "bytes": 5465,
+      "sha256": "fbbdb19586c9139d799d4a1d449c240da2a4f47bd65dca4bcb37067c15bec9ee"
+    },
+    "backup/v41-index.html": {
+      "bytes": 1694,
+      "sha256": "3ac671ce41fda0d1738d75a2d37a3201a1cce01dcb29a37eb475030d174c82ae"
+    },
+    "backup/v41-js-app.js": {
+      "bytes": 258515,
+      "sha256": "ad2079bb8d15effb17a83a36c0774bdb2cfd3c4f58255c75990d6af556cd0254"
+    },
+    "backup/v42-13-final-layout.css": {
+      "bytes": 8127,
+      "sha256": "bf3f10c69af4207cb5bf2594f324e0da6cbb8f13e8657eb02080709e4c10b9e7"
+    },
+    "backup/v42-app.js": {
+      "bytes": 275867,
+      "sha256": "58d8c69106b8a78fa56d550f1b7cd5a988c29e2b5c00f5b95cf5ec6ae7ee95dc"
+    },
+    "backup/v42-index.html": {
+      "bytes": 1824,
+      "sha256": "015ff49f721961a5fdaf4ee3324519764d455b4f64d9122170b8bbbfca7a666c"
+    },
+    "backup/v43-14-match-action-gallery.css": {
+      "bytes": 3689,
+      "sha256": "19af1e65613ed1b3de7c6dd9886e61208868c545b9d7d83dd3835b8cd7f80568"
+    },
+    "backup/v43-app.js": {
+      "bytes": 303223,
+      "sha256": "af749098c9fa1d39dfdd22a5a7128f613e135297faabedfd9299ae5eb8def1cd"
+    },
+    "backup/v43-index.html": {
+      "bytes": 1824,
+      "sha256": "015ff49f721961a5fdaf4ee3324519764d455b4f64d9122170b8bbbfca7a666c"
+    },
     "css/01-base.css": {
       "bytes": 48680,
       "sha256": "018b7ec6950e68f19e085a9a3660e2ff329cfc6de7758e10b3076839b84d4704"
@@ -239,21 +327,37 @@
       "bytes": 16681,
       "sha256": "aa55477f400d0d056a911070824096744bf99479698f8a1d0bde80d3d6b68d9f"
     },
+    "css/12-v41-audio-and-pitch.css": {
+      "bytes": 6957,
+      "sha256": "8b87ed0d7fede974817e1793d63d0511a5ffc8701149bd7ed30ba8a77bb6f1cc"
+    },
+    "css/13-v42-final-layout.css": {
+      "bytes": 8127,
+      "sha256": "bf3f10c69af4207cb5bf2594f324e0da6cbb8f13e8657eb02080709e4c10b9e7"
+    },
+    "css/14-match-action-gallery.css": {
+      "bytes": 3689,
+      "sha256": "19af1e65613ed1b3de7c6dd9886e61208868c545b9d7d83dd3835b8cd7f80568"
+    },
+    "docs/AD_INTEGRATION.md": {
+      "bytes": 1137,
+      "sha256": "c4e289cb5029723ae9ab2646095ec7417a952d50312420013a7b387b12b454ce"
+    },
     "docs/EDITING_RULES.md": {
       "bytes": 1651,
       "sha256": "cd5c11ab4a3b5653874e5bd363fc534a8e979b24aa86b86ab10a95d70918e834"
     },
     "docs/PROJECT_MAP.md": {
-      "bytes": 5465,
-      "sha256": "fbbdb19586c9139d799d4a1d449c240da2a4f47bd65dca4bcb37067c15bec9ee"
+      "bytes": 7026,
+      "sha256": "2a96a39e602ab70db4b09e89040cbd7910b6e16fa472aa5e47248de7c787fbe7"
     },
     "index.html": {
-      "bytes": 1628,
-      "sha256": "17203db835c0a3b12d883d4cd75d20ddfa5ea6ab6c56bdbf0b82aa1bab800356"
+      "bytes": 1824,
+      "sha256": "015ff49f721961a5fdaf4ee3324519764d455b4f64d9122170b8bbbfca7a666c"
     },
     "js/app.js": {
-      "bytes": 225196,
-      "sha256": "d6e5ea320ba8a8176e73a825f65fbb57f569bc9d794698dc79c180a21ef424f7"
+      "bytes": 303223,
+      "sha256": "af749098c9fa1d39dfdd22a5a7128f613e135297faabedfd9299ae5eb8def1cd"
     },
     "js/data/economy.js": {
       "bytes": 6913,

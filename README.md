@@ -1,8 +1,8 @@
-# Zero Football — проектная сборка v40
+# Zero Football — проектная сборка v44
 
 Это уже не один большой HTML-файл. Интерфейс, стили, игровые данные и логика разнесены по отдельным файлам, чтобы последующие изменения можно было вносить локально.
 
-## Что нового в v40
+## Что нового в v40 (сводка предыдущего обновления)
 
 
 - Рейтинг бота теперь вычисляется из фактических 11 игроков и их назначенных позиций; заранее заданное число больше не подменяет силу состава.
@@ -22,13 +22,24 @@
 - Убрано отображение диапазонов цены продажи и числовых диапазонов редкости; числовые границы остаются только внутренними параметрами генерации.
 - Тематические переменные распространены на вторичные панели, сохранённые клубы, журналы, формы, модальные карточки и блоки настроек. Зелёным по-прежнему остаётся футбольное поле.
 
+
+## Что нового в v44
+
+- В матче и центре энергии отображается обратный отсчёт `мм:сс` до следующей единицы энергии; таймер обновляется каждую секунду.
+- На главной странице и в центре матча появились рекламные места партнёров клуба. Активные контракты автоматически показывают бренд спонсора.
+- Добавлена кнопка просмотра rewarded-рекламы за +3 энергии. Награда выдаётся только после подтверждения завершённого просмотра от подключённого рекламного SDK. Без SDK игра честно сообщает, что рекламная сеть не подключена.
+- Добавлен интерфейс подключения рекламного провайдера — см. `docs/AD_INTEGRATION.md`.
+- Расширены переводы названий игровых действий и новых элементов интерфейса на 10 языков. Имена футболистов отображаются в официальном написании выбранного языкового режима; названия стран и позиций локализуются.
+- Сохранены 33 фотографии игровых действий и событий с одинаковой обрезкой 16:9.
+- Сохранена фоновая музыка: 25 оригинальных синтезированных тем, 5 стилей, громкость и переключение треков в настройках.
+
 ## Запуск
 
 1. Распакуй весь ZIP в одну папку.
 2. Открой `index.html` в современном браузере.
 3. Не перемещай CSS/JS отдельно от `index.html`: пути между файлами относительные.
 
-Игра не требует сборщика или установки npm-пакетов. Для загрузки фотографий футболистов и веб-шрифтов нужен интернет; базовый интерфейс и логика остаются локальными.
+Игра не требует сборщика или установки npm-пакетов. Для загрузки фотографий футболистов, 33 фотографий игровых эпизодов и веб-шрифтов нужен интернет; базовый интерфейс и логика остаются локальными.
 
 ## Где что менять
 
@@ -139,3 +150,17 @@
 - Такой же полноценный конструктор доступен в редакторе уже созданного клуба; изменения сохраняются кнопкой сохранения клуба.
 - Слои эмодзи сохраняются как отдельный тип и корректно восстанавливаются из локального сохранения.
 - Выбор стартовой страны остаётся расширенным до 30 стран; подсказки формата логина и пароля расположены непосредственно под соответствующими полями.
+
+
+## Version 42 — interface, tactics and captain controls
+
+- Fixed language switching on the start screen with a document-level language handler and expanded translations for the complete club hub.
+- Reworked tactical pitch spacing for desktop and mobile using distinct tactical lanes and responsive marker sizes.
+- Moved stamina into a compact line below each on-pitch player marker so it no longer covers portraits or neighbouring controls.
+- Added a captain selector containing every player in the club; the star controls remain available on the pitch and in the squad list.
+- Corrected substitution-picker portrait crop and vertical alignment.
+- Preserved the five generated soundtrack styles and their 25 browser-synthesised tracks; music preview now respects the master mute switch.
+
+
+### v43 — Match action images
+The live match now uses the 31 football action/event image links supplied for Zero Football. Match choice thumbnails, episode hero imagery and incident log thumbnails share a consistent centered 16:9 `object-fit: cover` crop. These images are loaded from their original HTTPS hosts, so an internet connection is required to display them.

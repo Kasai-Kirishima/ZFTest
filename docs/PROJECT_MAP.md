@@ -1,7 +1,7 @@
-# Карта проекта Zero Football v40
+# Карта проекта Zero Football v42
 
 - `index.html` — точка входа и подключение модулей.
-- `css/01..11` — базовые стили, сетки, карточки, поле, анимации, 47 палитр тем и слой тематических/составных исправлений. Файл `11-theme-and-squad-fixes.css` обязателен для полной раскраски интерфейса и отображения выносливости на тактическом поле.
+- `css/01..13` — базовые стили, сетки, карточки, поле, анимации, 47 палитр тем, звуковая студия и финальный адаптивный слой поля/модальных окон. Файл `11-theme-and-squad-fixes.css` обязателен для полной раскраски интерфейса и отображения выносливости на тактическом поле.
 - `js/app.js` — состояние игры, клубы, коллекция, магазин, матчи, таймеры, спонсоры и обработчики.
 - `js/data/players.js` — база игроков, их позиции, клубы и источники фотографий.
 - `js/data/gameplay.js` — формации, координаты ролей, игровые стили, боты и трофеи.
@@ -61,3 +61,20 @@
 - Pack reveal CSS-only animation pipeline: `css/06-visual-refinements.css`.
 - The `runPackOpeningAnimations()` Web Animations API helper and its render hook were removed from `js/app.js`; the modal's CSS animations start automatically on DOM insertion.
 - v34 versions of the app and visual refinements are preserved in `backup/v34-app.js` and `backup/v34-06-visual-refinements.css`.
+
+
+## v42 tactical layout
+- `calculatePitchPositions()` in `js/app.js` creates five compact tactical rows across all 15 formations.
+- `renderTeam()` shows stamina below each on-pitch card and a captain selector for the full roster.
+- `css/13-v42-final-layout.css` is intentionally loaded last to override legacy pitch and mobile card rules; do not remove it from `index.html`.
+- `setInterfaceLanguage()` plus the document-level change handler controls language switching from the start screen and settings.
+
+## v43 match gallery
+- `MATCH_ACTION_IMAGES` in `js/app.js` contains 33 supplied action/event photographs; all are displayed through the shared 16:9 crop rules in `css/14-match-action-gallery.css`.
+
+## v44 additions
+- `energyWidget()`, `energyCountdownText()` and `syncMatchCountdownUI()` in `js/app.js` show and update the next +1 energy timer (30-minute regeneration cadence).
+- `renderAdSlot()` in `js/app.js` renders internal sponsor placements on the dashboard and match lobby. It reads active `club.sponsorSlots` contracts.
+- Rewarded video integration is intentionally provider-neutral: expose `window.ZF_AD_PROVIDER.showRewardedAd({placement, reward})` and resolve `{completed:true}` only after the ad SDK confirms a completed view. The app never fabricates a completed view.
+- `css/14-match-action-gallery.css` also contains the energy-actions and responsive ad-placement styles.
+- The existing soundtrack remains in `js/app.js`: 5 styles × 5 original synthesized themes, user-controlled from Settings.
