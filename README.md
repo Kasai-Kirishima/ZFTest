@@ -1,23 +1,17 @@
-# Zero Football — проектная сборка v51
+# Zero Football — проектная сборка v52
 
-## Что нового в v51
+## Что нового в v52
 
-- Удалены настройка футбольной формы и её редактор. В клубе настраиваются название, страна и эмблема.
-- Удалены отдельные ежедневные бесплатные карточки; один бесплатный ежедневный пак из двух игроков остаётся в общем каталоге.
-- Капитана снова можно выбирать из всего состава клуба, включая запасных.
-- Фильтр игроков включает все 45 клубов, представленных в базе из 129 футболистов, а также клубы из сохранённых пользовательских составов.
-- Улучшена матчевая логика, исправлена принадлежность случайных стандартов атакующей команде, добавлена статистика и возврат к поиску матча.
-- 33 локальные SVG-иллюстрации матчевых эпизодов включены в архив.
-- Дополнены переводы интерфейса для 10 языков: русский, украинский, английский, немецкий, французский, испанский, японский, китайский, казахский и польский.
+- В ежедневном магазине доступны три платные карточки; бесплатный ежедневный пак находится в общем каталоге паков.
+- Музыкальная библиотека расширена до 16 композиций CC0 с отдельными стилями. OGG-файлы OpenGameArt загружаются по сети; при ошибке остаётся встроенная процедурная музыка.
+- Добавлены 30 долгосрочных заданий, по два ежедневных и ежемесячных задания для каждого клуба, а также 30 уровней клуба с опытом за матчи.
+- Выносливость удалена из характеристик, рейтингов и интерфейса. Контракты футболистов отображаются и продлеваются только в настройках команды.
+- Капитаном можно назначить только игрока стартовой одиннадцатки; капитанская повязка переходит к заменившему его игроку основы.
+- Спонсорские категории, описания и условия переведены; активный 30-дневный контракт нельзя заменить до истечения срока.
+- В матчевых эпизодах используются фотографии действий, а при недоступности внешнего изображения автоматически включается одна из 33 локальных SVG-иллюстраций.
+- События матча разнообразнее: расширены наборы сценариев и исключаются недавние повторы.
 
-Это уже не один большой HTML-файл. Интерфейс, стили, игровые данные и логика разнесены по отдельным файлам, чтобы последующие изменения можно было вносить локально.
-
-## История изменений v50 — музыка CC0
-
-- Добавлены четыре настоящие композиции OpenGameArt: спокойный Menu Music, мелодичный Shine Blitz, энергичный Empacotatron и роковый I Am Not Trash.
-- Все четыре источника отмечены CC0 / Public Domain dedication. Выбор трека, громкость и переключение работают в настройках.
-- Для работы нужна сеть: OGG-композиции загружаются напрямую с OpenGameArt, а при ошибке включается процедурный fallback.
-- Список авторов, исходников и лицензий находится в `docs/MUSIC_SOURCES.md`.
+Это модульная браузерная игра: интерфейс, стили, данные и логика находятся в отдельных файлах.
 
 ## Что нового в v40 (сводка предыдущего обновления)
 
@@ -25,7 +19,7 @@
 - Рейтинг бота теперь вычисляется из фактических 11 игроков и их назначенных позиций; заранее заданное число больше не подменяет силу состава.
 - Три лучшие карточки соперника выбираются и сортируются по OVR на реальной позиции, а не по базовому рейтингу.
 - Позиционная потеря стала заметной: штрафы составляют −8 за совместимую роль, −18 за неподходящую и −35 при несовпадении с вратарской позицией. Один расчёт используется на поле, в списке состава, выборе игрока, автобалансе и рейтинге команды.
-- На тактическом поле под каждым футболистом отображаются выносливость и индикатор её уровня; позиционный штраф отдельно отмечает изменившийся OVR.
+- На тактическом поле отображаются позиция и OVR; выносливость из игровой модели удалена.
 - Исправлена загрузка портретов в карточках состава, модальном выборе и рекомендациях замен: при сбое фото используется резервный портрет, а после смены игрока обновляется правильное изображение.
 - При травме или красной карточке игра показывает выбывшего футболиста, его позицию и текущий OVR, а также до трёх лучших доступных замен именно на эту роль.
 - Расширена локализация данных игроков: позиции и страны выводятся на выбранном языке, названия клубов имеют отдельные соответствия на английском и украинском, с английским резервом для остальных языков.
@@ -128,7 +122,7 @@
 - Эмблемы очищаются от emoji-пиктограмм, включая ранее сохранённые слои; добавлено 42 нейтральных геральдических знака.
 - Добавлены 8 стартовых стран: Бельгия, Хорватия, Турция, Швеция, Швейцария, Австрия, Чехия, Сербия и Греция.
 - Добавлены четыре формы эмблемы: шестиугольник, скруглённая, знамя и круглая с каймой.
-- В карточках игроков отображается выносливость; она снижается после игровых действий, влияет на OVR команды и частично восстанавливается после матча.
+- В этой исторической версии выносливость отображалась в карточках; в актуальной v52 характеристика удалена.
 - Возвращена анимация открытия пака.
 - Добавлен один бесплатный пак в сутки.
 - Переработано распределение рейтингов в паках с весами редкостей для каждого уровня.
@@ -186,7 +180,7 @@
 
 - Fixed language switching on the start screen with a document-level language handler and expanded translations for the complete club hub.
 - Reworked tactical pitch spacing for desktop and mobile using distinct tactical lanes and responsive marker sizes.
-- Moved stamina into a compact line below each on-pitch player marker so it no longer covers portraits or neighbouring controls.
+- Historical v42 layout note: stamina used to be shown below each player marker; it was removed in v52.
 - Added a captain selector containing every player in the club; the star controls remain available on the pitch and in the squad list.
 - Corrected substitution-picker portrait crop and vertical alignment.
 - Preserved the five generated soundtrack styles and their 25 browser-synthesised tracks; music preview now respects the master mute switch.
@@ -212,3 +206,23 @@ The live match now uses the 31 football action/event image links supplied for Ze
 
 ### v48 economy changes
 The daily shop now offers three purchasable player cards, with prices derived from player market value and refreshed offers each day. Restoring one match costs €0.10M.
+
+
+## v52 updates
+- Three player offers return in the daily market and are purchased with coins; the daily free pack remains in the pack catalog.
+- Music library expands to 16 CC0 tracks. OpenGameArt audio is streamed online and a procedural fallback remains available.
+- Clubs have 30 long-term missions, two daily missions and two monthly missions; match XP drives 30 club levels.
+- Stamina is removed from player ratings and UI. Player contracts are shown and renewed only from Team Settings.
+- Captains must belong to the starting XI. Active sponsorship deals cannot be replaced before expiry.
+- Generated starter names receive a Latin display form outside Russian. Match events use a larger non-repeating pool and local SVG illustrations.
+
+
+## Zero Football v52 follow-up
+
+- Daily player shop has three paid real-player offers; the free daily pack remains in the packs catalogue.
+- The captain picker and captain actions are restricted to the starting XI; the armband transfers with a substituted or replaced starter.
+- Player stamina has been removed from gameplay and country-bonus labels. Player contract renewals remain only in Team Settings.
+- Sponsor tiers, descriptions and requirements are localized for supported interface languages; active 30-day contracts cannot be replaced before expiry.
+- The club has two daily and two monthly tasks, plus 30 long-term missions and 30 club levels. Match results grant XP.
+- Match events use larger varied pools and avoid recent repeats; event images load sourced football photos where available and fall back to local SVGs.
+- Music library expanded to 16 CC0 tracks. Streaming requires internet; the built-in synth fallback is retained.

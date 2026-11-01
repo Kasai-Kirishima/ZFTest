@@ -1,7 +1,7 @@
-# Карта проекта Zero Football v42
+# Карта проекта Zero Football v52
 
 - `index.html` — точка входа и подключение модулей.
-- `css/01..13` — базовые стили, сетки, карточки, поле, анимации, 47 палитр тем, звуковая студия и финальный адаптивный слой поля/модальных окон. Файл `11-theme-and-squad-fixes.css` обязателен для полной раскраски интерфейса и отображения выносливости на тактическом поле.
+- `css/01..13` — базовые стили, сетки, карточки, поле, анимации, 47 палитр тем, звуковая студия и финальный адаптивный слой поля/модальных окон. Файл `11-theme-and-squad-fixes.css` обязателен для полной раскраски интерфейса и оформления тактического поля.
 - `js/app.js` — состояние игры, клубы, коллекция, магазин, матчи, таймеры, спонсоры и обработчики.
 - `js/data/players.js` — база игроков, их позиции, клубы и источники фотографий.
 - `js/data/gameplay.js` — формации, координаты ролей, игровые стили, боты и трофеи.
@@ -29,7 +29,7 @@
 ## v31 additions
 - Crest symbol sanitization and additional silhouettes: `js/app.js`, `js/data/gameplay.js`, `css/06-visual-refinements.css`, `css/09-theme-library.css`.
 - Additional starter countries: `js/data/players.js`.
-- Player stamina, daily free pack, weighted pack rarity and mandatory in-match substitutions: `js/app.js`.
+- Daily free pack, weighted pack rarity, captain selection, missions, club levels and match progression: `js/app.js`.
 - Pack-opening animation restored by removing the conflicting override in `css/04-layout-economy.css`.
 
 
@@ -65,7 +65,7 @@
 
 ## v42 tactical layout
 - `calculatePitchPositions()` in `js/app.js` creates five compact tactical rows across all 15 formations.
-- `renderTeam()` shows stamina below each on-pitch card and a captain selector for the full roster.
+- `renderTeam()` does not show stamina; captain selection is limited to the starting XI, and player contracts are managed only in Team Settings.
 - `css/13-v42-final-layout.css` is intentionally loaded last to override legacy pitch and mobile card rules; do not remove it from `index.html`.
 - `setInterfaceLanguage()` plus the document-level change handler controls language switching from the start screen and settings.
 

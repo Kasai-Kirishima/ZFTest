@@ -1,3 +1,29 @@
+## v52 follow-up corrections
+
+- Expanded music selection with seven additional CC0 tracks from OpenGameArt.
+- Restored the paid daily three-player market; the free daily pack remains alongside paid packs.
+- Starter-player names use their original Latin spelling in non-Russian interfaces.
+- Removed stamina from active gameplay and country bonuses; legacy saves discard the old stamina field. Player contracts remain only in Team Settings.
+- Captain selection is restricted to the starting XI; captaincy follows a starter replacement.
+- Localized sponsor tiers and dynamic sponsorship requirements. Active sponsor contracts remain locked until expiry.
+- Added more match-event templates, longer no-repeat window and reduced set-piece frequency.
+- Match events load mapped football action photographs first and use the bundled SVG illustrations as fallbacks when an image host fails.
+- Preserved the 30 long-term missions, 2 daily tasks and 2 monthly tasks per club, with XP and 30 club levels.
+
+# Changelog
+
+## v52 — 2026-11-01
+- Restored three purchasable daily player offers; retained the daily free pack in the pack catalog.
+- Added twelve additional CC0 tracks to the music library (sixteen total). Tracks stream from OpenGameArt; offline OGG packaging was unavailable in this environment.
+- Added 30 long-term club missions, two daily missions and two monthly missions per club.
+- Added 30 club levels with match XP and a coin reward for each level-up.
+- Removed stamina as a player attribute and from OVR calculations/UI.
+- Moved player contract visibility and renewal into Team Settings; removed contract details from Collection.
+- Restricted captain selection and captain OVR bonus to the starting XI.
+- Blocked changing a sponsor contract while its 30-day term is active; expanded sponsor translations.
+- Added international display names for generated starter players.
+- Reduced match-event repetition, broadened event templates, reduced random incident frequency, and added local SVG illustrations to event log entries.
+
 ## v51 — Упрощение клуба, полный фильтр и улучшение матчей
 
 - Удалены редактор футбольной формы, её настройки и превью; создание и редактирование клуба теперь работают с названием, страной и эмблемой.

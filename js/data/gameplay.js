@@ -9,8 +9,8 @@ const getTrophyTeamRating = club => {
     const p=(club.players||[]).find(x=>x.id===id);if(!p)return null;
     const target=formation[index]?.role||p.position;const positions=p.positions||[p.position];
     const penalty=positions.includes(target)?0:(target==='GK'||positions.includes('GK'))?-35:positions.some(x=>groups.some(g=>g.includes(x)&&g.includes(target)))?-8:-18;
-    const condition=(p.injuryMatches>0?5:0)+Math.round((100-(p.stamina??100))*.05);
-    return Math.max(1,Math.min(99,Math.round((Number(p.rating)||0)+penalty-condition+(club.captainId===p.id?1:0))));
+    const condition=p.injuryMatches>0?5:0;
+    return Math.max(1,Math.min(99,Math.round((Number(p.rating)||0)+penalty-condition+(club.captainId===p.id&&club.lineup?.includes(p.id)?1:0))));
   }).filter(Number.isFinite);
   return ratings.length?Math.round(ratings.reduce((a,b)=>a+b,0)/ratings.length):0;
 };
