@@ -1,19 +1,24 @@
 {
   "project": "Zero Football",
-  "version": "49",
-  "description": "Multilingual responsive UI, captain restricted to starting XI, full club filter, three 30-day sponsor slots, fixed match return, daily free pack in catalog, and four distinct music themes.",
+  "version": "51",
+  "name": "Zero Football v51",
+  "description": "Removed kit customization, removed separate daily free player cards while retaining one daily free pack, restored captain selection across the full club roster, included all 45 clubs represented by 129 players in filters, improved match logic and statistics, added 33 local match illustrations, expanded UI and match translations across 10 languages.",
   "files": {
     "CHANGELOG.md": {
-      "bytes": 32451,
-      "sha256": "819d5c6135ad70c273c40297356decc5f96357417fb4be0532606feb1b8fcef1"
+      "bytes": 36250,
+      "sha256": "74d162a9858d26439c12a3a21f534f1d14439dcd418350dfb89df5187f853333"
     },
     "README.md": {
-      "bytes": 29401,
-      "sha256": "500e1f1994078c884142452c741a96cea33571510828cc74385c09dac681c88c"
+      "bytes": 31700,
+      "sha256": "31094b676dd5b54bbc33652f1a54f92fd107721458ed2b27cf44aeb54c6c76df"
     },
     "assets/README.md": {
       "bytes": 397,
       "sha256": "1ab03f9db7f216b5371617238ed3c4b7dacc2874808a743b95f0de25e720f2fd"
+    },
+    "assets/audio/README.md": {
+      "bytes": 285,
+      "sha256": "55b363f8ba4c62acf3ddafb9e8736ae4f958ef67a8ae169d73a3a26a8ddc0c7e"
     },
     "assets/match-actions/action-01.svg": {
       "bytes": 2538,
@@ -417,7 +422,7 @@
     },
     "css/01-base.css": {
       "bytes": 48680,
-      "sha256": "018b7ec6950e68f19e085a9a3660e2ff329cfc6de7758e10b3076839b84d4704"
+      "sha256": "e4398c7ae6cfe48a6694be04142c76b8de0505a68dea166b8560c688b29e17ea"
     },
     "css/02-layout-and-responsive.css": {
       "bytes": 6240,
@@ -491,6 +496,10 @@
       "bytes": 3925,
       "sha256": "c26224276cc9081b8806dd30912204d91edcb6ced774dbbe3ef0f06e0223c732"
     },
+    "css/20-v51-match-and-cleanup.css": {
+      "bytes": 988,
+      "sha256": "d427da1a2fa96995ec1c49615c5ee5112a9fa946f875fa3a0f2b8df7187cdef2"
+    },
     "docs/AD_INTEGRATION.md": {
       "bytes": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -500,20 +509,20 @@
       "sha256": "cd5c11ab4a3b5653874e5bd363fc534a8e979b24aa86b86ab10a95d70918e834"
     },
     "docs/MUSIC_SOURCES.md": {
-      "bytes": 2951,
-      "sha256": "dd4820cd7f4dd89fc8a32749b57b0396dfb7e3a675ab18dc302808c717c57b0e"
+      "bytes": 3668,
+      "sha256": "e2c8b3445aa8b3c7349f85816339d4030a4b49ed2fbeb11adfbcf9a50c38cd40"
     },
     "docs/PROJECT_MAP.md": {
       "bytes": 7026,
       "sha256": "2a96a39e602ab70db4b09e89040cbd7910b6e16fa472aa5e47248de7c787fbe7"
     },
     "index.html": {
-      "bytes": 2125,
-      "sha256": "c55a6181c23ea4635b8b7a3e581b4b54e167cf07362f9ea8d93b9d8ba76d0270"
+      "bytes": 2245,
+      "sha256": "b69ab3f017aad92ef9a73b39e73709ad1a69ba9e6db023fbe117a84f92397b30"
     },
     "js/app.js": {
-      "bytes": 312685,
-      "sha256": "78ad216ab3fbf39ae110c511107fcd75a8b321634a20945c1c8b9715bc2b121c"
+      "bytes": 341852,
+      "sha256": "eed96c85c7af31f54b2b31c6a7c005cb585edd373f0f22b725a2e5f8185fcb54"
     },
     "js/data/economy.js": {
       "bytes": 6913,
@@ -534,7 +543,10 @@
     "js/data/ui-config.js": {
       "bytes": 3685,
       "sha256": "b7bc3cc55f83bd079d112510f25a5883ad9656c344ac6b2d931dfa747842fee8"
+    },
+    "js/data/v51-translations.js": {
+      "bytes": 66212,
+      "sha256": "af14316db7258a4530280d9d8422075dc70a9ca52412bc8d3197420a0c924901"
     }
-  },
-  "name": "Zero Football v47"
+  }
 }
