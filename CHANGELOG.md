@@ -185,3 +185,13 @@
 - Extended localized labels for the energy countdown, ad UI and match-action names across the 10 selectable interface languages.
 - Retained the v43 match-action photo gallery and its consistent 16:9 `object-fit: cover` crop on desktop and mobile.
 - Retained the existing 25 original browser-synthesized music themes across five styles, with language-independent music controls.
+
+
+## v45 — match visuals, squad layout and audio
+- Added local SVG fallbacks for all 33 match-action images; remote photographs remain preferred, but failed/hotlink-blocked images now fall back to visible local action illustrations.
+- Match hero, action choices and match log thumbnails now use explicit image fallbacks and eager loading where relevant.
+- Removed floating captain stars from the pitch to prevent collisions; captain assignment remains available for every club player through the full roster controls and the captain selector.
+- Expanded tactical-board spacing and card dimensions across desktop/mobile; portrait framing now prioritises faces.
+- Sponsor offers are sorted from lower to higher contract value inside each tier; tier order remains weakest to strongest.
+- Increased synthesized background-music audibility, added a persistent quick toggle, and improved audio-context resume after user interaction.
+- Improved club kit preview with collar, crest, number and sponsor placement.

@@ -1,6 +1,6 @@
 {
   "project": "Zero Football",
-  "version": "v44",
+  "version": "v45",
   "description": "Consistent match action photography plus live energy recovery countdown, sponsor ad placements, rewarded-ad provider hook, and expanded localization.",
   "files": {
     "CHANGELOG.md": {
@@ -379,5 +379,6 @@
       "bytes": 3685,
       "sha256": "b7bc3cc55f83bd079d112510f25a5883ad9656c344ac6b2d931dfa747842fee8"
     }
-  }
+  },
+  "name": "Zero Football v45"
 }
