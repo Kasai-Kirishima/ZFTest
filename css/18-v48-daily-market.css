@@ -1,0 +1,2 @@
+/* v48: paid daily player market and clearer pricing */
+.daily-player-price{display:block;color:var(--lime)!important;font-weight:800;font-size:12px!important;margin-top:3px}.daily-player-offer .daily-player-copy{gap:4px}.daily-player-offer .btn{max-width:180px}.daily-player-offer .btn:disabled{opacity:.7}@media(max-width:760px){.daily-player-offer{align-items:center}.daily-player-offer .daily-player-copy{flex-basis:calc(100% - 62px);}.daily-player-offer .btn{margin-left:52px;max-width:none;width:calc(100% - 52px)}}

@@ -210,3 +210,23 @@
 ## v47 — Player photos and collection filters
 - Added the player portrait URLs supplied by the user to the direct-photo database. Existing Wikipedia and generated portrait fallbacks remain active when a URL fails.
 - Added combined filters for club, country, market value range (EUR millions), position and rarity; filters can be combined. Added price sorting.
+
+
+## v48 — Daily player market and match recovery pricing
+- Changed the three daily player offers from free claims to paid purchases.
+- Daily player prices are calculated from player market value; already-owned players cannot be purchased again.
+- Daily offers still refresh once per day.
+- Increased the cost of restoring one match from €0.04M to €0.10M.
+
+
+## v49 — 1 ноября 2026
+
+- Исправлены капитанские ограничения: только стартовый состав; бонус не применяется к резерву.
+- Список клубов фильтра коллекции теперь всегда берётся из полной базы футболистов.
+- Конрад Лаймер переведён в Австрию; старые карточки синхронизируют страну с базой.
+- Добавлены три независимых спонсорских контракта: форма, основной и дополнительный. Каждый контракт действует 30 реальных дней; выплаты суммируются.
+- Исправлен возврат из результата матча в центр поиска.
+- Бесплатный ежедневный пак находится в общем каталоге паков.
+- Добавлены многоязычные Noto-шрифты и адаптивные правила для разных разрешений.
+- Музыка сокращена до четырёх отличающихся тем с уникальными мелодиями и разными темпами/ритмами.
+- Добавлен документ с проверенными направлениями поиска игровой музыки и замечаниями по лицензиям.

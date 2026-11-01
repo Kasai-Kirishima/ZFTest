@@ -1,19 +1,151 @@
 {
   "project": "Zero Football",
-  "version": "46",
-  "description": "Daily free player cards, independent audio controls, quieter pack sound, track skipping, one sponsor contract, match recovery timer, and rewarded-ad provider hook.",
+  "version": "49",
+  "description": "Multilingual responsive UI, captain restricted to starting XI, full club filter, three 30-day sponsor slots, fixed match return, daily free pack in catalog, and four distinct music themes.",
   "files": {
     "CHANGELOG.md": {
-      "bytes": 28027,
-      "sha256": "7cef46a6941b3fb4b81424b121ae8b82afb3d9980596bb93b59c0d475d6d8851"
+      "bytes": 32451,
+      "sha256": "819d5c6135ad70c273c40297356decc5f96357417fb4be0532606feb1b8fcef1"
     },
     "README.md": {
-      "bytes": 24715,
-      "sha256": "7959c7fe759d98489b7d65f0e7db0656520f55cc376cd5f2ad6ca6025acadffa"
+      "bytes": 29401,
+      "sha256": "500e1f1994078c884142452c741a96cea33571510828cc74385c09dac681c88c"
     },
     "assets/README.md": {
       "bytes": 397,
       "sha256": "1ab03f9db7f216b5371617238ed3c4b7dacc2874808a743b95f0de25e720f2fd"
+    },
+    "assets/match-actions/action-01.svg": {
+      "bytes": 2538,
+      "sha256": "20133fabe8b45a4e56d1178fc1045107fac3bf4695ba24bf66d3d69fecfcf29b"
+    },
+    "assets/match-actions/action-02.svg": {
+      "bytes": 2548,
+      "sha256": "755c898ae389aebd3f52dd2b11ea5ab7ba63d29bab79fa47bc5fe169c39c14b5"
+    },
+    "assets/match-actions/action-03.svg": {
+      "bytes": 2538,
+      "sha256": "35e01f3696fb7fa5dd9da088f6a38445d5db0473a61e68e837fe206d3f64fc67"
+    },
+    "assets/match-actions/action-04.svg": {
+      "bytes": 2570,
+      "sha256": "52af701610e336a1aeeda52a9029d4733a9ed78351d9b756aa70389dde679740"
+    },
+    "assets/match-actions/action-05.svg": {
+      "bytes": 2514,
+      "sha256": "ba074f00ffd8c0d6fc50d830a16684584c810592e55838ffa97f663fd48d72f6"
+    },
+    "assets/match-actions/action-06.svg": {
+      "bytes": 2548,
+      "sha256": "44eae850b21543904ee3942f66a38f2c10378f81c3a9b85a03b5d52ce2e62667"
+    },
+    "assets/match-actions/action-07.svg": {
+      "bytes": 2521,
+      "sha256": "02ab9e41b141226c982dc584eea5ce00575fe899e8f03e09f91c243ef59b0018"
+    },
+    "assets/match-actions/action-08.svg": {
+      "bytes": 2542,
+      "sha256": "1e44776720729b04d75e7de9c5d2cebe1730ebfbc9af183f98120b5b2a3e30ee"
+    },
+    "assets/match-actions/action-09.svg": {
+      "bytes": 2562,
+      "sha256": "789cd6554d4071cce8c1dd750d1bf6aa1aa77591aaff6aaa1f221ceffe7ade5b"
+    },
+    "assets/match-actions/action-10.svg": {
+      "bytes": 2541,
+      "sha256": "6531a22f27edd49daf0fb47660fd1ea5af12c0dc053319e83c64c22f3ab81c34"
+    },
+    "assets/match-actions/action-11.svg": {
+      "bytes": 2556,
+      "sha256": "e7cc2556c3bcb12febcaa76a9ec04e0b9b4c5a87ba2aa045450a771b4dff4a53"
+    },
+    "assets/match-actions/action-12.svg": {
+      "bytes": 2536,
+      "sha256": "29a8d65ce71aeb6f46453e4df0cc0f93c52f959befd5b8c43740183f1908e34e"
+    },
+    "assets/match-actions/action-13.svg": {
+      "bytes": 2538,
+      "sha256": "ed617c0d3e987d9e22a615340372d19117a3c253eb58c1d712015337f3b5305e"
+    },
+    "assets/match-actions/action-14.svg": {
+      "bytes": 2544,
+      "sha256": "bc6efc00607dbdc78314de74818e8da3f8ef9bb8a959466a66b0c81a28e3cd65"
+    },
+    "assets/match-actions/action-15.svg": {
+      "bytes": 2554,
+      "sha256": "881592a036a583d96ca129304f6cdbec02a8cf8b6ae117147329f1a115c37fc1"
+    },
+    "assets/match-actions/action-16.svg": {
+      "bytes": 2544,
+      "sha256": "0a8086fc9bdb6eb75661ab4108f12da8fd27e1f1d6363dfe0c1cc7e70ac69637"
+    },
+    "assets/match-actions/action-17.svg": {
+      "bytes": 2569,
+      "sha256": "050c79ed6ce44efbf6d49047be6380ac77baa80ff78fa380a8562a89ae84e308"
+    },
+    "assets/match-actions/action-18.svg": {
+      "bytes": 2530,
+      "sha256": "be43eac9dff98eee0ae08d4e888cd55b85e568bfe2bb7f0b33b45b101d318eda"
+    },
+    "assets/match-actions/action-19.svg": {
+      "bytes": 2549,
+      "sha256": "77b281ca27e64a7f5679bac8ac3e2e126f74a81c964fc779c8742c273987f810"
+    },
+    "assets/match-actions/action-20.svg": {
+      "bytes": 2549,
+      "sha256": "65a0174551c1adfcb4d37092e807e86e991eb1dd4c61e698cdc20081ac3de702"
+    },
+    "assets/match-actions/action-21.svg": {
+      "bytes": 2594,
+      "sha256": "eba92cc62ad895d19f447d7c24da48541105e27a5a1fe2e7517ef3b164312aaa"
+    },
+    "assets/match-actions/action-22.svg": {
+      "bytes": 2540,
+      "sha256": "29db4e118dcad855d61cb66b1eb06b1d6338db156cd12a9dafd50805ece966a1"
+    },
+    "assets/match-actions/action-23.svg": {
+      "bytes": 2560,
+      "sha256": "02ddc682ae3a613e864a1097fb29c142d9c8ee2b156212b4c5c49642d62db93e"
+    },
+    "assets/match-actions/action-24.svg": {
+      "bytes": 2566,
+      "sha256": "6aa96493095f13d496934fb476f10f2768a7b538d58f7eac1c162716389dc60e"
+    },
+    "assets/match-actions/action-25.svg": {
+      "bytes": 2586,
+      "sha256": "4e5d6d7c1db3dd5447ef8b5874e5ca2be5bf0e6ca02a79d68a848af91afc1178"
+    },
+    "assets/match-actions/action-26.svg": {
+      "bytes": 2520,
+      "sha256": "c62097884fae8d7ed8b3ae8eca6d1f796fc28c747e8d80a2065737470070cbf0"
+    },
+    "assets/match-actions/action-27.svg": {
+      "bytes": 2525,
+      "sha256": "4dbc626481f01a29a7fe022297f72bc8ba7f8cbeb385ac46ba701c05282b3612"
+    },
+    "assets/match-actions/action-28.svg": {
+      "bytes": 2524,
+      "sha256": "e7133de01f72bc4fefd52f8ddc14fb6168e9a5db26a9fc7bda4edfffe1d713e7"
+    },
+    "assets/match-actions/action-29.svg": {
+      "bytes": 2555,
+      "sha256": "0a3d4311611f7fba6a1269d90618a5ca49810444c7b1476a378c3011d11e5eef"
+    },
+    "assets/match-actions/action-30.svg": {
+      "bytes": 2517,
+      "sha256": "1bc2f7c022f536256e512a6c20191944690b21f71dda204ad98e1c73f9ba0b1c"
+    },
+    "assets/match-actions/action-31.svg": {
+      "bytes": 2518,
+      "sha256": "c367b817f60e9f36943890d8aafd56fb0eb0240fef00a40c22c309e6dcca64be"
+    },
+    "assets/match-actions/action-32.svg": {
+      "bytes": 2518,
+      "sha256": "96cd97a8f16524666c44dc4e26fd6ffb5a1bb6519bc1dadbf649ad533ae4fd5c"
+    },
+    "assets/match-actions/action-33.svg": {
+      "bytes": 2522,
+      "sha256": "247a64b4568b451e4cecc93591ad5678bc0ef6e52f6906f38553786f893aa27d"
     },
     "backup/Zero_Football_v25_original.html": {
       "bytes": 358082,
@@ -339,25 +471,49 @@
       "bytes": 3689,
       "sha256": "19af1e65613ed1b3de7c6dd9886e61208868c545b9d7d83dd3835b8cd7f80568"
     },
+    "css/15-v45-fixes.css": {
+      "bytes": 3501,
+      "sha256": "94aeb4426b143ef1ea4738adff02f212d49546787dcec57e5d1eb47d04d47b1f"
+    },
+    "css/16-v46-fixes.css": {
+      "bytes": 1181,
+      "sha256": "aa0d1f8c9cbc42f73ad834f6cf99cb3e086da5548f85f9ea225dc97dfdcae640"
+    },
+    "css/17-v47-collection-filters.css": {
+      "bytes": 1252,
+      "sha256": "c6c94f1aa9bc7b59b21a94a39fd3ce8b0e0ab1e2726a49feb4b84fcc0e532847"
+    },
+    "css/18-v48-daily-market.css": {
+      "bytes": 522,
+      "sha256": "0ecc5c141fbd9d0189d265b0b0e30fe578f2b7692da419aef52f114c2976561c"
+    },
+    "css/19-v49-resolution-fonts.css": {
+      "bytes": 3925,
+      "sha256": "c26224276cc9081b8806dd30912204d91edcb6ced774dbbe3ef0f06e0223c732"
+    },
     "docs/AD_INTEGRATION.md": {
-      "bytes": 1137,
-      "sha256": "c4e289cb5029723ae9ab2646095ec7417a952d50312420013a7b387b12b454ce"
+      "bytes": 1237,
+      "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
     },
     "docs/EDITING_RULES.md": {
       "bytes": 1651,
       "sha256": "cd5c11ab4a3b5653874e5bd363fc534a8e979b24aa86b86ab10a95d70918e834"
+    },
+    "docs/MUSIC_SOURCES.md": {
+      "bytes": 2951,
+      "sha256": "dd4820cd7f4dd89fc8a32749b57b0396dfb7e3a675ab18dc302808c717c57b0e"
     },
     "docs/PROJECT_MAP.md": {
       "bytes": 7026,
       "sha256": "2a96a39e602ab70db4b09e89040cbd7910b6e16fa472aa5e47248de7c787fbe7"
     },
     "index.html": {
-      "bytes": 1824,
-      "sha256": "015ff49f721961a5fdaf4ee3324519764d455b4f64d9122170b8bbbfca7a666c"
+      "bytes": 2125,
+      "sha256": "c55a6181c23ea4635b8b7a3e581b4b54e167cf07362f9ea8d93b9d8ba76d0270"
     },
     "js/app.js": {
-      "bytes": 303223,
-      "sha256": "af749098c9fa1d39dfdd22a5a7128f613e135297faabedfd9299ae5eb8def1cd"
+      "bytes": 312685,
+      "sha256": "78ad216ab3fbf39ae110c511107fcd75a8b321634a20945c1c8b9715bc2b121c"
     },
     "js/data/economy.js": {
       "bytes": 6913,
@@ -372,8 +528,8 @@
       "sha256": "472683ec6dc68b0c756d99205e02c6dac03431df8b030a75e5aec97350de3d9c"
     },
     "js/data/players.js": {
-      "bytes": 38329,
-      "sha256": "a56f334e0525f14bb587af0d5c2ad6f5d3a62f6afbd70cea2d545a1f37a5ff03"
+      "bytes": 46998,
+      "sha256": "e601458791cea70bfe5a39beb7dd1d20bdbfb20a1e9a2219c035b41ea0814697"
     },
     "js/data/ui-config.js": {
       "bytes": 3685,

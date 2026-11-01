@@ -1,0 +1,21 @@
+/* v49: multilingual typography, reliable sizing and responsive layout */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;600;700;800;900&display=swap');
+:root{font-synthesis:none;text-size-adjust:100%;-webkit-text-size-adjust:100%;}
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+body{font-family:'Noto Sans',Inter,system-ui,sans-serif;line-height:1.45}
+button,input,select,textarea{font-family:inherit;max-width:100%}
+[lang="ja"] body,[lang="ja"] button,[lang="ja"] input,[lang="ja"] select,[lang="ja"] textarea{font-family:'Noto Sans JP','Yu Gothic','Meiryo','Hiragino Kaku Gothic ProN','Noto Sans',sans-serif}
+[lang="zh"] body,[lang="zh"] button,[lang="zh"] input,[lang="zh"] select,[lang="zh"] textarea{font-family:'Noto Sans SC','Microsoft YaHei','SimHei','PingFang SC','Hiragino Sans GB','Noto Sans',sans-serif}
+[lang="kk"] body,[lang="kk"] button,[lang="kk"] input,[lang="kk"] select,[lang="kk"] textarea{font-family:'Noto Sans',system-ui,sans-serif}
+/* CJK text needs a little more room; long translations must not force horizontal scrolling. */
+[lang="ja"] .h1,[lang="zh"] .h1,[lang="ja"] .h2,[lang="zh"] .h2,[lang="ja"] .h3,[lang="zh"] .h3{font-family:'Noto Sans JP','Noto Sans SC','Yu Gothic','Microsoft YaHei','Noto Sans',sans-serif;letter-spacing:0;line-height:1.18;overflow-wrap:anywhere}
+[lang="ja"] .eyebrow,[lang="zh"] .eyebrow{letter-spacing:.04em}
+.game-layout,.main-area,.card,.section-heading,.team-layout,.editor-layout,.dashboard-grid,.match-shell,.collection-toolbar,.pack-grid,.sponsor-grid{min-width:0;max-width:100%}
+.main-area{overflow-x:clip}
+.card-header>*,.section-heading>*,.squad-info,.daily-player-copy,.identity-text{min-width:0}
+img,svg,video,canvas{max-width:100%}
+input,select{min-width:0}
+@media (min-width:1500px){.game-layout{grid-template-columns:250px minmax(0,1fr)}.main-area{padding-left:clamp(24px,3vw,52px);padding-right:clamp(24px,3vw,52px)}}
+@media (max-width:1100px){.game-layout{grid-template-columns:205px minmax(0,1fr)}.sidebar{padding-left:11px;padding-right:11px}.sidebar-brand{padding-left:5px;padding-right:5px}.main-area{padding-left:20px;padding-right:20px}.team-layout{grid-template-columns:minmax(0,1fr)!important}.team-layout>div{min-width:0}.collection-toolbar{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:760px){.game-layout{display:block}.sidebar{display:none}.main-area{padding:16px 12px 92px}.topbar{gap:8px}.section-heading{align-items:flex-start;flex-wrap:wrap}.section-heading .actions{width:100%}.card{padding:15px;border-radius:14px}.card-header{gap:9px;flex-wrap:wrap}.team-layout{display:block}.team-controls{flex-wrap:wrap}.team-controls .select-compact{max-width:100%}.pitch{min-height:440px}.collection-toolbar{grid-template-columns:repeat(2,minmax(0,1fr))}.collection-price-filter{grid-column:1/-1}.pack-grid,.sponsor-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.music-controls-grid{grid-template-columns:1fr}.settings-actions{flex-wrap:wrap}.settings-actions .btn{flex:1 1 150px}.match-scoreboard{gap:7px}.match-team{min-width:0}.match-team strong{overflow-wrap:anywhere}.match-score{font-size:36px}}
+@media (max-width:480px){.main-area{padding:12px 9px 88px}.h1{font-size:clamp(28px,9vw,38px)}.h2{font-size:23px}.page-subtitle{font-size:12px}.pack-grid,.sponsor-grid{grid-template-columns:1fr}.collection-toolbar{grid-template-columns:1fr}.collection-price-filter{grid-column:auto}.pitch{min-height:380px}.player-slot{transform:translate(-50%,-50%) scale(.88)}.match-scoreboard{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}.match-team strong{font-size:11px}.match-score{font-size:29px}.card-header .pill{max-width:100%;white-space:normal}.daily-player-offer .btn{margin-left:0;width:100%}.daily-player-offer{flex-wrap:wrap}.daily-player-copy{flex:1 1 calc(100% - 60px)}}
