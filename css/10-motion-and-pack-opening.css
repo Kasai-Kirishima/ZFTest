@@ -1,0 +1,145 @@
+/* v39 — reliable pack reveal choreography and a unified motion language. */
+:root{--zf-motion-fast:150ms;--zf-motion-base:240ms;--zf-motion-smooth:cubic-bezier(.2,.75,.25,1)}
+
+/* Start menu language selector */
+.start-language{display:grid;grid-template-columns:1fr;gap:7px;margin:0 0 18px;padding:12px 13px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(120deg,rgba(200,255,68,.07),transparent 65%),var(--panel2)}
+.start-language label{font-size:10px;font-weight:850;letter-spacing:.5px;color:var(--muted)}
+.start-language select{width:100%;max-width:100%}
+
+/* Shared game motion: small, purposeful responses rather than constant movement. */
+.btn,.nav-item,.icon-btn,.quick-action,.theme-option,.player-slot,.player-card,.squad-item,.metric-card,.trophy-card,.saved-club,.pack-card,.daily-offer,.style-option,.match-choice{transition:transform var(--zf-motion-base) var(--zf-motion-smooth),border-color var(--zf-motion-base) ease,background-color var(--zf-motion-base) ease,box-shadow var(--zf-motion-base) ease,filter var(--zf-motion-base) ease}
+.btn:hover:not(:disabled){filter:brightness(1.08);box-shadow:0 7px 22px rgba(0,0,0,.18)}
+.nav-item:hover,.icon-btn:hover{transform:translateX(3px)}
+.quick-action:hover,.theme-option:hover,.style-option:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(0,0,0,.2)}
+.pack-card{transform:translateZ(0)}
+.pack-card:hover{transform:translateY(-6px);border-color:color-mix(in srgb,var(--pack-color,var(--lime)) 60%,var(--line));box-shadow:0 18px 44px rgba(0,0,0,.24),0 0 0 1px color-mix(in srgb,var(--pack-color,var(--lime)) 18%,transparent)}
+.pack-card:hover .pack-box{animation:zfPackCardHover .72s var(--zf-motion-smooth)}
+.player-card:hover,.squad-item:hover,.metric-card:hover,.trophy-card:not(.locked):hover{transform:translateY(-3px);box-shadow:0 13px 28px rgba(0,0,0,.2)}
+.main-area>.section-heading,.main-area>.card,.main-area>.dashboard-grid,.main-area>.team-layout,.main-area>.match-shell,.main-area>.pack-grid,.main-area>.collection-grid,.main-area>.trophy-grid{animation:zfPageEnter .34s var(--zf-motion-smooth) both}
+.main-area>.section-heading{animation-delay:0ms}.main-area>.card{animation-delay:35ms}.main-area>.dashboard-grid,.main-area>.team-layout,.main-area>.match-shell{animation-delay:45ms}
+.main-area>.pack-grid>.pack-card{animation:zfPackTileIn .45s var(--zf-motion-smooth) both}
+.main-area>.pack-grid>.pack-card:nth-child(2){animation-delay:55ms}.main-area>.pack-grid>.pack-card:nth-child(3){animation-delay:110ms}.main-area>.pack-grid>.pack-card:nth-child(4){animation-delay:165ms}.main-area>.pack-grid>.pack-card:nth-child(5){animation-delay:220ms}
+@keyframes zfPageEnter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes zfPackTileIn{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes zfPackCardHover{0%,100%{transform:rotate(-7deg) translateY(0)}40%{transform:rotate(-2deg) translateY(-8px) scale(1.04)}}
+
+/* A dedicated, full-screen pack stage. High z-index also keeps it above mobile navigation. */
+.pack-opening{position:fixed!important;inset:0!important;width:100vw;height:100vh;height:100dvh;box-sizing:border-box;display:grid;place-items:start center;align-content:start;padding:clamp(8px,2vh,18px);z-index:250!important;isolation:isolate;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;background:radial-gradient(ellipse at 50% 32%,color-mix(in srgb,var(--pack-color) 14%,transparent),transparent 50%),rgba(3,6,4,.94)!important;backdrop-filter:blur(16px) saturate(1.12)!important;animation:zfPackOverlay .42s ease-out both!important}
+.pack-opening-backdrop-grid{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.18;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at center,#000,transparent 78%)}
+.pack-opening .opening-box{position:relative;width:min(100%,1040px);max-height:none;min-height:0;margin:0 auto;padding:clamp(15px,3vw,30px);overflow:visible;text-align:center;border:1px solid color-mix(in srgb,var(--pack-color) 42%,rgba(255,255,255,.14));border-radius:26px;background:linear-gradient(145deg,rgba(255,255,255,.075),transparent 35%),linear-gradient(180deg,rgba(14,20,14,.97),rgba(8,12,9,.99));box-shadow:0 35px 110px rgba(0,0,0,.65),0 0 65px color-mix(in srgb,var(--pack-glow) 50%,transparent);animation:zfPackPanelIn .55s var(--zf-motion-smooth) both!important}
+.opening-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:840px;margin:0 auto;color:#aab7a9;font-size:9px;font-weight:900;letter-spacing:1.5px;text-align:left}
+.opening-live-dot{width:7px;height:7px;display:inline-block;flex:0 0 7px;border-radius:50%;background:var(--pack-color);box-shadow:0 0 14px var(--pack-color);animation:zfLivePulse 1.35s ease-in-out infinite}
+.opening-pack-count{margin-left:auto;padding:6px 9px;border:1px solid color-mix(in srgb,var(--pack-color) 35%,transparent);border-radius:6px;color:var(--pack-accent);letter-spacing:.8px}
+.opening-pack-scene{height:clamp(145px,18vh,185px);width:min(100%,540px);margin:5px auto 0;display:grid;place-items:center;position:relative;isolation:isolate;perspective:900px;overflow:hidden}
+.opening-pack-scene:before{content:"";position:absolute;left:50%;bottom:18px;width:210px;height:28px;border-radius:50%;transform:translateX(-50%);background:var(--pack-glow);filter:blur(18px);opacity:.75;animation:zfPackShadow 1.8s ease-in-out infinite}
+.opening-scene-ring{position:absolute;left:50%;top:50%;width:180px;height:180px;border:1px solid color-mix(in srgb,var(--pack-color) 42%,transparent);border-radius:50%;transform:translate(-50%,-50%) rotateX(68deg);box-shadow:0 0 28px var(--pack-glow),inset 0 0 20px var(--pack-glow)}
+.opening-scene-ring.ring-one{animation:zfRingSpin 5s linear infinite}.opening-scene-ring.ring-two{width:235px;height:235px;border-style:dashed;opacity:.5;animation:zfRingSpin 12s linear infinite reverse}
+.opening-pack-glow{position:absolute;left:50%;top:50%;width:210px;height:210px;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,var(--pack-glow),transparent 68%);filter:blur(9px);animation:zfCorePulse 1.5s ease-in-out infinite alternate}
+.opening-pack-box{z-index:2;position:relative;width:118px;height:158px;display:grid;place-items:center;transform-style:preserve-3d;border:1px solid color-mix(in srgb,var(--pack-color) 78%,white);border-radius:13px 13px 19px 19px;background:linear-gradient(145deg,color-mix(in srgb,var(--pack-color) 90%,white),color-mix(in srgb,var(--pack-color) 38%,#161c16) 46%,#111711 100%);color:#10150f;font:1000 39px 'Barlow Condensed',sans-serif;letter-spacing:-2px;text-shadow:0 1px 0 rgba(255,255,255,.25);box-shadow:0 0 0 6px color-mix(in srgb,var(--pack-color) 13%,transparent),0 20px 45px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.65);transform:rotateY(-14deg) rotateX(4deg);animation:zfPackHover 2.35s ease-in-out infinite, zfPackCharge var(--pack-intro-duration) ease-in-out both}
+.opening-pack-box:before{content:"";position:absolute;inset:12px 9px;border:1px solid rgba(255,255,255,.38);border-radius:8px;background:linear-gradient(90deg,transparent 47%,rgba(255,255,255,.15) 48% 52%,transparent 53%);pointer-events:none}
+.opening-pack-box:after{content:"PLAYER CONTRACT · ZERO FOOTBALL";position:absolute;bottom:13px;left:0;right:0;text-align:center;font:800 6px Arial,sans-serif;letter-spacing:1px;color:rgba(255,255,255,.78)}
+.opening-pack-box>span:not(.opening-pack-star){position:relative;z-index:2;padding:2px 13px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent);text-shadow:0 2px 0 rgba(255,255,255,.32)}
+.opening-pack-star{position:absolute;z-index:3;top:18px;right:15px;font-size:20px;color:#fff3ba;text-shadow:0 0 15px white;animation:zfStarSpin 4s linear infinite}
+.opening-pack-box i{position:absolute;left:-7px;right:-7px;top:50%;height:2px;background:white;box-shadow:0 0 13px 4px var(--pack-color);opacity:0;animation:zfPackScan 1.4s ease-in-out .15s infinite}
+.opening-scene-particles{position:absolute;inset:0;pointer-events:none;color:var(--pack-accent);font-size:19px}
+.opening-scene-particles b{position:absolute;opacity:0;text-shadow:0 0 12px var(--pack-color);animation:zfParticleFloat 2.4s ease-in-out infinite}
+.opening-scene-particles b:nth-child(1){left:17%;top:33%;animation-delay:.1s}.opening-scene-particles b:nth-child(2){left:27%;top:72%;animation-delay:.6s}.opening-scene-particles b:nth-child(3){right:18%;top:27%;animation-delay:.35s}.opening-scene-particles b:nth-child(4){right:26%;top:70%;animation-delay:.9s}.opening-scene-particles b:nth-child(5){left:37%;top:15%;animation-delay:1.1s}.opening-scene-particles b:nth-child(6){right:39%;top:82%;animation-delay:.7s}.opening-scene-particles b:nth-child(7){right:13%;top:48%;animation-delay:1.3s}
+.opening-intro-copy{position:relative;z-index:3;animation:zfFlashIn .55s ease-out .28s both}
+.pack-opening .opening-flash{font:1000 clamp(36px,6vw,65px)/.9 'Barlow Condensed',Impact,sans-serif;letter-spacing:-1px;margin:8px 0 10px;text-shadow:0 5px 35px color-mix(in srgb,var(--pack-color) 30%,transparent);animation:zfTitleReveal .72s cubic-bezier(.15,.8,.2,1) .35s both}
+.pack-opening .opening-flash span{color:var(--pack-color);text-shadow:0 0 26px color-mix(in srgb,var(--pack-color) 50%,transparent)}
+.opening-progress-track{height:3px;width:min(100%,320px);margin:0 auto 8px;overflow:hidden;border-radius:9px;background:rgba(255,255,255,.1)}
+.opening-progress-track span{display:block;width:100%;height:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,var(--pack-color),white);box-shadow:0 0 12px var(--pack-color);animation:zfProgressCharge var(--pack-intro-duration) cubic-bezier(.2,.8,.2,1) .15s both}
+.opening-status{font-size:8px;font-weight:900;letter-spacing:1.5px;color:color-mix(in srgb,var(--pack-accent) 70%,#9aa69a);animation:zfStatusBlink 1.1s ease-in-out infinite alternate}
+.opening-description{max-width:620px;margin:8px auto 10px;line-height:1.55}
+.duplicate-rewards-panel{max-width:760px;margin-inline:auto!important;text-align:left}
+.pack-opening .revealed-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),230px));justify-content:center;align-items:stretch;gap:clamp(8px,1.5vw,14px);max-width:900px;margin:12px auto 14px;perspective:1100px}
+.pack-opening .revealed-card{position:relative;min-width:0;opacity:0;transform-origin:50% 80%;will-change:transform,opacity;animation:zfCardReveal var(--pack-card-duration) cubic-bezier(.16,.82,.22,1) var(--card-delay) both!important}
+.pack-opening .revealed-card:before{content:"";position:absolute;z-index:4;inset:-5px;border:1px solid color-mix(in srgb,var(--rarity-color) 76%,transparent);border-radius:18px;box-shadow:0 0 17px var(--rarity-glow),inset 0 0 17px var(--rarity-glow);opacity:0;pointer-events:none;animation:zfRarityFrame .8s ease-out calc(var(--card-delay) + .16s) both}
+.pack-opening .revealed-card:after{content:"";position:absolute;z-index:5;top:0;left:-120%;width:55%;height:100%;transform:skewX(-20deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.24),transparent);pointer-events:none;animation:zfCardSheen .8s ease-out calc(var(--card-delay) + .36s) both}
+.pack-opening .revealed-card .player-card{height:100%;border-color:color-mix(in srgb,var(--rarity-color) 45%,var(--line))!important;box-shadow:0 12px 30px rgba(0,0,0,.38),0 0 18px var(--rarity-glow)!important}
+.pack-opening .rarity-reveal-icon .player-card{box-shadow:0 12px 35px rgba(0,0,0,.4),0 0 30px var(--rarity-glow),inset 0 0 18px var(--rarity-glow)!important}
+.pack-opening .opening-actions{position:sticky;bottom:0;z-index:12;display:flex;justify-content:center;align-items:center;gap:9px;flex-wrap:wrap;margin:0 -8px -8px;padding:24px 8px 12px;background:linear-gradient(180deg,transparent,rgba(8,12,9,.96) 34%);backdrop-filter:blur(7px)}
+.pack-opening .opening-actions .btn{min-width:148px}
+.pack-opening.is-skipped .opening-pack-scene{height:112px;transform:scale(.7);transform-origin:center bottom;opacity:.62}
+.pack-opening.is-skipped .opening-intro-copy,.pack-opening.is-skipped .opening-pack-scene,.pack-opening.is-skipped .opening-box{animation:none!important}
+.pack-opening.is-skipped .opening-pack-box,.pack-opening.is-skipped .opening-pack-glow,.pack-opening.is-skipped .opening-progress-track span,.pack-opening.is-skipped .opening-scene-ring,.pack-opening.is-skipped .opening-scene-particles b{animation:none!important}
+.pack-opening.is-skipped .opening-pack-box{transform:none!important}
+.pack-opening.is-skipped .opening-progress-track span{transform:scaleX(1)}
+.pack-opening.is-skipped .opening-status{animation:none;}
+.pack-opening.is-skipped .revealed-card,.pack-opening.is-skipped .revealed-card:before,.pack-opening.is-skipped .revealed-card:after{animation:none!important;opacity:1!important;transform:none!important}
+.pack-opening.is-skipped .revealed-cards{animation:zfCardsReady .3s ease-out both}
+.pack-opening.is-no-animation .opening-pack-scene,.pack-opening.is-no-animation .opening-intro-copy,.pack-opening.is-no-animation .opening-box{animation:none!important}
+.pack-opening.is-no-animation .opening-pack-box,.pack-opening.is-no-animation .opening-pack-glow,.pack-opening.is-no-animation .opening-scene-ring,.pack-opening.is-no-animation .opening-progress-track span,.pack-opening.is-no-animation .opening-scene-particles b{animation:none!important}
+.pack-opening.is-no-animation .revealed-card,.pack-opening.is-no-animation .revealed-card:before,.pack-opening.is-no-animation .revealed-card:after{animation:none!important;opacity:1!important;transform:none!important}
+.pack-opening.is-no-animation .revealed-cards{animation:none!important}
+
+/* Settings for pack motion */
+.pack-settings-card .setting-toggle{margin-bottom:4px}
+.pack-speed-field{max-width:520px;margin-top:12px}
+.pack-settings-preview{display:flex;align-items:center;gap:12px;margin-top:13px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.pack-preview-orb{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:11px;background:color-mix(in srgb,var(--lime) 17%,transparent);color:var(--lime);font-size:22px;box-shadow:inset 0 0 15px color-mix(in srgb,var(--lime) 15%,transparent)}
+.pack-settings-preview div{display:grid;gap:4px}.pack-settings-preview b{font-size:11px}.pack-settings-preview small{font-size:10px;color:var(--muted);line-height:1.4}
+
+@keyframes zfPackOverlay{from{opacity:0;backdrop-filter:blur(0)}to{opacity:1;backdrop-filter:blur(16px)}}
+@keyframes zfPackPanelIn{0%{opacity:0;transform:translateY(28px) scale(.94)}65%{opacity:1;transform:translateY(-4px) scale(1.01)}100%{opacity:1;transform:none}}
+@keyframes zfLivePulse{from{opacity:.55;box-shadow:0 0 3px var(--pack-color)}to{opacity:1;box-shadow:0 0 16px 3px var(--pack-color)}}
+@keyframes zfRingSpin{from{transform:translate(-50%,-50%) rotateX(68deg) rotateZ(0)}to{transform:translate(-50%,-50%) rotateX(68deg) rotateZ(360deg)}}
+@keyframes zfCorePulse{from{opacity:.45;scale:.8}to{opacity:.95;scale:1.22}}
+@keyframes zfPackShadow{0%,100%{scale:.82;opacity:.55}50%{scale:1.18;opacity:1}}
+@keyframes zfPackHover{0%,100%{translate:0 1px;rotate:0deg}50%{translate:0 -9px;rotate:2deg}}
+@keyframes zfPackCharge{0%{filter:brightness(.65) saturate(.8)}35%{filter:brightness(1.15) saturate(1.2)}74%{filter:brightness(1.75) saturate(1.5)}100%{filter:brightness(1.1) saturate(1.1)}}
+@keyframes zfPackScan{0%,100%{opacity:0;transform:translateY(-55px)}45%,65%{opacity:1;transform:translateY(55px)}}
+@keyframes zfStarSpin{to{transform:rotate(360deg)}}
+@keyframes zfParticleFloat{0%{opacity:0;transform:translateY(13px) scale(.5) rotate(-20deg)}35%{opacity:1}100%{opacity:0;transform:translateY(-24px) scale(1.2) rotate(30deg)}}
+@keyframes zfFlashIn{from{opacity:0;transform:translateY(12px) scale(.88);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+@keyframes zfTitleReveal{0%{opacity:0;transform:translateY(18px) scale(.92);filter:blur(8px);letter-spacing:7px}65%{opacity:1;filter:blur(0);letter-spacing:-.3px}100%{transform:none;letter-spacing:-1px}}
+@keyframes zfProgressCharge{0%{transform:scaleX(0)}100%{transform:scaleX(1)}}
+@keyframes zfStatusBlink{from{opacity:.55}to{opacity:1}}
+@keyframes zfCardReveal{0%{opacity:0;transform:translateY(-75px) rotateX(24deg) rotateZ(5deg) scale(.72);filter:brightness(2.2) blur(5px)}54%{opacity:1;transform:translateY(8px) rotateX(-5deg) rotateZ(-2deg) scale(1.045);filter:brightness(1.45) blur(0)}75%{transform:translateY(-3px) rotateZ(1deg) scale(.99);filter:brightness(1.1)}100%{opacity:1;transform:translateY(0) rotateX(0) rotateZ(0) scale(1);filter:none}}
+@keyframes zfRarityFrame{0%{opacity:0;transform:scale(1.08)}25%{opacity:1}100%{opacity:.22;transform:scale(1)}}
+@keyframes zfCardSheen{0%{left:-120%;opacity:0}20%{opacity:1}100%{left:150%;opacity:0}}
+@keyframes zfCardsReady{from{opacity:.65;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+@media(max-width:760px){
+  .pack-opening{padding:9px!important;place-items:start center!important;align-content:start!important}
+  .pack-opening .opening-box{width:100%;min-height:0;padding:15px 10px 20px;border-radius:18px;}
+  .opening-pack-scene{height:150px;width:100%}.opening-pack-box{width:96px;height:132px;font-size:33px}
+  .opening-scene-ring{width:150px;height:150px}.opening-scene-ring.ring-two{width:195px;height:195px}
+  .pack-opening .revealed-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:16px auto}
+  .pack-opening .opening-actions .btn{min-width:0;flex:1 1 42%}
+  .opening-topline{font-size:7px;letter-spacing:.8px}.opening-description{font-size:10px}
+  .start-language{margin-bottom:14px}
+}
+@media(prefers-reduced-motion:reduce){
+  .main-area>.section-heading,.main-area>.card,.main-area>.dashboard-grid,.main-area>.team-layout,.main-area>.match-shell,.main-area>.pack-grid,.main-area>.collection-grid,.main-area>.trophy-grid,.main-area>.pack-grid>.pack-card{animation-duration:.12s!important;animation-delay:0ms!important}
+  .pack-opening,.pack-opening .opening-box,.pack-opening .opening-pack-box,.pack-opening .opening-pack-glow,.pack-opening .opening-flash,.pack-opening .revealed-card,.pack-opening .revealed-card:before,.pack-opening .revealed-card:after,.opening-progress-track span{animation-duration:.12s!important;animation-delay:0ms!important}
+}
+
+/* Matchday, rewards and modal polish — motion cues are brief and directional. */
+.btn:active,.match-choice:active,.quick-action:active,.theme-option:active{transform:translateY(1px) scale(.975)!important;filter:brightness(1.12)}
+.match-scoreboard{transform-origin:center;animation:zfScoreboardEnter .52s var(--zf-motion-smooth) both}
+.match-event{animation:zfEventEnter .48s var(--zf-motion-smooth) .06s both}
+.match-event .event-visual{animation:zfPitchReveal .62s var(--zf-motion-smooth) .1s both}
+.match-event .event-title{animation:zfFlashIn .4s ease-out .14s both}
+.match-choice{animation:zfChoiceEnter .38s var(--zf-motion-smooth) both}
+.match-choice:nth-child(1){animation-delay:.04s}.match-choice:nth-child(2){animation-delay:.09s}.match-choice:nth-child(3){animation-delay:.14s}.match-choice:nth-child(4){animation-delay:.19s}.match-choice:nth-child(5){animation-delay:.24s}.match-choice:nth-child(6){animation-delay:.29s}
+.match-log .log-row{animation:zfLogEnter .28s ease-out both}
+.result-stamp{animation:zfResultStamp .72s cubic-bezier(.16,.9,.25,1) .12s both}
+.trophy-card:not(.locked) .trophy-medal{transition:transform .4s var(--zf-motion-smooth),box-shadow .4s ease}
+.trophy-card:not(.locked):hover .trophy-medal{transform:translateY(-5px) rotate(-8deg) scale(1.07);box-shadow:0 12px 30px rgba(0,0,0,.35),0 0 22px rgba(247,200,90,.24)}
+.modal-backdrop,.login-modal-backdrop{animation:zfBackdropIn .2s ease-out both}
+.modal-backdrop .modal,.login-modal-backdrop .login-modal{animation:zfModalEnter .34s var(--zf-motion-smooth) both}
+.toast{animation:zfToastEnter .25s var(--zf-motion-smooth) both}
+@keyframes zfScoreboardEnter{from{opacity:0;transform:translateY(14px) scale(.98);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+@keyframes zfEventEnter{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes zfPitchReveal{from{opacity:0;transform:scale(.965);filter:saturate(.65)}to{opacity:1;transform:scale(1);filter:saturate(1)}}
+@keyframes zfChoiceEnter{from{opacity:0;transform:translateY(11px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes zfLogEnter{from{opacity:0;transform:translateX(9px)}to{opacity:1;transform:none}}
+@keyframes zfResultStamp{0%{opacity:0;transform:rotate(-13deg) scale(.45);filter:blur(5px)}65%{opacity:1;transform:rotate(-2deg) scale(1.12);filter:none}100%{transform:rotate(-3deg) scale(1)}}
+@keyframes zfBackdropIn{from{opacity:0;backdrop-filter:blur(0)}to{opacity:1;backdrop-filter:blur(7px)}}
+@keyframes zfModalEnter{from{opacity:0;transform:translateY(18px) scale(.965)}to{opacity:1;transform:none}}
+@keyframes zfToastEnter{from{opacity:0;transform:translateY(9px) scale(.97)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){
+  .match-scoreboard,.match-event,.match-event .event-visual,.match-event .event-title,.match-choice,.match-log .log-row,.result-stamp,.modal-backdrop,.login-modal-backdrop,.modal-backdrop .modal,.login-modal-backdrop .login-modal,.toast{animation-duration:.01ms!important;animation-delay:0ms!important}
+  .trophy-card:not(.locked) .trophy-medal,.btn,.nav-item,.icon-btn,.quick-action,.theme-option,.player-slot,.player-card,.squad-item,.metric-card,.trophy-card,.saved-club,.pack-card,.daily-offer,.style-option,.match-choice{transition-duration:.01ms!important}
+}
