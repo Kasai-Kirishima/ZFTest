@@ -1,15 +1,15 @@
 {
   "project": "Zero Football",
-  "version": "v39",
-  "description": "Start-screen language selector; rebuilt animated pack reveal with three speeds, skip/replay, pack-specific sound and vibration settings; game-wide motion polish.",
+  "version": "v40",
+  "description": "Position-aware team and player OVR; actual bot roster rating and top player cards; improved portrait fallbacks; localized player data; expanded theme propagation; stamina on tactical lineup; forced substitution recommendations; pack-only player acquisition; removed coin achievements and visible price ranges.",
   "files": {
     "CHANGELOG.md": {
-      "bytes": 21610,
-      "sha256": "df9fa163ca4f4045a2085eba4e5155cf14c35ad9c05f46869cef331bfe34b1a0"
+      "bytes": 25072,
+      "sha256": "0a69f8657a989298affc1c635d2ed0b29fdea543e844868e5de93633577bbafb"
     },
     "README.md": {
-      "bytes": 19013,
-      "sha256": "474b6146cd0db08b72e5c4620bb8c663254502b783f70368d80c54533b2eee1a"
+      "bytes": 21616,
+      "sha256": "84c9ec149e75c2ffc828682b09ed870b4bb0dcd8271f9dc1164ee66aafe576f0"
     },
     "assets/README.md": {
       "bytes": 397,
@@ -159,6 +159,42 @@
       "bytes": 11892,
       "sha256": "078cd33cb42fc05879f1bc5c6ea9ec6da533e5ebee99f64bf588f0ee73167f19"
     },
+    "backup/v39-01-base.css": {
+      "bytes": 48680,
+      "sha256": "018b7ec6950e68f19e085a9a3660e2ff329cfc6de7758e10b3076839b84d4704"
+    },
+    "backup/v39-02-layout-and-responsive.css": {
+      "bytes": 6240,
+      "sha256": "a4c60079760e5858a58ba7a5a84cd2972f62f54ef5b7e5e6a6ce13bb0c5d8ed8"
+    },
+    "backup/v39-05-pitch-and-mobile.css": {
+      "bytes": 2725,
+      "sha256": "66a6f1c9ba96fe7174a336cfbba9edd77b59bb2905c06cb1182eb7921a3c45f3"
+    },
+    "backup/v39-11-theme-and-squad-fixes.css": {
+      "bytes": 13404,
+      "sha256": "a473e9c7b124513b61e618c6d523c2a365df156a1ce8959cfc689ca31dbbfe23"
+    },
+    "backup/v39-app.js": {
+      "bytes": 190400,
+      "sha256": "87e21eabc4b362d682ecb562e720568615eaea4c0fb08458f3767adef3b5fe1b"
+    },
+    "backup/v39-gameplay.js": {
+      "bytes": 12452,
+      "sha256": "5930627961b09170a10af02a98990c285527ee9274362a750cd94df0d956f51b"
+    },
+    "backup/v39-index.html": {
+      "bytes": 1560,
+      "sha256": "7b4b52fc95d6ec132b922016372cf49c06960eeac4a44f01da4cfb94bcceb5d7"
+    },
+    "backup/v39-localization.js": {
+      "bytes": 121054,
+      "sha256": "8ef01f6a79fc7cb17711d333f4a82290f29e88e3e365e60be020fecdd8f02f6f"
+    },
+    "backup/v39-players.js": {
+      "bytes": 38329,
+      "sha256": "a56f334e0525f14bb587af0d5c2ad6f5d3a62f6afbd70cea2d545a1f37a5ff03"
+    },
     "css/01-base.css": {
       "bytes": 48680,
       "sha256": "018b7ec6950e68f19e085a9a3660e2ff329cfc6de7758e10b3076839b84d4704"
@@ -199,33 +235,37 @@
       "bytes": 21899,
       "sha256": "e49794e9d090c2130a9cddaacb012a885aa664c73cd00663ffb7d05962e60485"
     },
+    "css/11-theme-and-squad-fixes.css": {
+      "bytes": 16681,
+      "sha256": "aa55477f400d0d056a911070824096744bf99479698f8a1d0bde80d3d6b68d9f"
+    },
     "docs/EDITING_RULES.md": {
       "bytes": 1651,
       "sha256": "cd5c11ab4a3b5653874e5bd363fc534a8e979b24aa86b86ab10a95d70918e834"
     },
     "docs/PROJECT_MAP.md": {
-      "bytes": 5189,
-      "sha256": "0b8c07517e388f982368b75734c1669d2d89437b856e9ae681915ea180cb378a"
+      "bytes": 5465,
+      "sha256": "fbbdb19586c9139d799d4a1d449c240da2a4f47bd65dca4bcb37067c15bec9ee"
     },
     "index.html": {
-      "bytes": 1560,
-      "sha256": "7b4b52fc95d6ec132b922016372cf49c06960eeac4a44f01da4cfb94bcceb5d7"
+      "bytes": 1628,
+      "sha256": "17203db835c0a3b12d883d4cd75d20ddfa5ea6ab6c56bdbf0b82aa1bab800356"
     },
     "js/app.js": {
-      "bytes": 190400,
-      "sha256": "87e21eabc4b362d682ecb562e720568615eaea4c0fb08458f3767adef3b5fe1b"
+      "bytes": 225196,
+      "sha256": "d6e5ea320ba8a8176e73a825f65fbb57f569bc9d794698dc79c180a21ef424f7"
     },
     "js/data/economy.js": {
       "bytes": 6913,
       "sha256": "3883feb2d911d2d4d3a8f6f5cc802be199a36a16761a362cd9b67967b90bfa0d"
     },
     "js/data/gameplay.js": {
-      "bytes": 12452,
-      "sha256": "5930627961b09170a10af02a98990c285527ee9274362a750cd94df0d956f51b"
+      "bytes": 12723,
+      "sha256": "bdac52bd5576262dfc41821d837cf1b84771606fc2835c7a940cdc3d968d78e7"
     },
     "js/data/localization.js": {
-      "bytes": 121054,
-      "sha256": "8ef01f6a79fc7cb17711d333f4a82290f29e88e3e365e60be020fecdd8f02f6f"
+      "bytes": 120670,
+      "sha256": "472683ec6dc68b0c756d99205e02c6dac03431df8b030a75e5aec97350de3d9c"
     },
     "js/data/players.js": {
       "bytes": 38329,
