@@ -1,18 +1,18 @@
 {
   "project": "Zero Football",
-  "version": "52",
-  "name": "Zero Football v52",
-  "description": "Expanded music library to sixteen CC0 tracks, restored a three-player paid daily market, removed stamina, moved player contracts into Team Settings, restricted captains to the starting XI, added daily/monthly/30 long-term missions and 30 match-XP levels, expanded sponsor localization, and improved match variety and local action illustrations.",
+  "version": "53",
+  "name": "Zero Football v53",
+  "description": "Added remembered local sessions, encrypted cross-device account backup import/export, safe club-render recovery, and restored stamina/fatigue gameplay.",
   "files": [
     {
       "path": "CHANGELOG.md",
-      "sha256": "f08313f0c2b57170cea121d2d69f6647c91034a7ed7163c2c950beae68bffb1f",
-      "size": 38284
+      "sha256": "45f26b07c0984ca6c8137f8ccb6a9ee322231212e42fb3aab0da379a31b65f81",
+      "size": 40624
     },
     {
       "path": "README.md",
-      "sha256": "409a38a14f18e9c1178d0516ef02089af951637b6e4c3c883af2a71c671cdbf6",
-      "size": 32728
+      "sha256": "70b9626514fdfc50841a35aaedd4e7031529d89c99d6dbd00cc59692668702bf",
+      "size": 33861
     },
     {
       "path": "assets/README.md",
@@ -630,6 +630,11 @@
       "size": 5221
     },
     {
+      "path": "css/22-v53-account-stamina.css",
+      "sha256": "37c545cc7c7f451166a8493d30d2878be87c38ff02a7dd9d7097d4498666ec7e",
+      "size": 618
+    },
+    {
       "path": "docs/AD_INTEGRATION.md",
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c",
       "size": 1237
@@ -651,13 +656,13 @@
     },
     {
       "path": "index.html",
-      "sha256": "33c37c1ff7b567d256a88b0a286241738efa812c6f216a16792290fb68ae2f2a",
-      "size": 2305
+      "sha256": "5a0a70beefb6a43cf80d456532b359ae2788e8eb45d46ad1e5e92781259d4ae4",
+      "size": 2369
     },
     {
       "path": "js/app.js",
-      "sha256": "0bc5fcab2bb87d9aeaddef49f9fcf023c35883b5a24d60516c01199b4d8d8431",
-      "size": 471902
+      "sha256": "68b429ee2f7f020e6e269b801f0b9c1f3cc7ad48d0452551f885a8ea53829b06",
+      "size": 478164
     },
     {
       "path": "js/data/economy.js",
