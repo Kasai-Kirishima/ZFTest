@@ -1,12 +1,12 @@
 {
   "project": "Zero Football",
-  "version": "55",
+  "version": "56",
   "name": "Zero Football v53",
   "description": "Added remembered local sessions, encrypted cross-device account backup import/export, safe club-render recovery, and restored stamina/fatigue gameplay.",
   "files": {
     "CHANGELOG.md": {
-      "size": 42116,
-      "sha256": "1192b90ae49f81bf03c4485dd5989ad4d8a63d534eff298553557f64fe46a283"
+      "size": 43069,
+      "sha256": "e27d14cb547886da1d436b409d840018392161f6abc564c2f03d38d4e9db20e8"
     },
     "README.md": {
       "size": 33861,
@@ -508,6 +508,10 @@
       "size": 618,
       "sha256": "37c545cc7c7f451166a8493d30d2878be87c38ff02a7dd9d7097d4498666ec7e"
     },
+    "css/23-v56-release.css": {
+      "size": 1363,
+      "sha256": "62bccdf3b9971fa636d41b5befdd8f9cbb1d09a4539998b44dcc380637faa8de"
+    },
     "docs/AD_INTEGRATION.md": {
       "size": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -525,12 +529,12 @@
       "sha256": "4318daaa99bd82100f631b099617f24434a87dd5c15fdc6f0dbb3b5eec11c7fc"
     },
     "index.html": {
-      "size": 2369,
-      "sha256": "5a0a70beefb6a43cf80d456532b359ae2788e8eb45d46ad1e5e92781259d4ae4"
+      "size": 2430,
+      "sha256": "130ac40c117d78fdedc0c4a164079f3437f650f96eb009aaca38e6c55787412b"
     },
     "js/app.js": {
-      "size": 468269,
-      "sha256": "fe8f345e629e3fd2a8e9b33e14951a8617fc885a368d3d7e2484905332cfe5cb"
+      "size": 468872,
+      "sha256": "840e8f4aad857df3953b824e9db8762b4c8f6ccceb63c7f2bb7c71670a689b71"
     },
     "js/data/economy.js": {
       "size": 6913,
@@ -545,8 +549,8 @@
       "sha256": "f80109d32d90fd45aae1e3fe0f1b5a0a0985c755c90aa562514aefe3289b61df"
     },
     "js/data/players.js": {
-      "size": 46970,
-      "sha256": "fe8395cb06dad785914a03309be4ed2b91a4bccd4eb50cb2ff6e7257ae916cfe"
+      "size": 48850,
+      "sha256": "d4959d17c83eeaeeb10d6ea59cd863e572655ef371487172dc136e229ca5f27d"
     },
     "js/data/ui-config.js": {
       "size": 3685,
@@ -558,6 +562,6 @@
     }
   },
   "project_version": "52",
-  "release": "v55",
-  "notes": "Removed password-protected club accounts. Existing clubs open directly; old credential fields are stripped while preserving game data. New clubs require no login or password."
+  "release": "v56-single-player-release-pass",
+  "notes": "Single-player release pass: player cards/photos, sponsor-only daily/monthly missions, match finalization hardening and full-height match imagery."
 }

@@ -18,7 +18,7 @@
   const SAFE_CREST_GLYPHS=new Set(['★','☆','✦','✧','✶','✷','✸','✹','◆','◇','♦','♢','◈','◊','●','○','◉','◎','◐','◑','◌','▲','△','▼','▽','■','□','▣','▢','▪','▫','+','✚','✛','×','✕','✖','⊕','⊗','⊙','⌖','☼','☀','☾','☽','∞','⚑']);
   let PLAYER_IMAGE_OBSERVER=null;
   function resolvePlayerImages(){
-    const cards=$$('.player-card[data-portrait-key],.squad-item[data-portrait-key],.modal-player[data-portrait-key],.opponent-star-card[data-portrait-key],.player-slot[data-portrait-key],.forced-sub-option[data-portrait-key]');
+    const cards=$$('.player-card[data-portrait-key],.squad-item[data-portrait-key],.modal-player[data-portrait-key],.opponent-star-card[data-portrait-key],.player-slot[data-portrait-key],.forced-sub-option[data-portrait-key],.daily-player-offer[data-portrait-key]');
     cards.filter(card=>card.classList.contains('opponent-star-card')||card.closest('.opponent-best-grid')).forEach(loadPlayerImage);
     if(!PLAYER_IMAGE_OBSERVER&&'IntersectionObserver' in window)PLAYER_IMAGE_OBSERVER=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){PLAYER_IMAGE_OBSERVER.unobserve(entry.target);loadPlayerImage(entry.target);}}),{rootMargin:'320px'});
     cards.forEach(card=>{if(PLAYER_IMAGE_OBSERVER){if(!card.dataset.imageObserved){card.dataset.imageObserved='1';PLAYER_IMAGE_OBSERVER.observe(card);}}else loadPlayerImage(card);});
@@ -653,7 +653,7 @@
       {id:'daily',name:'Ежедневный бесплатный пак',type:'Ежедневный бонус',price:0,count:2,color:'#f6ce58',glow:'rgba(246,206,88,.17)',desc:'2 футболиста. Один бесплатный набор каждые сутки.',meta:'БЕСПЛАТНО · 1 РАЗ В ДЕНЬ'}
     ];
     const shop=dailyShop(club);const freeReady=club.freePackDay!==shop.day;
-    const dailyCards=shop.offers.map(wiki=>{const player=REAL_PLAYERS.find(x=>x.wiki===wiki);if(!player)return '';const claimed=shop.claimed.includes(wiki);const owned=club.players.some(x=>x.wiki===wiki);const price=Math.max(.08,Math.round(marketValue(player.rating)*.06*100)/100);const unavailable=claimed||owned;return `<article class="daily-player-offer"><div class="daily-player-rating">${player.rating}</div><div class="daily-player-copy"><strong>${esc(player.name)}</strong><small>${esc(positionLabel(player.position))} · ${esc(playerClubLabel({realClub:player.club}))}</small><small class="daily-player-price">${formatMoney(price)}</small></div><button class="btn ${unavailable?'btn-quiet':'btn-primary'} btn-sm" data-action="claim-daily-card" data-player-wiki="${esc(wiki)}" data-player-price="${price}" ${unavailable||club.coins<price?'disabled':''}>${claimed?'Куплено':owned?'Уже в клубе':`Купить · ${formatMoney(price)}`}</button></article>`;}).join('');
+    const dailyCards=shop.offers.map(wiki=>{const player=REAL_PLAYERS.find(x=>x.wiki===wiki);if(!player)return '';const claimed=shop.claimed.includes(wiki);const owned=club.players.some(x=>x.wiki===wiki);const price=Math.max(.08,Math.round(marketValue(player.rating)*.06*100)/100);const unavailable=claimed||owned;return `<article class="daily-player-offer" data-portrait-key="${esc(player.wiki)}" data-wiki="${esc(player.wiki)}"><div class="daily-player-photo"><img class="squad-photo" alt="${esc(player.name)}" loading="lazy"><b>${player.rating}</b></div><div class="daily-player-copy"><strong>${esc(player.name)}</strong><small>${esc(positionLabel(player.position))} · ${esc(playerClubLabel({realClub:player.club}))}</small><small class="daily-player-price">${formatMoney(price)}</small></div><button class="btn ${unavailable?'btn-quiet':'btn-primary'} btn-sm" data-action="claim-daily-card" data-player-wiki="${esc(wiki)}" data-player-price="${price}" ${unavailable||club.coins<price?'disabled':''}>${claimed?'Куплено':owned?'Уже в клубе':`Купить · ${formatMoney(price)}`}</button></article>`;}).join('');
     return `<div class="section-heading"><div><div class="eyebrow">Pack market</div><h1 class="h1">МАГАЗИН ПАКОВ</h1><p class="page-subtitle">Выбирай наборы карточек и усиливай состав через открытие паков.</p></div><div class="actions"><span class="coin-chip">${formatMoney(club.coins)}</span></div></div><section class="card daily-player-shop" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ЕЖЕДНЕВНЫЙ МАГАЗИН</div><h2 class="h2">3 КАРТОЧКИ ДЛЯ ПОКУПКИ</h2><p>Три футболиста доступны для покупки за монеты. Ассортимент и цены обновляются ежедневно.</p></div><span class="pill pill-lime">${shop.day}</span></div><div class="daily-player-list">${dailyCards}</div></section><section class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ПАКИ ДЛЯ КОМАНДЫ</div><h2 class="h2">НАБОРЫ КАРТОЧЕК</h2><p>Все платные и бесплатные паки находятся в одном каталоге. Ежедневный бесплатный набор обновляется раз в сутки.</p></div><span class="pill">${shop.day}</span></div></section><div class="pack-grid">${packOptions.map(p=>`<article class="pack-card" style="--pack-color:${p.color};--pack-glow:${p.glow}"><div class="pack-art"><div class="pack-box"><span class="pack-art-star">✦</span><span class="pack-art-mark">ZF</span><span class="pack-art-lines"></span></div><span class="pack-orbit orbit-a"></span><span class="pack-orbit orbit-b"></span></div><div class="pack-type">${p.type}</div><h3>${p.name}</h3><p>${p.desc}</p><div class="pack-bottom"><span class="pack-price">${p.id==='daily'?'БЕСПЛАТНО':formatMoney(p.price)}</span><button class="btn btn-primary btn-sm" data-action="open-pack" data-pack="${p.id}" ${p.id==='daily'&&!freeReady?'disabled':(p.id!=='daily'&&club.coins<p.price)?'disabled':''}>${p.id==='daily'&&!freeReady?'Получен сегодня':'Открыть ↗'}</button></div><div class="pack-footnote">${p.meta} · Игроки добавятся в твою коллекцию</div></article>`).join('')}</div>`;
   }
   function renderPlayerCard(p,actions=false,clickable=false){
@@ -1165,6 +1165,8 @@
     const slots=club.sponsorSlots||{kit:null,title:null,extra:null};
     const labels={kit:'СПОНСОР ФОРМЫ',title:'ОСНОВНОЙ СПОНСОР',extra:'ДОПОЛНИТЕЛЬНЫЙ СПОНСОР'};
     const types=['kit','title','extra'];
+    const cycles=ensureMissionCycles(club);
+    const missions=`<section class="card sponsor-missions" style="margin-bottom:18px"><div class="card-header"><div><div class="eyebrow">ЗАДАНИЯ И НАГРАДЫ</div><h2 class="h2">ЗАДАНИЯ СПОНСОРОВ</h2><p>Выполняй цели спонсоров и забирай дополнительные выплаты. Ежедневные задания обновляются каждый день, ежемесячные — в начале месяца.</p></div><span class="pill pill-lime">4 задания</span></div><div class="mission-section-grid"><section><div class="eyebrow">${translateUIText('Ежедневные задания')}</div><div class="mission-list">${cycles.daily.map(q=>renderMissionCard(club,q,'daily')).join('')}</div></section><section><div class="eyebrow">${translateUIText('Ежемесячные задания')}</div><div class="mission-list">${cycles.monthly.map(q=>renderMissionCard(club,q,'monthly')).join('')}</div></section></div></section>`;
     const sections=types.map(type=>{
       const active=slots[type]&&slots[type].until>Date.now()?slots[type]:null;
       const deal=active?SPONSOR_DEALS.find(x=>x.id===active.id):null;
@@ -1173,7 +1175,7 @@
       const expired=slots[type]&&!active;
       return `<section class="card sponsor-slot-section" style="margin-bottom:18px"><div class="card-header"><div><div class="eyebrow">${translateUIText(labels[type])}</div><h2 class="h2">${esc(title)}</h2><p>${detail}${expired?' · '+translateUIText('Контракт истёк'):''}</p></div><span class="pill ${deal?'pill-lime':''}">${deal?translateUIText('ЗАКЛЮЧЁН'):translateUIText('СВОБОДНО')}</span></div>${renderSponsorTiers(type,active,club)}</section>`;
     }).join('');
-    return `<div class="section-heading"><div><div class="eyebrow">${translateUIText('Спонсорские контракты')}</div><h1 class="h1">${translateUIText('СПОНСОРЫ')}</h1><p class="page-subtitle">${translateUIText('Можно одновременно заключить три независимых контракта на 30 реальных дней.')}</p></div><span class="pill pill-lime">${translateUIText('3 рекламных места')}</span></div>${sections}`;
+    return `<div class="section-heading"><div><div class="eyebrow">${translateUIText('Спонсорские контракты')}</div><h1 class="h1">${translateUIText('СПОНСОРЫ')}</h1><p class="page-subtitle">${translateUIText('Можно одновременно заключить три независимых контракта на 30 реальных дней.')}</p></div><span class="pill pill-lime">${translateUIText('3 рекламных места')}</span></div>${missions}${sections}`;
   }
 
   function renderEditor(club){
@@ -1240,9 +1242,8 @@
     return `<article class="mission-card ${claimed?'mission-claimed':done?'mission-done':''}"><div class="mission-icon">${mission.icon}</div><div class="mission-copy"><strong>${translateUIText(mission.name)}</strong><small>${translateUIText(mission.desc)}</small><div class="mission-progress"><span style="width:${percent}%"></span></div><small class="muted">${Math.min(progress,target)} / ${target} · ${formatMoney(mission.reward)}</small></div>${claimed?`<span class="pill">${translateUIText('Получено')}</span>`:done?`<button class="btn btn-primary btn-sm" data-action="claim-mission" data-mission-type="${type}" data-mission-id="${mission.id}">${translateUIText('Забрать')}</button>`:`<span class="mission-percent">${Math.floor(percent)}%</span>`}</article>`;
   }
   function renderProgressionAndMissions(club){
-    const cycles=ensureMissionCycles(club),p=progressionState(club);
+    const p=progressionState(club);
     return `<section class="card progression-card"><div class="progression-top"><div><div class="eyebrow">${translateUIText('УРОВЕНЬ КЛУБА')}</div><h2 class="h2">${translateUIText('Уровень')} ${p.level} / 30</h2><p>${translateUIText('Опыт за сыгранные матчи, победы и удачные решения.')}</p></div><div class="progression-level">${p.level}<small>LVL</small></div></div><div class="progression-bar"><span style="width:${p.percent}%"></span></div><div class="progression-footer"><span>${p.level>=30?translateUIText('Максимальный уровень'):`${p.xp} / ${p.need} XP`}</span><span>${p.total} XP · ${translateUIText('До уровня')} ${Math.min(30,p.level+1)}</span></div></section>
-    <div class="mission-section-grid"><section class="card"><div class="card-header"><div><div class="eyebrow">${translateUIText('Ежедневные задания')}</div><h2 class="h2">${translateUIText('ЗАДАНИЯ НА СЕГОДНЯ')}</h2></div><span class="pill">2</span></div><div class="mission-list">${cycles.daily.map(q=>renderMissionCard(club,q,'daily')).join('')}</div></section><section class="card"><div class="card-header"><div><div class="eyebrow">${translateUIText('Ежемесячные задания')}</div><h2 class="h2">${translateUIText('ЗАДАНИЯ НА МЕСЯЦ')}</h2></div><span class="pill">2</span></div><div class="mission-list">${cycles.monthly.map(q=>renderMissionCard(club,q,'monthly')).join('')}</div></section></div>
     <section class="card milestone-section"><div class="card-header"><div><div class="eyebrow">${translateUIText('Долгосрочные цели')}</div><h2 class="h2">${translateUIText('30 ЗАДАНИЙ КЛУБА')}</h2><p>${translateUIText('Выполняй цели и забирай награды за прогресс клуба.')}</p></div><span class="pill pill-lime">30</span></div><div class="mission-grid">${MILESTONE_MISSIONS.map(q=>renderMissionCard(club,q,'milestone')).join('')}</div></section>`;
   }
     const unlocked=Object.keys(club.trophyUnlocks||{}).length;
@@ -1703,14 +1704,15 @@
       // The tenth decision is the final whistle. Incidents in this last episode
       // remain recorded on the player for the next match, but must not trap the user
       // on the mandatory-substitution screen after the match has already ended.
-      m.eventIndex=10;m.completedEvents=Math.max(10,Number(m.completedEvents)||0);m.pendingForcedSub=null;m.pendingForcedSlot=null;m.pendingForcedType=null;m.resolvingEvent=null;
-      finishMatch(true);return;
+      m.eventIndex=10;m.completedEvents=10;m.actionDeadline=null;m.availableChoices=[];m.pendingForcedSub=null;m.pendingForcedSlot=null;m.pendingForcedType=null;m.resolvingEvent=null;
+      if(!finishMatch(true)){m.finalized=false;m.stage='live';m.eventIndex=10;m.completedEvents=10;finishMatch(true);}return;
     }
     m.eventIndex++;m.resolvingEvent=null;makeCurrentEvent();render();
   }
   function finishMatch(fromFinalDecision=false){
     const club=currentClub();const m=matchState;
     if(!club||!m||m.finalized)return false;
+    if(fromFinalDecision&&m.stage==='result')return true;
     const completed=Math.max(Number(m.completedEvents)||0,Number(m.eventIndex)||0);
     if(!fromFinalDecision&&completed<10)return false;
     if(fromFinalDecision&&m.stage!=='live')return false;
