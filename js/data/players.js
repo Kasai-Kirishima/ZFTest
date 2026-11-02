@@ -75,7 +75,7 @@ Object.assign(window.ZF_DATA, {
     'Ihor Krasnopir':'https://pictures.ua.tribuna.com/image/575a551d-1685-4519-b831-4985870dc27c?width=1920&quality=70',
     'Artem Shabanov':'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdSMR5Ts7NW1m42s9IdzU162aSlm5iGB79NTNxVW-C-iZf00jXz304G7HV&s=10',
     'Irakli Azarov':'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIpKOGKfjkHnHKRcZzkERRQLdYYXVgDBO1Oyo33B_-Cw&s=10',
-    'Mykola Shaparenko':'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStv2n06pE2oXYv_xeFkcQ2CSEwiqI0Xdts4VSP_PZuEhyN9xeovLVbdW8&s=10',
+    'Mykola Shaparenko':'https://fcdynamo.com/img/content/photoGalleries/2618/ib-0273.jpg?fm=jpg&q=80&fit=max&crop=4500%2C3000%2C0%2C0',
     'Ihor Kohut':'https://pictures.ua.tribuna.com/image/11233c6d-d737-4dde-965f-76bef593931b?width=1920&quality=70',
     'Yehor Tverdokhlib':'https://pic.sport.ua/images/news/0/21/142/orig_868408.jpg',
     'Vladlen Yurchenko':'https://pic.sport.ua/images/news/0/12/34/orig_486844.jpg',

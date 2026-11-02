@@ -1,12 +1,12 @@
 {
   "project": "Zero Football",
-  "version": "56",
-  "name": "Zero Football v53",
-  "description": "Added remembered local sessions, encrypted cross-device account backup import/export, safe club-render recovery, and restored stamina/fatigue gameplay.",
+  "version": "57",
+  "name": "Zero Football v57",
+  "description": "Daily shop player cards now use the same full card design and portraits as the collection; updated Mykola Shaparenko official photo.",
   "files": {
     "CHANGELOG.md": {
-      "size": 43069,
-      "sha256": "e27d14cb547886da1d436b409d840018392161f6abc564c2f03d38d4e9db20e8"
+      "size": 43750,
+      "sha256": "db903454c300e8451a5075a35e98895835999b35050fe0e2d81b5072ca49b9d6"
     },
     "README.md": {
       "size": 33861,
@@ -512,6 +512,10 @@
       "size": 1363,
       "sha256": "62bccdf3b9971fa636d41b5befdd8f9cbb1d09a4539998b44dcc380637faa8de"
     },
+    "css/24-v57-daily-player-cards.css": {
+      "size": 610,
+      "sha256": "10478375ea93bda6f15ed002ab9de10b5712fba0d5c4ed170a3070efc5d1bfb3"
+    },
     "docs/AD_INTEGRATION.md": {
       "size": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -529,12 +533,12 @@
       "sha256": "4318daaa99bd82100f631b099617f24434a87dd5c15fdc6f0dbb3b5eec11c7fc"
     },
     "index.html": {
-      "size": 2430,
-      "sha256": "130ac40c117d78fdedc0c4a164079f3437f650f96eb009aaca38e6c55787412b"
+      "size": 2502,
+      "sha256": "8c374ec0272251970780e205e90447d43c35fbe70aa46870da13483c514ebe07"
     },
     "js/app.js": {
-      "size": 468872,
-      "sha256": "840e8f4aad857df3953b824e9db8762b4c8f6ccceb63c7f2bb7c71670a689b71"
+      "size": 468535,
+      "sha256": "8bf4964c606f7a4bc8e2403570362c2ebae82d2dd88156ae6cd4c72a7922197a"
     },
     "js/data/economy.js": {
       "size": 6913,
@@ -549,8 +553,8 @@
       "sha256": "f80109d32d90fd45aae1e3fe0f1b5a0a0985c755c90aa562514aefe3289b61df"
     },
     "js/data/players.js": {
-      "size": 48850,
-      "sha256": "d4959d17c83eeaeeb10d6ea59cd863e572655ef371487172dc136e229ca5f27d"
+      "size": 48843,
+      "sha256": "087ffc697964d1bf4ff09836b952aa72daa2635ee8809bd084092ee245427388"
     },
     "js/data/ui-config.js": {
       "size": 3685,
