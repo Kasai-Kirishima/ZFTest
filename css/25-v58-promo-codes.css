@@ -1,0 +1,4 @@
+.promo-code-controls{display:flex;gap:10px;align-items:center;max-width:560px}
+.promo-code-controls input{flex:1;min-width:0}
+.promo-code-panel .small{margin:10px 0 0}
+@media(max-width:520px){.promo-code-controls{align-items:stretch;flex-direction:column}.promo-code-controls .btn{width:100%}}

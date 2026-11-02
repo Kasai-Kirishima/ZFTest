@@ -1,12 +1,12 @@
 {
   "project": "Zero Football",
-  "version": "57",
-  "name": "Zero Football v57",
-  "description": "Daily shop player cards now use the same full card design and portraits as the collection; updated Mykola Shaparenko official photo.",
+  "version": "58",
+  "name": "Zero Football v58",
+  "description": "Added one-time 1TestGame promo code (+€100M) and filtered already-owned players from daily purchase offers.",
   "files": {
     "CHANGELOG.md": {
-      "size": 43750,
-      "sha256": "db903454c300e8451a5075a35e98895835999b35050fe0e2d81b5072ca49b9d6"
+      "size": 44262,
+      "sha256": "cef726c717cd0f66e0cec00a91f2e6dc5c49dfcd3f52b5cf82b2379637d880a0"
     },
     "README.md": {
       "size": 33861,
@@ -516,6 +516,10 @@
       "size": 610,
       "sha256": "10478375ea93bda6f15ed002ab9de10b5712fba0d5c4ed170a3070efc5d1bfb3"
     },
+    "css/25-v58-promo-codes.css": {
+      "size": 294,
+      "sha256": "7dd8d85c91c27e63db59411ad944561a4c6fd68e411853bb106cb4e7a8e46352"
+    },
     "docs/AD_INTEGRATION.md": {
       "size": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -533,12 +537,12 @@
       "sha256": "4318daaa99bd82100f631b099617f24434a87dd5c15fdc6f0dbb3b5eec11c7fc"
     },
     "index.html": {
-      "size": 2502,
-      "sha256": "8c374ec0272251970780e205e90447d43c35fbe70aa46870da13483c514ebe07"
+      "size": 2564,
+      "sha256": "f9d04f86a2d4731eba00cd0a4c61ec981808caec9e8ac3f08a7d06b47fce2261"
     },
     "js/app.js": {
-      "size": 468535,
-      "sha256": "8bf4964c606f7a4bc8e2403570362c2ebae82d2dd88156ae6cd4c72a7922197a"
+      "size": 470511,
+      "sha256": "0f81c689d69a05503015bcb4d1a6d3b412d6757e606c0f4214222f826c52ed30"
     },
     "js/data/economy.js": {
       "size": 6913,
