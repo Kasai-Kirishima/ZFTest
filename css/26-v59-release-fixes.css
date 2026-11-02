@@ -1,0 +1,9 @@
+/* Zero Football v59 — promo panel visibility and release fixes */
+.promo-code-panel{display:block!important;position:relative;z-index:1;overflow:visible}
+.promo-code-panel .card-header{align-items:center}
+.promo-code-controls{display:flex;align-items:stretch;gap:10px;max-width:620px;margin-top:12px}
+.promo-code-controls input{flex:1 1 280px;min-width:0;width:100%;min-height:46px}
+.promo-code-controls .btn{flex:0 0 auto;min-height:46px;white-space:nowrap}
+.promo-code-controls .btn:disabled{opacity:.62;cursor:not-allowed}
+.promo-code-panel .small{margin:10px 0 0;line-height:1.5}
+@media(max-width:520px){.promo-code-controls{flex-direction:column}.promo-code-controls .btn{width:100%}}

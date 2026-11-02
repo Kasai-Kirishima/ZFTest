@@ -1,16 +1,16 @@
 {
   "project": "Zero Football",
-  "version": "58",
-  "name": "Zero Football v58",
-  "description": "Added one-time 1TestGame promo code (+€100M) and filtered already-owned players from daily purchase offers.",
+  "version": "59",
+  "name": "Zero Football v59",
+  "description": "Fixed match finalization and shared mission/progression helpers, restored sponsor screens, made the 1TestGame +€100M promo form visible and cache-busted the release scripts.",
   "files": {
     "CHANGELOG.md": {
-      "size": 44262,
-      "sha256": "cef726c717cd0f66e0cec00a91f2e6dc5c49dfcd3f52b5cf82b2379637d880a0"
+      "size": 45449,
+      "sha256": "67ceaf2608a439b3079460fc6315c47f2413693219d19b80f7ad2db0dd4813f8"
     },
     "README.md": {
-      "size": 33861,
-      "sha256": "70b9626514fdfc50841a35aaedd4e7031529d89c99d6dbd00cc59692668702bf"
+      "size": 34097,
+      "sha256": "5c79274dca46f382d3210b5967e15602587046da9ad83b59747b820d8bf3e5a9"
     },
     "assets/README.md": {
       "size": 397,
@@ -520,6 +520,10 @@
       "size": 294,
       "sha256": "7dd8d85c91c27e63db59411ad944561a4c6fd68e411853bb106cb4e7a8e46352"
     },
+    "css/26-v59-release-fixes.css": {
+      "size": 693,
+      "sha256": "7885d15cf47c30359c3a3011a758966442e3a51b87687e62fb4c613dd95dd6a0"
+    },
     "docs/AD_INTEGRATION.md": {
       "size": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -537,12 +541,12 @@
       "sha256": "4318daaa99bd82100f631b099617f24434a87dd5c15fdc6f0dbb3b5eec11c7fc"
     },
     "index.html": {
-      "size": 2564,
-      "sha256": "f9d04f86a2d4731eba00cd0a4c61ec981808caec9e8ac3f08a7d06b47fce2261"
+      "size": 2643,
+      "sha256": "ab2994f45e6408b501a47429bdc6ef37bb0bc39f77533ef873b91ca7e096d238"
     },
     "js/app.js": {
-      "size": 470511,
-      "sha256": "0f81c689d69a05503015bcb4d1a6d3b412d6757e606c0f4214222f826c52ed30"
+      "size": 471494,
+      "sha256": "5e4661bfc60ddf39ba3225fe921b568554af3962a9b0dc2daf67e8876eac70f2"
     },
     "js/data/economy.js": {
       "size": 6913,

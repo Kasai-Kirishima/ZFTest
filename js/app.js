@@ -634,6 +634,22 @@
   function currentDayKey(){
     const now=new Date();return [now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
   }
+  function renderPromoPanel(club){
+    const redeemed=Array.isArray(club.redeemedPromoCodes)&&club.redeemedPromoCodes.includes('1testgame');
+    return `<section class="card promo-code-panel" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">БОНУСЫ ZERO FOOTBALL</div><h2 class="h2">ПРОМОКОД</h2><p>Введи код и получи игровую валюту на баланс клуба.</p></div><span class="pill">🎁 Бонус</span></div><form id="promoCodeForm" class="promo-code-controls"><input id="promoCodeInput" name="promoCode" class="collection-search" type="text" maxlength="40" autocomplete="off" placeholder="Например, 1TestGame" aria-label="Промокод" ${redeemed?'disabled':''} required><button class="btn btn-primary" type="submit" ${redeemed?'disabled':''}>${redeemed?'Уже использован':'Активировать'}</button></form><p class="muted small">${redeemed?'Код 1TestGame уже активирован на этом клубе.':'1TestGame · награда +€100 млн · один раз на клуб.'}</p></section>`;
+  }
+  function redeemPromoCode(){
+    const club=currentClub();if(!club)return;
+    const input=$('#promoCodeInput');const code=String(input?.value||'').trim().toLowerCase();
+    if(!code){toast('Введи промокод.','error');input?.focus();return;}
+    club.redeemedPromoCodes=Array.isArray(club.redeemedPromoCodes)?club.redeemedPromoCodes:[];
+    if(code!=='1testgame'){toast('Такого промокода не существует.','error');return;}
+    if(club.redeemedPromoCodes.includes('1testgame')){toast('Этот промокод уже использован.','error');render();return;}
+    club.coins=(Number(club.coins)||0)+100;
+    club.redeemedPromoCodes.push('1testgame');
+    saveDB();render();toast('Промокод 1TestGame активирован: +€100 млн.');
+  }
+
   function dailyShop(club){
     const now=new Date(),day=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
     if(!club.dailyShop||club.dailyShop.day!==day||!Array.isArray(club.dailyShop.offers)){
@@ -659,7 +675,7 @@
     ];
     const shop=dailyShop(club);const freeReady=club.freePackDay!==shop.day;
     const dailyCards=shop.offers.map(wiki=>{const player=REAL_PLAYERS.find(x=>x.wiki===wiki);if(!player)return '';const claimed=shop.claimed.includes(wiki);const owned=club.players.some(x=>x.wiki===wiki);const price=Math.max(.08,Math.round(marketValue(player.rating)*.06*100)/100);const unavailable=claimed||owned;return `<article class="daily-market-card">${renderPlayerCard({...player,id:null,realClub:player.club},false,false)}<button class="btn ${unavailable?'btn-quiet':'btn-primary'} btn-sm daily-market-buy" data-action="claim-daily-card" data-player-wiki="${esc(wiki)}" data-player-price="${price}" ${unavailable||club.coins<price?'disabled':''}>${claimed?'Куплено':owned?'Уже в клубе':`Купить · ${formatMoney(price)}`}</button></article>`;}).join('');
-    return `<div class="section-heading"><div><div class="eyebrow">Pack market</div><h1 class="h1">МАГАЗИН ПАКОВ</h1><p class="page-subtitle">Выбирай наборы карточек и усиливай состав через открытие паков.</p></div><div class="actions"><span class="coin-chip">${formatMoney(club.coins)}</span></div></div><section class="card daily-player-shop" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ЕЖЕДНЕВНЫЙ МАГАЗИН</div><h2 class="h2">КАРТОЧКИ ДЛЯ ПОКУПКИ</h2><p>Только футболисты, которых ещё нет в твоём клубе. Ассортимент и цены обновляются ежедневно.</p></div><span class="pill pill-lime">${shop.day}</span></div><div class="daily-player-cards player-grid">${dailyCards||'<p class="muted">Все доступные футболисты уже в твоём клубе.</p>'}</div></section><section class="card promo-code-panel" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">БОНУСЫ ZERO FOOTBALL</div><h2 class="h2">ПРОМОКОД</h2><p>Введи промокод, чтобы получить игровую валюту.</p></div><span class="pill">🎁 Бонус</span></div><div class="promo-code-controls"><input id="promoCodeInput" class="collection-search" type="text" maxlength="40" autocomplete="off" placeholder="Введи промокод" aria-label="Промокод"><button class="btn btn-primary" data-action="redeem-promo">Активировать</button></div><p class="muted small">Каждый промокод можно активировать один раз на клуб.</p></section><section class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ПАКИ ДЛЯ КОМАНДЫ</div><h2 class="h2">НАБОРЫ КАРТОЧЕК</h2><p>Все платные и бесплатные паки находятся в одном каталоге. Ежедневный бесплатный набор обновляется раз в сутки.</p></div><span class="pill">${shop.day}</span></div></section><div class="pack-grid">${packOptions.map(p=>`<article class="pack-card" style="--pack-color:${p.color};--pack-glow:${p.glow}"><div class="pack-art"><div class="pack-box"><span class="pack-art-star">✦</span><span class="pack-art-mark">ZF</span><span class="pack-art-lines"></span></div><span class="pack-orbit orbit-a"></span><span class="pack-orbit orbit-b"></span></div><div class="pack-type">${p.type}</div><h3>${p.name}</h3><p>${p.desc}</p><div class="pack-bottom"><span class="pack-price">${p.id==='daily'?'БЕСПЛАТНО':formatMoney(p.price)}</span><button class="btn btn-primary btn-sm" data-action="open-pack" data-pack="${p.id}" ${p.id==='daily'&&!freeReady?'disabled':(p.id!=='daily'&&club.coins<p.price)?'disabled':''}>${p.id==='daily'&&!freeReady?'Получен сегодня':'Открыть ↗'}</button></div><div class="pack-footnote">${p.meta} · Игроки добавятся в твою коллекцию</div></article>`).join('')}</div>`;
+    return `<div class="section-heading"><div><div class="eyebrow">Pack market</div><h1 class="h1">МАГАЗИН ПАКОВ</h1><p class="page-subtitle">Выбирай наборы карточек и усиливай состав через открытие паков.</p></div><div class="actions"><span class="coin-chip">${formatMoney(club.coins)}</span></div></div>${renderPromoPanel(club)}<section class="card daily-player-shop" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ЕЖЕДНЕВНЫЙ МАГАЗИН</div><h2 class="h2">КАРТОЧКИ ДЛЯ ПОКУПКИ</h2><p>Только футболисты, которых ещё нет в твоём клубе. Ассортимент и цены обновляются ежедневно.</p></div><span class="pill pill-lime">${shop.day}</span></div><div class="daily-player-cards player-grid">${dailyCards||'<p class="muted">Все доступные футболисты уже в твоём клубе.</p>'}</div></section><section class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ПАКИ ДЛЯ КОМАНДЫ</div><h2 class="h2">НАБОРЫ КАРТОЧЕК</h2><p>Все платные и бесплатные паки находятся в одном каталоге. Ежедневный бесплатный набор обновляется раз в сутки.</p></div><span class="pill">${shop.day}</span></div></section><div class="pack-grid">${packOptions.map(p=>`<article class="pack-card" style="--pack-color:${p.color};--pack-glow:${p.glow}"><div class="pack-art"><div class="pack-box"><span class="pack-art-star">✦</span><span class="pack-art-mark">ZF</span><span class="pack-art-lines"></span></div><span class="pack-orbit orbit-a"></span><span class="pack-orbit orbit-b"></span></div><div class="pack-type">${p.type}</div><h3>${p.name}</h3><p>${p.desc}</p><div class="pack-bottom"><span class="pack-price">${p.id==='daily'?'БЕСПЛАТНО':formatMoney(p.price)}</span><button class="btn btn-primary btn-sm" data-action="open-pack" data-pack="${p.id}" ${p.id==='daily'&&!freeReady?'disabled':(p.id!=='daily'&&club.coins<p.price)?'disabled':''}>${p.id==='daily'&&!freeReady?'Получен сегодня':'Открыть ↗'}</button></div><div class="pack-footnote">${p.meta} · Игроки добавятся в твою коллекцию</div></article>`).join('')}</div>`;
   }
   function renderPlayerCard(p,actions=false,clickable=false){
     const activeClub=currentClub();const lineupIndex=p.id&&activeClub?.lineup?activeClub.lineup.indexOf(p.id):-1;const assignedRole=lineupIndex>=0?(FORMATIONS[activeClub.formation]||FORMATIONS['4-3-3'])[lineupIndex]?.role:null;const shownRating=lineupIndex>=0?playerOVRAt(p,assignedRole||p.position,activeClub):(p.id&&activeClub?.captainId===p.id&&activeClub?.lineup?.includes(p.id)?p.rating+1:p.rating);const r=rarityFor(shownRating);const country=playerCountryData(p.country);const displayName=playerDisplayName(p);const displayPositions=playerPositionsLabel(p);const displayClub=playerClubLabel(p);
@@ -1166,6 +1182,68 @@
     const deals=SPONSOR_DEALS.filter(o=>o.type===type).slice().sort((a,b)=>((a.match+a.win+a.sign)-(b.match+b.win+b.sign))||((a.minRating||0)-(b.minRating||0))||a.name.localeCompare(b.name));
     return SPONSOR_TIER_ORDER.map(tier=>{const items=deals.filter(o=>sponsorTier(o)===tier);if(!items.length)return '';const min=items.reduce((v,o)=>Math.min(v,o.minRating||0),99);const max=items.reduce((v,o)=>Math.max(v,o.minRating||0),0);return `<section class="sponsor-tier-section sponsor-tier-level-${SPONSOR_TIER_ORDER.indexOf(tier)}"><div class="sponsor-tier-heading"><div><span class="sponsor-tier-kicker">${translateUIText('УРОВЕНЬ')} ${SPONSOR_TIER_ORDER.indexOf(tier)+1}</span><h3>${tier==='ИМБА'?'🔥 ':''}${sponsorCopy(tier)}</h3><p>${sponsorCopy(sponsorTierDescription(tier))}</p></div><span class="pill">${items.length} ${sponsorCopy('контрактов')}</span></div><div class="sponsor-grid">${items.map(o=>renderSponsorDeal(o,active,type,club)).join('')}</div></section>`;}).join('');}
 
+const MILESTONE_MISSIONS = [
+  ...[1,3,5,10,20].map(n=>({id:`matches_${n}`,icon:'⚽',name:`Сыграть ${n} матчей`,desc:`Проведи ${n} матчей за клуб.`,metric:'matches',target:n,reward:.04+n*.005})),
+  ...[1,3,5,10,20].map(n=>({id:`wins_${n}`,icon:'🏆',name:`Одержать ${n} побед`,desc:`Выиграй ${n} официальных матчей.`,metric:'wins',target:n,reward:.05+n*.006})),
+  ...[5,10,25,50,100].map(n=>({id:`goals_${n}`,icon:'🥅',name:`Забить ${n} голов`,desc:`Забей ${n} голов в матчах.`,metric:'goalsFor',target:n,reward:.04+n*.0015})),
+  ...[1,3,5,10,20].map(n=>({id:`packs_${n}`,icon:'🎴',name:`Открыть ${n} паков`,desc:`Открой ${n} паков в агентстве.`,metric:'packsOpened',target:n,reward:.04+n*.004})),
+  ...[16,20,24,28,32].map(n=>({id:`players_${n}`,icon:'👥',name:`Собрать ${n} игроков`,desc:`Добавь в коллекцию ${n} футболистов.`,metric:'players',target:n,reward:.04+n*.002})),
+  ...[60,65,70,75,80].map(n=>({id:`rating_${n}`,icon:'📈',name:`Достичь рейтинга ${n}`,desc:`Подними средний рейтинг основы до ${n}.`,metric:'teamRating',target:n,reward:.05+(n-60)*.004}))
+];
+const DAILY_QUEST_POOL=[
+  {id:'daily_match',name:'Матч дня',desc:'Сыграй 1 матч.',metric:'matches',target:1,reward:.06},
+  {id:'daily_win',name:'Победа дня',desc:'Одержи 1 победу.',metric:'wins',target:1,reward:.08},
+  {id:'daily_goals',name:'Голевая серия',desc:'Забей 3 гола.',metric:'goalsFor',target:3,reward:.07},
+  {id:'daily_pack',name:'Открой агентство',desc:'Открой 1 пак.',metric:'packsOpened',target:1,reward:.06},
+  {id:'daily_two',name:'Двойной матчдей',desc:'Сыграй 2 матча.',metric:'matches',target:2,reward:.09}
+];
+const MONTHLY_QUEST_POOL=[
+  {id:'monthly_matches',name:'Календарь клуба',desc:'Сыграй 12 матчей за месяц.',metric:'matches',target:12,reward:.35},
+  {id:'monthly_wins',name:'Месяц побед',desc:'Одержи 6 побед за месяц.',metric:'wins',target:6,reward:.4},
+  {id:'monthly_goals',name:'Атакующая мощь',desc:'Забей 30 голов за месяц.',metric:'goalsFor',target:30,reward:.38},
+  {id:'monthly_packs',name:'Селекция месяца',desc:'Открой 8 паков за месяц.',metric:'packsOpened',target:8,reward:.32},
+  {id:'monthly_form',name:'Уверенный ход',desc:'Сыграй 8 матчей за месяц.',metric:'matches',target:8,reward:.28}
+];
+function missionMetric(club,metric){if(metric==='players')return (club.players||[]).length;if(metric==='teamRating')return teamRating(club);return Math.max(0,Number(club.stats?.[metric])||0);}
+function missionSeed(str){let h=2166136261;for(const ch of String(str))h=Math.imul(h^ch.charCodeAt(0),16777619);return h>>>0;}
+function chooseCycleMissions(club,pool,key){let seed=missionSeed(`${club.id}:${key}`),arr=pool.slice();for(let i=arr.length-1;i>0;i--){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const j=seed%(i+1);[arr[i],arr[j]]=[arr[j],arr[i]];}return arr.slice(0,2).map(q=>({...q,baseline:missionMetric(club,q.metric),claimed:false}));}
+function ensureMissionCycles(club){
+  const now=new Date(),day=currentDayKey(),month=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  let changed=false;
+  if(!club.missionClaims||typeof club.missionClaims!=='object'){club.missionClaims={};changed=true;}
+  if(club.dailyMissionKey!==day||!Array.isArray(club.dailyMissions)||club.dailyMissions.length!==2){club.dailyMissionKey=day;club.dailyMissions=chooseCycleMissions(club,DAILY_QUEST_POOL,day);changed=true;}
+  if(club.monthlyMissionKey!==month||!Array.isArray(club.monthlyMissions)||club.monthlyMissions.length!==2){club.monthlyMissionKey=month;club.monthlyMissions=chooseCycleMissions(club,MONTHLY_QUEST_POOL,month);changed=true;}
+  if(changed)saveDB();
+  return {daily:club.dailyMissions,monthly:club.monthlyMissions};
+}
+function levelRequirement(level){return 100+(level-1)*35;}
+function progressionState(club){
+  const total=Math.max(0,Number(club.progression?.totalXp)||0);let remaining=total,level=1;
+  while(level<30&&remaining>=levelRequirement(level)){remaining-=levelRequirement(level);level++;}
+  const need=level>=30?0:levelRequirement(level);
+  return {level,total,xp:level>=30?need:remaining,need,percent:need?Math.min(100,remaining/need*100):100};
+}
+function addMatchProgression(club,m,won,draw){
+  club.progression=club.progression&&typeof club.progression==='object'?club.progression:{totalXp:0};
+  const before=progressionState(club).level;
+  const xp=55+(won?45:draw?22:0)+(Number(m.score?.[0])||0)*12+(Number(m.goodChoices)||0)*4;
+  club.progression.totalXp=(Number(club.progression.totalXp)||0)+xp;
+  const after=progressionState(club).level,ups=Math.max(0,after.level-before);
+  m.xpEarned=xp;m.levelUps=ups;
+  if(ups)club.coins=(Number(club.coins)||0)+ups*.04;
+}
+function renderMissionCard(club,mission,type){
+  const progress=type==='milestone'?missionMetric(club,mission.metric):Math.max(0,missionMetric(club,mission.metric)-Number(mission.baseline||0));
+  const done=progress>=mission.target,claimed=type==='milestone'?!!club.missionClaims[mission.id]:!!mission.claimed;
+  const target=mission.target,percent=Math.max(0,Math.min(100,progress/target*100));
+  return `<article class="mission-card ${claimed?'mission-claimed':done?'mission-done':''}"><div class="mission-icon">${mission.icon}</div><div class="mission-copy"><strong>${translateUIText(mission.name)}</strong><small>${translateUIText(mission.desc)}</small><div class="mission-progress"><span style="width:${percent}%"></span></div><small class="muted">${Math.min(progress,target)} / ${target} · ${formatMoney(mission.reward)}</small></div>${claimed?`<span class="pill">${translateUIText('Получено')}</span>`:done?`<button class="btn btn-primary btn-sm" data-action="claim-mission" data-mission-type="${type}" data-mission-id="${mission.id}">${translateUIText('Забрать')}</button>`:`<span class="mission-percent">${Math.floor(percent)}%</span>`}</article>`;
+}
+function renderProgressionAndMissions(club){
+  const p=progressionState(club);
+  return `<section class="card progression-card"><div class="progression-top"><div><div class="eyebrow">${translateUIText('УРОВЕНЬ КЛУБА')}</div><h2 class="h2">${translateUIText('Уровень')} ${p.level} / 30</h2><p>${translateUIText('Опыт за сыгранные матчи, победы и удачные решения.')}</p></div><div class="progression-level">${p.level}<small>LVL</small></div></div><div class="progression-bar"><span style="width:${p.percent}%"></span></div><div class="progression-footer"><span>${p.level>=30?translateUIText('Максимальный уровень'):`${p.xp} / ${p.need} XP`}</span><span>${p.total} XP · ${translateUIText('До уровня')} ${Math.min(30,p.level+1)}</span></div></section>
+  <section class="card milestone-section"><div class="card-header"><div><div class="eyebrow">${translateUIText('Долгосрочные цели')}</div><h2 class="h2">${translateUIText('30 ЗАДАНИЙ КЛУБА')}</h2><p>${translateUIText('Выполняй цели и забирай награды за прогресс клуба.')}</p></div><span class="pill pill-lime">30</span></div><div class="mission-grid">${MILESTONE_MISSIONS.map(q=>renderMissionCard(club,q,'milestone')).join('')}</div></section>`;
+}
+
   function renderSponsors(club){
     const slots=club.sponsorSlots||{kit:null,title:null,extra:null};
     const labels={kit:'СПОНСОР ФОРМЫ',title:'ОСНОВНОЙ СПОНСОР',extra:'ДОПОЛНИТЕЛЬНЫЙ СПОНСОР'};
@@ -1188,69 +1266,7 @@
     return `<div class="section-heading"><div><div class="eyebrow">Профиль клуба</div><h1 class="h1">РЕДАКТОР КЛУБА</h1><p class="page-subtitle">Измени название, страну и эмблему своего клуба.</p></div><span class="pill pill-lime">${c.flag} ${c.name}</span></div><div class="editor-layout"><section class="card"><div class="card-header"><div><div class="eyebrow">Профиль клуба</div><h2 class="h2">ДАННЫЕ КЛУБА</h2></div></div><form id="editClubForm" class="form-grid"><div class="field"><label for="editClubName">Название клуба</label><input id="editClubName" name="clubName" value="${esc(club.name)}" maxlength="26" required /></div><div class="field"><label for="editCountry">Страна и флаг</label><select id="editCountry" name="country">${Object.entries(COUNTRY).map(([code,v])=>`<option value="${code}" ${club.country===code?'selected':''}>${v.flag} ${v.name}</option>`).join('')}</select><small id="editCountryBonus" class="muted small">Бонус страны: ${c.bonus}</small></div><div class="field"><label>Конструктор эмблемы</label>${renderEditCrestBuilder(club.logo)}</div><button class="btn btn-primary btn-full" type="submit">Сохранить изменения ✓</button></form></section><div><section class="card" style="margin-bottom:15px"><div class="card-header"><div><div class="eyebrow">Предпросмотр клуба</div><h2 class="h2">ВНЕШНИЙ ВИД КЛУБА</h2><p>Так эмблема и название будут выглядеть в меню и матчах.</p></div></div><div class="club-identity-preview"><span class="club-crest ${crestShape(club.logo)}" id="editorPreviewCrest" style="--crest-color:${esc(club.logo.color)}">${crestContent(club.logo,.7)}</span><div class="identity-text"><strong id="editorPreviewName">${esc(c.flag)} ${esc(club.name)}</strong><small id="editorPreviewCountry">${esc(c.name)} · ${teamRating(club)} OVR</small></div></div></section><section class="card"><div class="card-header"><div><div class="eyebrow">Карточка клуба</div><h2 class="h2">ПАСПОРТ КЛУБА</h2></div></div><div class="recent-list"><div class="recent-row"><div class="recent-icon">🏅</div><div><strong>Эмблема клуба</strong><small>Индивидуальный знак команды</small></div><div class="right">${esc(club.logo.symbol||'★')}</div></div><div class="recent-row"><div class="recent-icon">🌍</div><div><strong>Страна</strong><small>Стартовый пак и флаг клуба</small></div><div class="right">${c.flag} ${esc(c.name)}</div></div></div></section></div></div>`;
   }
 
-    function renderTrophies(club){
-
-  const MILESTONE_MISSIONS = [
-    ...[1,3,5,10,20].map(n=>({id:`matches_${n}`,icon:'⚽',name:`Сыграть ${n} матчей`,desc:`Проведи ${n} матчей за клуб.`,metric:'matches',target:n,reward:.04+n*.005})),
-    ...[1,3,5,10,20].map(n=>({id:`wins_${n}`,icon:'🏆',name:`Одержать ${n} побед`,desc:`Выиграй ${n} официальных матчей.`,metric:'wins',target:n,reward:.05+n*.006})),
-    ...[5,10,25,50,100].map(n=>({id:`goals_${n}`,icon:'🥅',name:`Забить ${n} голов`,desc:`Забей ${n} голов в матчах.`,metric:'goalsFor',target:n,reward:.04+n*.0015})),
-    ...[1,3,5,10,20].map(n=>({id:`packs_${n}`,icon:'🎴',name:`Открыть ${n} паков`,desc:`Открой ${n} паков в агентстве.`,metric:'packsOpened',target:n,reward:.04+n*.004})),
-    ...[16,20,24,28,32].map(n=>({id:`players_${n}`,icon:'👥',name:`Собрать ${n} игроков`,desc:`Добавь в коллекцию ${n} футболистов.`,metric:'players',target:n,reward:.04+n*.002})),
-    ...[60,65,70,75,80].map(n=>({id:`rating_${n}`,icon:'📈',name:`Достичь рейтинга ${n}`,desc:`Подними средний рейтинг основы до ${n}.`,metric:'teamRating',target:n,reward:.05+(n-60)*.004}))
-  ];
-  const DAILY_QUEST_POOL=[
-    {id:'daily_match',name:'Матч дня',desc:'Сыграй 1 матч.',metric:'matches',target:1,reward:.06},
-    {id:'daily_win',name:'Победа дня',desc:'Одержи 1 победу.',metric:'wins',target:1,reward:.08},
-    {id:'daily_goals',name:'Голевая серия',desc:'Забей 3 гола.',metric:'goalsFor',target:3,reward:.07},
-    {id:'daily_pack',name:'Открой агентство',desc:'Открой 1 пак.',metric:'packsOpened',target:1,reward:.06},
-    {id:'daily_two',name:'Двойной матчдей',desc:'Сыграй 2 матча.',metric:'matches',target:2,reward:.09}
-  ];
-  const MONTHLY_QUEST_POOL=[
-    {id:'monthly_matches',name:'Календарь клуба',desc:'Сыграй 12 матчей за месяц.',metric:'matches',target:12,reward:.35},
-    {id:'monthly_wins',name:'Месяц побед',desc:'Одержи 6 побед за месяц.',metric:'wins',target:6,reward:.4},
-    {id:'monthly_goals',name:'Атакующая мощь',desc:'Забей 30 голов за месяц.',metric:'goalsFor',target:30,reward:.38},
-    {id:'monthly_packs',name:'Селекция месяца',desc:'Открой 8 паков за месяц.',metric:'packsOpened',target:8,reward:.32},
-    {id:'monthly_form',name:'Уверенный ход',desc:'Сыграй 8 матчей за месяц.',metric:'matches',target:8,reward:.28}
-  ];
-  function missionMetric(club,metric){if(metric==='players')return (club.players||[]).length;if(metric==='teamRating')return teamRating(club);return Math.max(0,Number(club.stats?.[metric])||0);}
-  function missionSeed(str){let h=2166136261;for(const ch of String(str))h=Math.imul(h^ch.charCodeAt(0),16777619);return h>>>0;}
-  function chooseCycleMissions(club,pool,key){let seed=missionSeed(`${club.id}:${key}`),arr=pool.slice();for(let i=arr.length-1;i>0;i--){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const j=seed%(i+1);[arr[i],arr[j]]=[arr[j],arr[i]];}return arr.slice(0,2).map(q=>({...q,baseline:missionMetric(club,q.metric),claimed:false}));}
-  function ensureMissionCycles(club){
-    const now=new Date(),day=currentDayKey(),month=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-    let changed=false;
-    if(!club.missionClaims||typeof club.missionClaims!=='object'){club.missionClaims={};changed=true;}
-    if(club.dailyMissionKey!==day||!Array.isArray(club.dailyMissions)||club.dailyMissions.length!==2){club.dailyMissionKey=day;club.dailyMissions=chooseCycleMissions(club,DAILY_QUEST_POOL,day);changed=true;}
-    if(club.monthlyMissionKey!==month||!Array.isArray(club.monthlyMissions)||club.monthlyMissions.length!==2){club.monthlyMissionKey=month;club.monthlyMissions=chooseCycleMissions(club,MONTHLY_QUEST_POOL,month);changed=true;}
-    if(changed)saveDB();
-    return {daily:club.dailyMissions,monthly:club.monthlyMissions};
-  }
-  function levelRequirement(level){return 100+(level-1)*35;}
-  function progressionState(club){
-    const total=Math.max(0,Number(club.progression?.totalXp)||0);let remaining=total,level=1;
-    while(level<30&&remaining>=levelRequirement(level)){remaining-=levelRequirement(level);level++;}
-    const need=level>=30?0:levelRequirement(level);
-    return {level,total,xp:level>=30?need:remaining,need,percent:need?Math.min(100,remaining/need*100):100};
-  }
-  function addMatchProgression(club,m,won,draw){
-    club.progression=club.progression&&typeof club.progression==='object'?club.progression:{totalXp:0};
-    const before=progressionState(club).level;
-    const xp=55+(won?45:draw?22:0)+(Number(m.score?.[0])||0)*12+(Number(m.goodChoices)||0)*4;
-    club.progression.totalXp=(Number(club.progression.totalXp)||0)+xp;
-    const after=progressionState(club).level,ups=Math.max(0,after.level-before);
-    m.xpEarned=xp;m.levelUps=ups;
-    if(ups)club.coins=(Number(club.coins)||0)+ups*.04;
-  }
-  function renderMissionCard(club,mission,type){
-    const progress=type==='milestone'?missionMetric(club,mission.metric):Math.max(0,missionMetric(club,mission.metric)-Number(mission.baseline||0));
-    const done=progress>=mission.target,claimed=type==='milestone'?!!club.missionClaims[mission.id]:!!mission.claimed;
-    const target=mission.target,percent=Math.max(0,Math.min(100,progress/target*100));
-    return `<article class="mission-card ${claimed?'mission-claimed':done?'mission-done':''}"><div class="mission-icon">${mission.icon}</div><div class="mission-copy"><strong>${translateUIText(mission.name)}</strong><small>${translateUIText(mission.desc)}</small><div class="mission-progress"><span style="width:${percent}%"></span></div><small class="muted">${Math.min(progress,target)} / ${target} · ${formatMoney(mission.reward)}</small></div>${claimed?`<span class="pill">${translateUIText('Получено')}</span>`:done?`<button class="btn btn-primary btn-sm" data-action="claim-mission" data-mission-type="${type}" data-mission-id="${mission.id}">${translateUIText('Забрать')}</button>`:`<span class="mission-percent">${Math.floor(percent)}%</span>`}</article>`;
-  }
-  function renderProgressionAndMissions(club){
-    const p=progressionState(club);
-    return `<section class="card progression-card"><div class="progression-top"><div><div class="eyebrow">${translateUIText('УРОВЕНЬ КЛУБА')}</div><h2 class="h2">${translateUIText('Уровень')} ${p.level} / 30</h2><p>${translateUIText('Опыт за сыгранные матчи, победы и удачные решения.')}</p></div><div class="progression-level">${p.level}<small>LVL</small></div></div><div class="progression-bar"><span style="width:${p.percent}%"></span></div><div class="progression-footer"><span>${p.level>=30?translateUIText('Максимальный уровень'):`${p.xp} / ${p.need} XP`}</span><span>${p.total} XP · ${translateUIText('До уровня')} ${Math.min(30,p.level+1)}</span></div></section>
-    <section class="card milestone-section"><div class="card-header"><div><div class="eyebrow">${translateUIText('Долгосрочные цели')}</div><h2 class="h2">${translateUIText('30 ЗАДАНИЙ КЛУБА')}</h2><p>${translateUIText('Выполняй цели и забирай награды за прогресс клуба.')}</p></div><span class="pill pill-lime">30</span></div><div class="mission-grid">${MILESTONE_MISSIONS.map(q=>renderMissionCard(club,q,'milestone')).join('')}</div></section>`;
-  }
+  function renderTrophies(club){
     const unlocked=Object.keys(club.trophyUnlocks||{}).length;
     return `<div class="section-heading"><div><div class="eyebrow">Зал славы клуба</div><h1 class="h1">ЗАЛ ТРОФЕЕВ</h1><p class="page-subtitle">Каждый матч — новая возможность вписать имя клуба в историю.</p></div><span class="pill pill-lime">🏆 ${unlocked} / ${TROPHIES.length}</span></div><div class="card" style="margin-bottom:17px;background:linear-gradient(100deg,rgba(247,200,90,.08),transparent 70%),var(--panel)"><div class="card-header" style="margin-bottom:0"><div><div class="eyebrow">Зал славы</div><h2 class="h2">ТВОЯ КОЛЛЕКЦИЯ ДОСТИЖЕНИЙ</h2><p>Продолжай играть, собирать игроков и улучшать клуб, чтобы разблокировать новые награды.</p></div><div style="font:900 33px 'Barlow Condensed',sans-serif;color:var(--gold)">${Math.round(unlocked/TROPHIES.length*100)}%</div></div><div class="progress" style="height:8px;margin-top:17px"><span style="width:${unlocked/TROPHIES.length*100}%;background:var(--gold)"></span></div></div>${renderProgressionAndMissions(club)}<div class="trophy-grid">${TROPHIES.map(t=>{const earned=!!club.trophyUnlocks[t.id];return `<article class="trophy-card ${earned?'':'locked'}"><div class="trophy-medal">${earned?t.icon:'🔒'}</div><h3>${t.name}</h3><p>${t.desc}</p><div class="trophy-status">${earned?'✓ Получен':`Цель: ${t.goal}`}</div>${earned?`<div class="tiny muted" style="margin-top:8px">${new Date(club.trophyUnlocks[t.id]).toLocaleDateString(({ru:'ru-RU',uk:'uk-UA',en:'en-GB',de:'de-DE',fr:'fr-FR',es:'es-ES',ja:'ja-JP',zh:'zh-CN',kk:'kk-KZ',pl:'pl-PL'})[db.language||'ru']||'ru-RU')}</div>`:''}</article>`;}).join('')}</div>`;
   }
@@ -1710,7 +1726,7 @@
       // remain recorded on the player for the next match, but must not trap the user
       // on the mandatory-substitution screen after the match has already ended.
       m.eventIndex=10;m.completedEvents=10;m.actionDeadline=null;m.availableChoices=[];m.pendingForcedSub=null;m.pendingForcedSlot=null;m.pendingForcedType=null;m.resolvingEvent=null;
-      if(!finishMatch(true)){m.finalized=false;m.stage='live';m.eventIndex=10;m.completedEvents=10;finishMatch(true);}return;
+      let finalized=false;try{finalized=finishMatch(true);}catch(finalError){console.error('Final whistle failed on final decision:',finalError);}if(!finalized){m.finalized=false;m.stage='live';m.eventIndex=10;m.completedEvents=10;try{finishMatch(false);}catch(retryError){console.error('Match finalization retry failed:',retryError);toast('Не удалось закрыть матч. Попробуй нажать «Завершить матч» ещё раз.','error');}}return;
     }
     m.eventIndex++;m.resolvingEvent=null;makeCurrentEvent();render();
   }
@@ -1731,7 +1747,7 @@
     const won=m.score[0]>m.score[1],draw=m.score[0]===m.score[1];m.reward=won?0.8:draw?0.55:0.35;
     club.coins=(Number(club.coins)||0)+m.reward;club.stats.matches++;m.sponsorBonus=0;club.sponsorSlots=club.sponsorSlots||{kit:null,title:null,extra:null};Object.entries(club.sponsorSlots).forEach(([type,contract])=>{if(!contract)return;if(contract.until>Date.now()){const deal=SPONSOR_DEALS.find(x=>x.id===contract.id);if(deal){const bonus=deal.match+(won?deal.win:0);club.coins+=bonus/1000;m.sponsorBonus+=bonus/1000;}}else club.sponsorSlots[type]=null;});club.sponsorContract=club.sponsorSlots.title||club.sponsorSlots.kit||club.sponsorSlots.extra||null;
     if(won)club.stats.wins++;else if(draw)club.stats.draws++;else club.stats.losses++;
-    addMatchProgression(club,m,won,draw);
+    try{addMatchProgression(club,m,won,draw);}catch(progressError){console.error('Match XP could not be applied:',progressError);m.xpEarned=0;m.levelUps=0;}
     club.stats.goalsFor+=m.score[0];club.stats.goalsAgainst+=m.score[1];
     // Only bans/injuries that existed before this match count down; new incidents remain active.
     (club.players||[]).forEach(p=>{const wasStarter=(club.lineup||[]).includes(p.id);p.stamina=clamp((Number(p.stamina)||0)+(wasStarter?-rand(7,12):rand(8,14)),0,100);const prior=m.preMatchStatuses?.[p.id];if(prior?.injury>0)p.injuryMatches=Math.max(0,(p.injuryMatches||0)-1);if(prior?.red>0)p.redCardMatches=Math.max(0,(p.redCardMatches||0)-1);if(prior?.yellowBan>0)p.yellowBanMatches=Math.max(0,(p.yellowBanMatches||0)-1);});
@@ -1974,7 +1990,7 @@
     if(action==='claim-mission'){const c=currentClub();if(!c)return;const type=btn.dataset.missionType,id=btn.dataset.missionId,cycles=ensureMissionCycles(c);let mission=null;if(type==='milestone'){mission=MILESTONE_MISSIONS.find(q=>q.id===id);if(!mission||c.missionClaims[id])return;if(missionMetric(c,mission.metric)<mission.target){toast('Задание ещё не выполнено.','error');return;}c.missionClaims[id]=Date.now();}else{const list=type==='daily'?cycles.daily:type==='monthly'?cycles.monthly:null;mission=list?.find(q=>q.id===id);if(!mission||mission.claimed)return;const amount=Math.max(0,missionMetric(c,mission.metric)-Number(mission.baseline||0));if(amount<mission.target){toast('Задание ещё не выполнено.','error');return;}mission.claimed=true;}c.coins=(Number(c.coins)||0)+mission.reward;saveDB();render();toast(`Задание выполнено: +${formatMoney(mission.reward)}.`);return;}
     if(action==='renew-player-contract'){const c=currentClub();const player=c?.players.find(p=>p.id===btn.dataset.playerId);if(!c||!player)return;const cost=contractRenewalCost(player);if(c.coins<cost){toast('Недостаточно монет для продления контракта.','error');return;}c.coins-=cost;player.contractUntil=Math.max(Date.now(),Number(player.contractUntil)||0)+30*86400000;saveDB();render();toast(`Контракт ${playerDisplayName(player)} продлён на 30 дней.`);return;}
     if(action==='claim-daily-card'){const c=currentClub();if(!c)return;const shop=dailyShop(c),wiki=btn.dataset.playerWiki;if(!shop.offers.includes(wiki)||shop.claimed.includes(wiki))return;const base=REAL_PLAYERS.find(x=>x.wiki===wiki);if(!base)return;if(c.players.some(p=>p.wiki===wiki)){toast('Этот футболист уже есть в твоём клубе.','error');render();return;}const price=Math.max(.08,Math.round(marketValue(base.rating)*.06*100)/100);if(c.coins<price){toast(`Недостаточно монет. Нужно ${formatMoney(price)}.`,'error');return;}c.coins-=price;const created=createPlayer(base.position,base.rating,base.name,base.country,{id:'daily-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),wiki:base.wiki,realClub:base.club,realPlayer:true});created.positions=REAL_PLAYER_POSITIONS[base.wiki]||[base.position];created.name=base.name;created.rating=base.rating;created.country=base.country;created.realClub=base.club;created.wiki=base.wiki;created.realPlayer=true;created.contractUntil=Date.now()+30*86400000;c.players.push(created);shop.claimed.push(wiki);saveDB();render();toast(`${base.name} куплен за ${formatMoney(price)}.`);return;}
-    if(action==='redeem-promo'){const c=currentClub();if(!c)return;const input=$('#promoCodeInput');const code=String(input?.value||'').trim().toLowerCase();if(!code){toast('Введи промокод.','error');return;}c.redeemedPromoCodes=Array.isArray(c.redeemedPromoCodes)?c.redeemedPromoCodes:[];if(code==='1testgame'){if(c.redeemedPromoCodes.includes('1testgame')){toast('Этот промокод уже использован.','error');return;}c.coins=(Number(c.coins)||0)+100;c.redeemedPromoCodes.push('1testgame');saveDB();render();toast('Промокод активирован: +€100 млн.');return;}toast('Такого промокода не существует.','error');return;}
+    if(action==='redeem-promo'){redeemPromoCode();return;}
         if(action==='open-pack'){openPack(btn.dataset.pack);return;}if(action==='forced-sub'||action==='forced-sub-pick'){const c=currentClub(),out=btn.dataset.out,inn=action==='forced-sub-pick'?btn.dataset.playerId:$('#forcedSubPlayer')?.value;if(!inn){toast('Выбери игрока для обязательной замены.','error');return;}const idx=c.lineup.indexOf(out);if(idx>=0){if(c.lineup.includes(inn))return;c.lineup[idx]=inn;if(c.captainId===out)c.captainId=inn;}else{toast('Игрок уже покинул поле после автоматической замены.','error');return;}matchState.pendingForcedSub=null;matchState.pendingForcedSlot=null;matchState.pendingForcedType=null;saveDB();if(matchState.eventIndex>=10){finishMatch();return;}render();toast('Обязательная замена выполнена.');return;}
     if(action==='collection-mode'){collectionMode=btn.dataset.mode;$$('[data-action="collection-mode"]').forEach(b=>b.className='btn '+(b.dataset.mode===collectionMode?'btn-primary':'btn-secondary')+' btn-sm');applyCollectionFilters();return;}
     if(action==='skip-pack-animation'){if(!reveal)return;reveal.skipAnimation=true;render();return;}
@@ -1989,6 +2005,7 @@
     if(action==='match-return-search'||action==='match-again'){clearMatchTimers();matchState={stage:'idle'};view='match';render();return;}
   });
   $('#app').addEventListener('submit',async e=>{
+    if(e.target.id==='promoCodeForm'){e.preventDefault();redeemPromoCode();return;}
     if(e.target.id==='createClubForm'){e.preventDefault();try{await createClubFromForm(e.target);}catch(err){console.error(err);toast(err?.message||'Не удалось создать клуб.','error');}}
     if(e.target.id==='editClubForm'){
       e.preventDefault();const club=currentClub();if(!club)return;const fd=new FormData(e.target);const name=String(fd.get('clubName')||'').trim();
