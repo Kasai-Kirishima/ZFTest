@@ -239,3 +239,7 @@ The daily shop now offers three purchasable player cards, with prices derived fr
 - The club has two daily and two monthly tasks, plus 30 long-term missions and 30 club levels. Match results grant XP.
 - Match events use larger varied pools and avoid recent repeats; event images load sourced football photos where available and fall back to local SVGs.
 - Music library expanded to 16 CC0 tracks. Streaming requires internet; the built-in synth fallback is retained.
+
+## Supabase (v60)
+
+See `SUPABASE_SETUP_RU.md`. Run `supabase/001_cloud_saves.sql` in the project's Supabase SQL Editor before using cloud saves. Registration and sign-in are available in Settings. Cloud upload/download are manual; local single-player remains available offline.

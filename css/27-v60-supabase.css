@@ -1,0 +1,5 @@
+.zf-cloud-card .zf-cloud-auth-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.zf-cloud-card .zf-cloud-auth-form .settings-actions{grid-column:1/-1;margin-top:2px}
+.zf-cloud-card .settings-actions{display:flex;flex-wrap:wrap;gap:9px}
+.zf-cloud-card .statline{margin:10px 0}
+@media(max-width:640px){.zf-cloud-card .zf-cloud-auth-form{grid-template-columns:1fr}.zf-cloud-card .zf-cloud-auth-form .settings-actions{grid-column:auto}.zf-cloud-card .settings-actions .btn{flex:1 1 100%}}

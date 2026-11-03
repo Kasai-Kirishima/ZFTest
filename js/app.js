@@ -126,6 +126,71 @@
   const BOT_PLAYER_NAMES = window.ZF_DATA.BOT_PLAYER_NAMES;
   const TROPHIES = window.ZF_DATA.TROPHIES;
   let db = loadDB();
+  const ZF_SUPABASE = (() => {
+    const cfg = window.ZF_SUPABASE_CONFIG || {};
+    if (!cfg.url || !cfg.anonKey || !window.supabase?.createClient) return null;
+    try { return window.supabase.createClient(cfg.url, cfg.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }); }
+    catch (error) { console.error('Supabase initialization failed:', error); return null; }
+  })();
+  let zfAuthSession = null;
+  let zfAuthUser = null;
+  let zfCloudBusy = false;
+  let zfCloudStatus = ZF_SUPABASE ? 'Подключение к Supabase…' : 'Supabase не настроен';
+  async function refreshCloudAuth() {
+    if (!ZF_SUPABASE) { zfCloudStatus = 'Supabase не настроен'; return; }
+    try {
+      const { data, error } = await ZF_SUPABASE.auth.getSession();
+      if (error) throw error;
+      zfAuthSession = data.session || null;
+      zfAuthUser = data.session?.user || null;
+      zfCloudStatus = zfAuthUser ? `Вход выполнен: ${zfAuthUser.email || 'аккаунт'}` : 'Не выполнен вход';
+    } catch (error) { zfCloudStatus = 'Ошибка подключения: ' + (error.message || 'неизвестная ошибка'); }
+  }
+  async function cloudSignIn(mode, form) {
+    if (!ZF_SUPABASE) throw new Error('Supabase не инициализирован. Проверь настройки проекта.');
+    const fd = new FormData(form), email = String(fd.get('email') || '').trim(), password = String(fd.get('password') || '');
+    if (!email || !password) throw new Error('Укажи электронную почту и пароль.');
+    if (password.length < 6) throw new Error('Пароль должен содержать минимум 6 символов.');
+    const result = mode === 'signup' ? await ZF_SUPABASE.auth.signUp({ email, password }) : await ZF_SUPABASE.auth.signInWithPassword({ email, password });
+    if (result.error) throw result.error;
+    zfAuthSession = result.data.session || null; zfAuthUser = result.data.user || null;
+    zfCloudStatus = mode === 'signup' && !zfAuthSession ? 'Проверь почту и подтверди регистрацию.' : `Вход выполнен: ${zfAuthUser?.email || email}`;
+    render(); toast(zfCloudStatus);
+  }
+  async function cloudSignOut() {
+    if (!ZF_SUPABASE) return;
+    const { error } = await ZF_SUPABASE.auth.signOut(); if (error) throw error;
+    zfAuthSession = null; zfAuthUser = null; zfCloudStatus = 'Вы вышли из аккаунта'; render(); toast('Выход из облачного аккаунта выполнен.');
+  }
+  async function cloudSave(mode) {
+    if (!ZF_SUPABASE || !zfAuthUser) throw new Error('Сначала войди в облачный аккаунт.');
+    if (zfCloudBusy) return; zfCloudBusy = true;
+    try {
+      if (mode === 'upload') {
+        const payload = JSON.parse(JSON.stringify(db));
+        const { error } = await ZF_SUPABASE.from('zf_cloud_saves').upsert({ user_id: zfAuthUser.id, payload, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+        if (error) throw error;
+        zfCloudStatus = 'Локальное сохранение загружено в облако'; toast('Сохранение отправлено в облако.');
+      } else {
+        const { data, error } = await ZF_SUPABASE.from('zf_cloud_saves').select('payload,updated_at').eq('user_id', zfAuthUser.id).maybeSingle();
+        if (error) throw error;
+        if (!data?.payload) throw new Error('В облаке пока нет сохранения. Сначала нажми «Сохранить в облако».');
+        if (!confirm('Заменить текущий локальный прогресс данными из облака? Сначала рекомендуется сохранить локальный прогресс.')) return;
+        localStorage.setItem(STORE_KEY, JSON.stringify(data.payload)); db = loadDB();
+        zfCloudStatus = `Облако загружено · ${new Date(data.updated_at).toLocaleString()}`; toast('Облачное сохранение загружено.');
+      }
+      render();
+    } finally { zfCloudBusy = false; }
+  }
+  if (ZF_SUPABASE) {
+    refreshCloudAuth().then(() => { if (view === 'settings') render(); });
+    ZF_SUPABASE.auth.onAuthStateChange((_event, session) => {
+      zfAuthSession = session || null; zfAuthUser = session?.user || null;
+      zfCloudStatus = zfAuthUser ? `Вход выполнен: ${zfAuthUser.email || 'аккаунт'}` : 'Не выполнен вход';
+      if (view === 'settings') render();
+    });
+  }
+
   // Persistent presentation preferences; defaults keep the full experience enabled.
   if(!db.language)db.language='ru';
   if(typeof db.sound!=='boolean')db.sound=true;
@@ -556,6 +621,7 @@
     const themeGroups=[...new Set(THEME_OPTIONS.map(x=>x[4]||'Другие'))].map(category=>[category,THEME_OPTIONS.filter(x=>(x[4]||'Другие')===category)]);
     const themeButtons=arr=>arr.map(([id,icon,name,kind])=>`<button class="theme-option ${active===id?'active':''}" data-action="set-theme" data-theme="${id}"><span>${icon}</span><strong>${name}</strong><small>${kind}</small></button>`).join('');
     return `<div class="section-heading"><div><div class="eyebrow">Игровые настройки</div><h1 class="h1">НАСТРОЙКИ</h1><p class="page-subtitle">Оформление и игровые параметры.</p></div></div>
+    <section class="card zf-cloud-card" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">Облачный профиль</div><h2 class="h2">АККАУНТ ZERO FOOTBALL</h2><p>Регистрация нужна для переноса клуба между устройствами. Одиночный режим продолжает работать без интернета.</p></div><span class="pill ${zfAuthUser?'pill-lime':''}">${zfAuthUser?'В сети':'Локально'}</span></div><p class="muted small" id="zfCloudStatus">${esc(zfCloudStatus)}</p>${zfAuthUser?`<div class="statline"><span>Аккаунт</span><b>${esc(zfAuthUser.email||'Подключён')}</b></div><div class="settings-actions"><button class="btn btn-primary" data-action="cloud-upload" ${zfCloudBusy?'disabled':''}>☁ Сохранить в облако</button><button class="btn btn-secondary" data-action="cloud-download" ${zfCloudBusy?'disabled':''}>↓ Загрузить из облака</button><button class="btn btn-quiet" data-action="cloud-logout">Выйти</button></div>`:`<form id="zfCloudAuthForm" class="zf-cloud-auth-form"><div class="field"><label for="zfCloudEmail">Электронная почта</label><input id="zfCloudEmail" name="email" type="email" autocomplete="email" required placeholder="name@example.com"></div><div class="field"><label for="zfCloudPassword">Пароль</label><input id="zfCloudPassword" name="password" type="password" autocomplete="current-password" minlength="6" required placeholder="Минимум 6 символов"></div><div class="settings-actions"><button class="btn btn-primary" type="submit" data-auth-mode="signin">Войти</button><button class="btn btn-secondary" type="submit" data-auth-mode="signup">Создать аккаунт</button></div></form>`}<p class="muted small">Важно: «Сохранить в облако» заменяет облачную копию текущим локальным прогрессом. «Загрузить из облака» заменяет локальный прогресс облачной копией. Перед переносом сделай резервную копию.</p></section>
     <section class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">Внешний вид</div><h2 class="h2">ОФОРМЛЕНИЕ</h2><p>Открой панель и выбери тему интерфейса.</p></div><button class="btn btn-secondary" data-action="toggle-theme-panel">${themePanelOpen?'Скрыть темы':'🎨 Выбрать тему'}</button></div>${themePanelOpen?themeGroups.map(([category,items])=>`<div class="theme-group-title">${esc(category.toUpperCase())}</div><div class="theme-grid">${themeButtons(items)}</div>`).join(''):`<span class="pill">Активная тема: ${THEME_OPTIONS.find(x=>x[0]===active)?.[2]||'Classic'}</span>`}</section>
     <section class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">Звуки и отклики</div><h2 class="h2">ОТКЛИКИ</h2></div></div><label class="setting-toggle"><span><b>Вибрация</b><small>Можно отключить в любой момент.</small></span><input type="checkbox" data-setting="vibration" ${db.vibration!==false?'checked':''}></label><label class="setting-toggle"><span><b>Звуковые эффекты</b><small>Звуки интерфейса.</small></span><input type="checkbox" data-setting="sound" ${db.sound!==false?'checked':''}></label><div class="field music-volume-field"><label>Громкость эффектов <b id="soundVolumeValue">${Math.round(db.soundVolume)}%</b></label><input type="range" min="0" max="100" value="${Math.round(db.soundVolume)}" data-setting="soundVolume"></div></section>
     <section class="card music-settings-card" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">Музыкальная библиотека · CC0</div><h2 class="h2">ФОНОВАЯ МУЗЫКА</h2><p>Шестнадцать композиций разных жанров: chill, rock, электроника, ретро и атмосферная музыка.</p></div><span class="pill pill-lime">${MUSIC_LIBRARY.length} треков</span></div><label class="setting-toggle"><span><b>Включить фоновую музыку</b><small>Композиция продолжает играть при переходе между экранами.</small></span><input type="checkbox" data-setting="musicEnabled" ${db.musicEnabled!==false?'checked':''}></label><div class="music-controls-grid"><div class="field" style="grid-column:1/-1"><label for="musicTrack">Композиция</label><select id="musicTrack" class="select-compact" data-setting="musicTrack">${renderMusicTrackOptions()}</select><small class="muted">${esc(currentMusicTrack().genre)} · ${esc(currentMusicTrack().artist)} · CC0 · <a href="${esc(currentMusicTrack().source)}" target="_blank" rel="noopener noreferrer">страница трека</a></small></div></div><div class="field music-volume-field"><label for="musicVolume">Громкость музыки <b id="musicVolumeValue">${Math.round(db.musicVolume)}%</b></label><input id="musicVolume" type="range" min="0" max="100" step="1" value="${Math.round(db.musicVolume)}" data-setting="musicVolume"/><div class="music-volume-scale"><span>Тихо</span><span>Громко</span></div></div><div class="settings-actions"><button class="btn btn-primary" data-action="music-preview">▶ Прослушать / включить</button><button class="btn btn-secondary" data-action="music-prev">⏮ Предыдущий трек</button><button class="btn btn-secondary" data-action="music-next">Следующий трек ⏭</button><button class="btn btn-quiet" data-action="music-stop">■ Остановить музыку</button></div><p class="muted small">Треки воспроизводятся с OpenGameArt по CC0. Для запуска требуется интернет и первое нажатие в игре; при недоступности источника включится резервная музыка. Громкость музыки и эффектов регулируется отдельно.</p></section>
@@ -1938,6 +2004,9 @@ function renderProgressionAndMissions(club){
     const btn=e.target.closest('[data-action]');if(!btn)return;
     const action=btn.dataset.action; if(['match-choice','open-pack','assign-player','quick-assign','set-theme'].includes(action))vibrate(action==='match-choice'?[25,20,35]:18);
     if(action==='create-club-submit'){const form=$('#createClubForm');if(!form)return;if(!form.reportValidity())return;try{await createClubFromForm(form);}catch(err){console.error('Club creation failed before save:',err);toast(err?.message||'Клуб не сохранён. Проверь данные и доступное место в браузере.','error');}return;}
+    if(action==='cloud-upload'){try{await cloudSave('upload');}catch(err){console.error(err);toast(err.message||'Не удалось сохранить в облако.','error');}return;}
+    if(action==='cloud-download'){try{await cloudSave('download');}catch(err){console.error(err);toast(err.message||'Не удалось загрузить облачное сохранение.','error');}return;}
+    if(action==='cloud-logout'){try{await cloudSignOut();}catch(err){toast(err.message||'Не удалось выйти.','error');}return;}
     if(action==='retry-club-render'){render();return;}if(action==='start-create'){startMode='create';createDraft={symbol:'★',logoColor:'#c8ff44',shape:'shield',layers:[{id:'base',kind:'symbol',value:'★',x:50,y:48,size:34,color:'#10140c'}]};render();return;}
     if(action==='start-back'){startMode='choose';render();return;}
     if(action==='select-club'){chooseClub(btn.dataset.clubId);return;}
@@ -2005,6 +2074,7 @@ function renderProgressionAndMissions(club){
     if(action==='match-return-search'||action==='match-again'){clearMatchTimers();matchState={stage:'idle'};view='match';render();return;}
   });
   $('#app').addEventListener('submit',async e=>{
+    if(e.target.id==='zfCloudAuthForm'){e.preventDefault();const mode=e.submitter?.dataset.authMode||'signin';try{await cloudSignIn(mode,e.target);}catch(err){console.error('Supabase auth error:',err);toast(err.message||'Ошибка авторизации.','error');}return;}
     if(e.target.id==='promoCodeForm'){e.preventDefault();redeemPromoCode();return;}
     if(e.target.id==='createClubForm'){e.preventDefault();try{await createClubFromForm(e.target);}catch(err){console.error(err);toast(err?.message||'Не удалось создать клуб.','error');}}
     if(e.target.id==='editClubForm'){
