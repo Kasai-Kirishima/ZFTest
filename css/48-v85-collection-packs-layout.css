@@ -1,0 +1,56 @@
+/* Zero Football v85 — keep collection filters stable across rerenders and improve pack card composition. */
+
+/* Pack cards occupy a centred, predictable grid. Each card keeps the same portrait ratio
+   and is sized from the available row height rather than stretching to fill a grid cell. */
+.pack-opening .revealed-cards{
+  display:grid!important;
+  grid-template-columns:repeat(var(--reveal-cols,3),minmax(0,1fr))!important;
+  grid-template-rows:repeat(var(--reveal-rows,2),minmax(0,1fr))!important;
+  justify-items:center!important;
+  align-items:center!important;
+  align-content:center!important;
+  justify-content:center!important;
+  gap:clamp(5px,1vw,13px)!important;
+  padding:clamp(3px,.7vw,9px)!important;
+  box-sizing:border-box!important;
+}
+.pack-opening .revealed-card{
+  position:relative!important;
+  box-sizing:border-box!important;
+  width:min(100%,260px,max(75px,calc((100dvh - 300px) * .75 / var(--reveal-rows,1))))!important;
+  height:auto!important;
+  max-height:none!important;
+  aspect-ratio:3 / 4!important;
+  min-width:0!important;
+  min-height:0!important;
+  justify-self:center!important;
+  align-self:center!important;
+  overflow:hidden!important;
+}
+.pack-opening .revealed-card .player-card{
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  box-sizing:border-box!important;
+}
+/* Five-card batches have a centred final card instead of leaving it against the left edge. */
+.pack-opening .revealed-cards[data-reveal-count="5"] .revealed-card:last-child{
+  grid-column:2!important;
+}
+/* Three cards are more balanced as two above and one centred below on narrow screens. */
+@media(max-width:600px){
+  .pack-opening .revealed-cards[data-reveal-count="3"]{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-rows:repeat(2,minmax(0,1fr))!important;
+    --reveal-rows:2!important;
+  }
+  .pack-opening .revealed-cards[data-reveal-count="3"] .revealed-card:last-child{
+    grid-column:1 / -1!important;
+    width:min(100%,170px,max(75px,calc((100dvh - 300px) * .75 / 2)))!important;
+  }
+}
+@media(max-height:650px){
+  .pack-opening .revealed-cards{gap:4px!important;padding:2px!important}
+  .pack-opening .revealed-card{width:min(100%,240px,max(70px,calc((100dvh - 300px) * .75 / var(--reveal-rows,1))))!important}
+}
