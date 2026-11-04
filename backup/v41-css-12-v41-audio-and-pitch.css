@@ -1,0 +1,47 @@
+/* Zero Football v41 — pitch spacing, reliable captain hit areas, sponsor tiers and generated soundtrack controls. */
+.pitch{min-height:660px!important;overflow:visible!important;isolation:isolate}
+.player-slot-wrap{width:82px!important;max-width:none!important;z-index:12!important;overflow:visible!important;pointer-events:none}
+.player-slot-wrap .player-slot{position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;width:78px!important;max-width:78px!important;min-height:0!important;height:auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:2px!important;padding:0!important;overflow:visible!important;pointer-events:auto!important;z-index:2!important}
+.player-slot-wrap .slot-card{position:relative!important;width:54px!important;height:66px!important;min-width:54px!important;flex:0 0 66px!important;margin:0 auto 2px!important;overflow:hidden!important;border-radius:8px!important;clip-path:none!important;background:var(--panel2)!important;border:1px solid color-mix(in srgb,var(--lime) 65%,var(--line))!important;box-shadow:0 5px 12px #0007!important}
+.player-slot-wrap .slot-portrait{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center 18%!important}
+.player-slot-wrap .slot-stamina-overlay{position:absolute!important;z-index:5!important;left:2px!important;right:2px!important;bottom:2px!important;display:grid!important;grid-template-columns:auto 1fr!important;align-items:center!important;gap:3px!important;padding:2px 3px!important;border-radius:4px!important;background:#070b0de8!important;color:#fff!important;line-height:1!important;pointer-events:none!important}
+.player-slot-wrap .slot-stamina-overlay b{font-size:7px!important;font-weight:900!important;white-space:nowrap!important}
+.player-slot-wrap .slot-stamina-overlay i{display:block!important;height:3px!important;min-width:12px!important;border-radius:5px!important;background:#ffffff35!important;overflow:hidden!important}
+.player-slot-wrap .slot-stamina-overlay u{display:block!important;height:100%!important;background:var(--lime)!important;text-decoration:none!important;border-radius:5px!important}
+.player-slot-wrap .slot-rating-below{display:block!important;margin:0!important;min-width:32px!important;padding:1px 5px!important;line-height:1.1!important;font-size:12px!important}
+.player-slot-wrap .slot-name{display:block!important;max-width:80px!important;min-height:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font-size:9px!important;line-height:1.1!important;text-align:center!important}
+.player-slot-wrap .slot-role{display:block!important;margin:0!important;max-width:80px!important;font-size:8px!important;line-height:1.1!important;white-space:nowrap!important;text-align:center!important}
+.player-slot-wrap .captain-toggle{position:absolute!important;right:-1px!important;top:-12px!important;left:auto!important;z-index:30!important;width:27px!important;height:27px!important;min-width:27px!important;padding:0!important;margin:0!important;border:2px solid #f6cf58!important;border-radius:50%!important;background:#18211c!important;color:#f6cf58!important;font-size:16px!important;line-height:1!important;display:grid!important;place-items:center!important;cursor:pointer!important;pointer-events:auto!important;box-shadow:0 3px 9px #0009!important}
+.player-slot-wrap .captain-toggle.captain-active{background:#f6cf58!important;color:#18211c!important}
+.player-slot-wrap .status-tag{position:absolute!important;top:-6px!important;left:-7px!important;z-index:10!important;max-width:70px!important;font-size:8px!important}
+.player-slot-wrap .slot-stamina,.player-slot-wrap .slot-stamina-track{display:none!important}
+.squad-captain-button{margin-top:6px!important;align-self:flex-start!important;white-space:nowrap!important}
+.squad-info{gap:5px!important}
+.sponsor-tier-section{margin:17px 0 23px;padding:14px;border:1px solid var(--line);border-radius:15px;background:var(--panel2)}
+.sponsor-tier-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.sponsor-tier-heading h3{font:900 22px 'Barlow Condensed',sans-serif;margin:2px 0;color:var(--text)}
+.sponsor-tier-heading p{font-size:11px;color:var(--muted);margin:0}
+.sponsor-tier-kicker{font-size:9px;font-weight:950;letter-spacing:1px;color:var(--lime)}
+.sponsor-tier-level-0{border-left:4px solid #9b765c}.sponsor-tier-level-1{border-left:4px solid #78a7a0}.sponsor-tier-level-2{border-left:4px solid #6fa4d8}.sponsor-tier-level-3{border-left:4px solid #a58ee3}.sponsor-tier-level-4{border-left:4px solid #e0b75f}.sponsor-tier-level-5{border:1px solid #f4c94c;background:linear-gradient(130deg,#f4c94c18,transparent 55%),var(--panel2);box-shadow:0 0 24px #f4c94c12}
+.sponsor-card-tier-5{border-color:#f4c94c!important;box-shadow:0 0 18px #f4c94c16!important}
+.music-settings-card{overflow:hidden}
+.music-controls-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.music-volume-field{margin:8px 0 12px}
+.music-volume-field label{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.music-volume-field label b{color:var(--lime);font-size:12px}
+.music-volume-field input[type=range]{width:100%;accent-color:var(--lime)}
+.music-volume-scale{display:flex;justify-content:space-between;color:var(--muted);font-size:9px;margin-top:2px}
+.music-settings-card .settings-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+@media(max-width:760px){
+ .pitch{min-height:650px!important;padding:8px 0!important}
+ .player-slot-wrap{width:62px!important}
+ .player-slot-wrap .player-slot{width:62px!important;max-width:62px!important}
+ .player-slot-wrap .slot-card{width:44px!important;height:55px!important;min-width:44px!important;flex-basis:55px!important}
+ .player-slot-wrap .slot-name{max-width:64px!important;font-size:8px!important}
+ .player-slot-wrap .slot-role{max-width:64px!important;font-size:7px!important}
+ .player-slot-wrap .slot-stamina-overlay b{font-size:6px!important}
+ .player-slot-wrap .captain-toggle{right:-2px!important;top:-12px!important;width:25px!important;height:25px!important;min-width:25px!important}
+ .music-controls-grid{grid-template-columns:1fr}
+ .sponsor-tier-section{padding:10px;margin-inline:0}
+}
+@media(max-width:390px){.pitch{min-height:640px!important}.player-slot-wrap{width:56px!important}.player-slot-wrap .player-slot{width:56px!important;max-width:56px!important}.player-slot-wrap .slot-card{width:40px!important;height:51px!important;min-width:40px!important;flex-basis:51px!important}.player-slot-wrap .slot-name{max-width:57px!important;font-size:7px!important}.player-slot-wrap .slot-role{font-size:6px!important}.player-slot-wrap .captain-toggle{width:23px!important;height:23px!important;min-width:23px!important}}

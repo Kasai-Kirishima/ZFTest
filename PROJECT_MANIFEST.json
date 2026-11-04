@@ -1,13 +1,13 @@
 {
   "project": "Zero Football",
   "version": "v66",
-  "name": "Zero Football v66 — Match Visuals and 12-Episode Matches",
-  "description": "Restored match action photography and thumbnails, expanded local and online action choices to eight, added 12-episode matches and a Supabase migration preserving 10-event compatibility.",
+  "name": "Zero Football v66 — Community & Transfer Expansion",
+  "description": "Friends and acquaintances, card gifts and trades, server-backed card inventory, transfer market, leagues, knockout tournaments, clans, standings and responsive community UI.",
   "files": [
     {
       "path": "CHANGELOG.md",
-      "size": 3846,
-      "sha256": "2be30d207198ad5339aced6d6b5093cedf486f964dfb03f8dd44d6d5d50c068f"
+      "size": 7272,
+      "sha256": "676ee61484c7f04262b131c7988ed009e112cba8cd6df757d6fa201be932ed65"
     },
     {
       "path": "CHANGELOG_V64.md",
@@ -16,13 +16,13 @@
     },
     {
       "path": "CHANGELOG_V65.md",
-      "size": 559,
-      "sha256": "77e8640f76e9d94020b1ad6021b40d3e8d50b9a213d40c7a2838e75d3573c5c7"
+      "size": 2961,
+      "sha256": "122ba740f0b2d57e5bae89b42b143fcde256a187fd35723ce5ae3aa96ae752ca"
     },
     {
       "path": "CHANGELOG_V66.md",
-      "size": 2313,
-      "sha256": "783908fa21cf4428fad6328cefbe80d5f97f4a64fa237a66b163f2e9f5090471"
+      "size": 4399,
+      "sha256": "15e807caa174804058dd65e953196759e2bb754fb3b3028b02769d3e910476b9"
     },
     {
       "path": "CHANGELOG_v63.md",
@@ -36,18 +36,23 @@
     },
     {
       "path": "README.md",
-      "size": 37054,
-      "sha256": "33432685e05e278995b1e1fb60394f4b0ef508624bc20699df1d8d65ab7c6433"
+      "size": 36338,
+      "sha256": "cddd9946e54a9df349aef1654d2f56e63308ee24e4045a508dad478c291cd513"
     },
     {
       "path": "SUPABASE_SETUP_RU.md",
-      "size": 7320,
-      "sha256": "3266ddbe37723bdc8af364c08c7f78e76996652e18a14164d48d6e37f8dabdc3"
+      "size": 6247,
+      "sha256": "2d2acef94ea67e3a2d462a73f9740fa55772ce42ce4e9dc93a1fefd5616e2a71"
+    },
+    {
+      "path": "SUPABASE_UPDATE_V66_RU.md",
+      "size": 4650,
+      "sha256": "7bbd4bf6ff674597ec3b73d68226801cbd2840dc2d48d4fedcce8abbe182e393"
     },
     {
       "path": "assets/README.md",
-      "size": 397,
-      "sha256": "1ab03f9db7f216b5371617238ed3c4b7dacc2874808a743b95f0de25e720f2fd"
+      "size": 605,
+      "sha256": "c1eda69357415ef3912ea50ac3773a04c3b0cb3641dcbfd31a633655149391ea"
     },
     {
       "path": "assets/audio/README.md",
@@ -218,6 +223,36 @@
       "path": "assets/match-actions/action-33.svg",
       "size": 2522,
       "sha256": "247a64b4568b451e4cecc93591ad5678bc0ef6e52f6906f38553786f893aa27d"
+    },
+    {
+      "path": "assets/packs/daily.webp",
+      "size": 36628,
+      "sha256": "8924d5f01233f21854df8f179061f2e65181db75a9daeb43cd3bfaab8e132d70"
+    },
+    {
+      "path": "assets/packs/elite.webp",
+      "size": 43098,
+      "sha256": "a299c7ce8a7a3ec402a25548d612393f53f40227175cdf9061a7b4944f8a1f36"
+    },
+    {
+      "path": "assets/packs/legend.webp",
+      "size": 37762,
+      "sha256": "36b6cf9b733dd2b7f152c3967b2257b37f3bf0a2a13609ef8caad71799460c40"
+    },
+    {
+      "path": "assets/packs/national.webp",
+      "size": 42480,
+      "sha256": "bded2a57a8d9df01cc49af835a89917dd6a8a5eec264b60420fc07fe1f708a41"
+    },
+    {
+      "path": "assets/packs/pro.webp",
+      "size": 44574,
+      "sha256": "6e169318b73083efc5285655782faa5d11c0f1df76c573792fb6424ebfcf4326"
+    },
+    {
+      "path": "assets/packs/starter.webp",
+      "size": 38846,
+      "sha256": "cf2e72b5d4eac358c7f0546ecbf8d05bd539a9249569a59f15407350a6d69f7a"
     },
     {
       "path": "backup/Zero_Football_v25_original.html",
@@ -710,9 +745,14 @@
       "sha256": "b169e82f24936260dde2b7d3d46b921b4527887f0efcc486eab42948b49c9ae6"
     },
     {
-      "path": "css/32-v66-match-visuals-and-variety.css",
-      "size": 2911,
-      "sha256": "71963bd0e40543eb68f2f0cb51ec72b393c5fc1f8c660fa581ae64bf9ed1c9d9"
+      "path": "css/32-v65-team-upgrades.css",
+      "size": 4992,
+      "sha256": "d18183ac4e327c17d0995063b306e2ad3a5a76e31eb6c2231e591c4042854b6e"
+    },
+    {
+      "path": "css/33-v66-community.css",
+      "size": 5373,
+      "sha256": "0f86972ed1f452152d5367afbdcc472174fc36cc919b0c89fc8f5e7c9b3e0bbb"
     },
     {
       "path": "docs/AD_INTEGRATION.md",
@@ -736,13 +776,13 @@
     },
     {
       "path": "index.html",
-      "size": 3235,
-      "sha256": "6f720ebe993af5e4210c2708e12e1f04d6531e78bb78364b00d8ec96b0b5971c"
+      "size": 3293,
+      "sha256": "606808b34918a703d6bf4339933d44e1ccc26c5917e6098d98df35da67769faa"
     },
     {
       "path": "js/app.js",
-      "size": 554109,
-      "sha256": "918444e61f3a7f1f5a036c0de49ee3cf57dc315f035eb041d119de1a107ddd3c"
+      "size": 591392,
+      "sha256": "bac4f69a39717c3fdc4ebca81bf872e47b4248aa601a8fe2e0cadb971e268665"
     },
     {
       "path": "js/data/economy.js",
@@ -751,8 +791,8 @@
     },
     {
       "path": "js/data/gameplay.js",
-      "size": 12711,
-      "sha256": "095224589b7b7002a10d43f9d19203340d913dc7bec2c3cd5c9372c8a5f289e7"
+      "size": 17325,
+      "sha256": "cbff05147126d7abf3c00607b36959d47bc504af907085aa924baa49ab9eef02"
     },
     {
       "path": "js/data/localization.js",
@@ -766,8 +806,8 @@
     },
     {
       "path": "js/data/ui-config.js",
-      "size": 3685,
-      "sha256": "b7bc3cc55f83bd079d112510f25a5883ad9656c344ac6b2d931dfa747842fee8"
+      "size": 3898,
+      "sha256": "e3069ad6e2a1fd8b37b7cefaad9784baca43927b4450998416fba7bbf7e0deb8"
     },
     {
       "path": "js/data/v51-translations.js",
@@ -795,9 +835,9 @@
       "sha256": "d33da19a0cd1642099dda522d17cc1729127d24cfa36fe155c9e525e1c50962f"
     },
     {
-      "path": "supabase/004_twelve_match_events.sql",
-      "size": 1892,
-      "sha256": "03a8704ecbc2e0b712346ad0000dc4cf56ce6fb9d70028792f028f9c1da77737"
+      "path": "supabase/004_social_market_competitions_clans.sql",
+      "size": 94020,
+      "sha256": "36f71b6873869e48e1bf9f6f9ea57d0c58afc280d6f5b31ace695c24cc842801"
     }
   ]
 }

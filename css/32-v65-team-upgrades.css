@@ -1,0 +1,69 @@
+/* Zero Football v65 — team upgrades, pack art, responsive emblems */
+*{box-sizing:border-box}
+.pack-card{min-width:0;min-height:0;padding:14px;}
+.pack-art-image{height:218px;min-height:0;margin:0 auto 10px;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+.pack-art-image img{display:block;width:auto;height:100%;max-width:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 10px 15px #0008);}
+.pack-card h3{font-size:clamp(19px,2vw,24px);overflow-wrap:anywhere;}
+.pack-card p{min-height:40px;}
+.pack-bottom{flex-wrap:wrap;align-items:center;}
+.pack-bottom .btn{white-space:normal;}
+.team-items-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:16px;}
+.team-item-card{min-width:0;border:1px solid var(--line);border-radius:15px;background:var(--panel);padding:16px;display:flex;flex-direction:column;gap:9px;}
+.team-item-icon{font-size:34px;width:54px;height:54px;display:grid;place-items:center;border-radius:13px;background:rgba(200,255,68,.08);border:1px solid var(--line);}
+.team-item-card h3{margin:0;font:900 22px 'Barlow Condensed',sans-serif;text-transform:uppercase;}
+.team-item-card p{margin:0 0 auto;min-height:66px;color:var(--muted);font-size:11px;line-height:1.55;}
+.team-item-use-label{display:grid;gap:6px;margin-top:4px;color:var(--muted);font-size:10px;}
+.team-item-use-label select{width:100%;max-width:100%;min-width:0;}
+.support-project-card{display:flex;align-items:center;justify-content:space-between;gap:16px;overflow:hidden;background:linear-gradient(110deg,rgba(200,255,68,.08),transparent 75%),var(--panel);}
+.support-project-card>div:first-child{min-width:0;}
+.support-project-card p{max-width:520px;color:var(--muted);font-size:12px;line-height:1.6;}
+.support-mark{font:1000 72px 'Barlow Condensed',sans-serif;color:var(--lime);opacity:.14;flex:0 0 auto;}
+.player-career-list{width:100%;overflow-x:auto;overscroll-behavior-x:contain;}
+.player-career-row{display:grid;grid-template-columns:minmax(145px,1fr) repeat(4,38px);gap:7px;align-items:center;min-width:315px;padding:8px 7px;border-bottom:1px solid var(--line);font-size:11px;}
+.player-career-row>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.player-career-row>b{text-align:center;font-variant-numeric:tabular-nums;}
+.player-career-head{color:var(--muted);font-weight:800;font-size:9px;text-transform:uppercase;}
+.scorers-box{margin:18px auto;padding:13px;border:1px solid rgba(200,255,68,.18);border-radius:12px;background:rgba(200,255,68,.045);max-width:590px;text-align:left;}
+.scorers-box>strong{display:block;margin-bottom:8px;color:var(--lime);font-size:11px;}
+.scorers-box>div{display:grid;gap:5px;}
+.scorers-box span{font-size:11px;color:var(--text);padding:5px 0;border-bottom:1px solid var(--line);}
+.club-crest,.banner-crest{box-sizing:border-box;flex-shrink:0;}
+.match-team .club-crest{width:66px;height:73px;}
+.found-side .club-crest{width:65px;height:73px;}
+.sidebar-club .club-crest{width:35px;height:39px;}
+@media(max-width:1100px){.team-items-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:760px){
+  .mobile-nav{display:flex;gap:4px;overflow-x:auto;overscroll-behavior-x:contain;justify-content:flex-start;scrollbar-width:none;}
+  .mobile-nav::-webkit-scrollbar{display:none;}
+  .mobile-nav .nav-item{flex:0 0 70px;min-width:70px;}
+  .pack-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+  .pack-card{padding:10px;border-radius:13px;}
+  .pack-art-image{height:165px;margin-bottom:7px;}
+  .pack-type{font-size:8px;letter-spacing:.8px;}
+  .pack-card h3{font-size:18px;line-height:1.05;margin:5px 0;}
+  .pack-card p{font-size:9px;min-height:52px;margin-bottom:8px;}
+  .pack-bottom{display:flex;flex-direction:column;align-items:stretch;gap:7px;}
+  .pack-bottom>*{width:100%;min-width:0;}
+  .pack-quantity-label{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:10px;}
+  .pack-quantity-label select{max-width:80px;}
+  .pack-bottom .btn{font-size:10px;padding:9px 6px;}
+  .pack-footnote{font-size:8px;margin-top:8px;}
+  .team-items-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  .team-item-card{padding:11px;gap:7px;}
+  .team-item-card h3{font-size:19px;}
+  .team-item-card p{font-size:10px;min-height:88px;}
+  .support-project-card{align-items:flex-start;padding:14px;}
+  .support-mark{font-size:48px;}
+  .match-team .club-crest,.found-side .club-crest{width:51px;height:57px;}
+  .match-team .club-crest .crest-layer,.found-side .club-crest .crest-layer{scale:.773;}
+  .player-career-row{grid-template-columns:minmax(125px,1fr) repeat(4,32px);min-width:270px;gap:4px;}
+}
+@media(max-width:380px){
+  .main-area{padding-left:7px;padding-right:7px;}
+  .pack-grid{gap:7px;}
+  .pack-card{padding:8px;}
+  .pack-art-image{height:145px;}
+  .team-items-grid{grid-template-columns:1fr;}
+  .team-item-card p{min-height:0;}
+  .mobile-nav .nav-item{flex-basis:64px;min-width:64px;}
+}

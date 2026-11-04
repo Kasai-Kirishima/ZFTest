@@ -1,0 +1,31 @@
+/* v66 social, clans, competitions and transfer market */
+.nav-menu{max-height:calc(100vh - 310px);overflow-y:auto;scrollbar-width:thin}
+.nav-item{white-space:nowrap}
+.community-profile{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:14px 0 18px;padding:16px 20px}
+.community-profile>div{display:grid;gap:4px}.community-profile strong{font-size:24px;letter-spacing:2px;color:var(--lime)}.community-profile span{font-size:13px;color:var(--muted)}
+.community-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px}
+.community-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:end;margin-top:12px}
+.community-form-grid .field{margin:0;min-width:0}.community-form-grid input,.community-form-grid select,.community-select,.code-input{width:100%;min-width:0;background:var(--panel-2,var(--surface-2));border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--text);font:inherit}
+.community-form-grid>button{align-self:end}.community-search-result{margin-top:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.community-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+.community-row:last-child{border-bottom:0}.community-row>div:first-child{display:grid;gap:4px;min-width:0}.community-row strong{font-size:14px}.community-row small{font-size:11px;color:var(--muted);font-weight:500}.community-row span,.community-row small{overflow-wrap:anywhere;color:var(--muted);font-size:12px}
+.community-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}.community-actions .btn{white-space:nowrap}.community-error{border-color:rgba(255,90,90,.4)}
+.community-select{max-width:220px}.checkbox-line{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}.checkbox-line input{width:auto}
+.market-list{display:grid;gap:0;margin-top:12px}.market-listing{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}.market-player{display:flex;align-items:center;gap:12px;min-width:0}.market-player>div{display:grid;gap:4px;min-width:0}.market-player strong{overflow-wrap:anywhere}.market-player span{font-size:12px;color:var(--muted)}.market-ovr{display:grid;place-items:center;min-width:42px;height:42px;border-radius:12px;background:rgba(200,255,68,.12);color:var(--lime);font-weight:900}.market-price{font-weight:800;white-space:nowrap;color:var(--lime)}
+.clan-banner{background:linear-gradient(120deg,rgba(200,255,68,.12),transparent 70%),var(--panel);border-color:rgba(200,255,68,.25)}.clan-banner h2{font-size:28px;margin:5px 0}.clan-banner p{color:var(--muted)}
+.clan-mission{padding:12px 0;border-bottom:1px solid var(--line);display:grid;gap:6px}.clan-mission>span,.clan-mission small{font-size:12px;color:var(--muted)}.clan-mission .progress{height:7px}
+.competition-card{padding:16px 0;border-bottom:1px solid var(--line)}.competition-card:last-child{border-bottom:0}.competition-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}.competition-head h3{margin:5px 0;font-size:20px}.competition-head small{color:var(--muted);font-size:12px}.competition-members{margin-top:12px}.fixture-list{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}.fixture-row{padding:7px 0;color:var(--muted);font-size:13px;border-bottom:1px solid var(--line)}
+@media(max-width:850px){
+ .community-grid{grid-template-columns:1fr}.community-form-grid{grid-template-columns:1fr}.community-row{align-items:flex-start;flex-direction:column}.community-actions{justify-content:flex-start;width:100%}.community-actions .btn{flex:0 0 auto}.market-listing{grid-template-columns:minmax(0,1fr) auto}.market-listing>.btn{grid-column:1/-1;width:100%}.market-price{justify-self:end}.competition-head{flex-direction:column}.community-profile{align-items:flex-start}.community-profile strong{font-size:20px}
+ .mobile-nav{overflow-x:auto;justify-content:flex-start;gap:4px;white-space:nowrap;scrollbar-width:thin}.mobile-nav .nav-item{flex:0 0 auto;min-width:max-content;padding-inline:12px}
+}
+
+/* League table: compact on desktop and horizontally safe on phones. */
+.league-standings{margin:16px 0;padding:14px;border:1px solid var(--line,rgba(255,255,255,.09));border-radius:14px;background:rgba(255,255,255,.025);overflow:hidden}
+.league-standings h4{margin:0 0 10px;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#a4aca4)}
+.league-standing-row{display:grid;grid-template-columns:24px minmax(110px,1fr) repeat(5,minmax(28px,auto)) 28px;align-items:center;gap:8px;padding:8px 2px;border-bottom:1px solid var(--line,rgba(255,255,255,.07));font-size:.82rem;font-variant-numeric:tabular-nums}
+.league-standing-row:last-child{border-bottom:0}
+.league-standing-row>strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.league-standing-row>span{color:var(--muted,#a4aca4);text-align:center}
+.league-standing-row>b:last-child{text-align:right;color:var(--lime,#c8ff44)}
+@media(max-width:600px){.league-standings{padding:10px 8px}.league-standing-row{grid-template-columns:20px minmax(92px,1fr) repeat(5,minmax(21px,auto)) 24px;gap:4px;font-size:.7rem}.fixture-row{flex-wrap:wrap;gap:6px}}

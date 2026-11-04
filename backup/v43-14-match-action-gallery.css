@@ -1,0 +1,112 @@
+/* Match action gallery: every supplied photo uses the same landscape crop. */
+.match-event .event-visual.match-action-hero{
+  position:relative;
+  display:block;
+  width:100%;
+  height:auto;
+  aspect-ratio:16/9;
+  min-height:0;
+  overflow:hidden;
+  margin:14px 0 12px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:14px;
+  background:#17251d;
+  isolation:isolate;
+}
+.match-action-hero>img{
+  display:block;
+  width:100%;
+  height:100%;
+  aspect-ratio:16/9;
+  object-fit:cover;
+  object-position:50% 50%;
+  position:absolute;
+  inset:0;
+  filter:saturate(1.04);
+}
+.match-action-hero:after{
+  content:"";
+  position:absolute;
+  inset:45% 0 0;
+  z-index:1;
+  background:linear-gradient(transparent,rgba(0,0,0,.72));
+  pointer-events:none;
+}
+.match-action-hero-label{
+  position:absolute;
+  z-index:2;
+  left:13px;
+  bottom:11px;
+  color:#fff;
+  font-size:11px;
+  font-weight:850;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  text-shadow:0 1px 5px #000;
+}
+.choice-grid .match-choice.match-choice-with-image{
+  display:grid;
+  grid-template-columns:112px 28px minmax(0,1fr);
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  min-height:96px;
+  padding:9px;
+  overflow:hidden;
+}
+.match-choice-image{
+  display:block;
+  position:relative;
+  width:112px;
+  height:63px;
+  aspect-ratio:16/9;
+  overflow:hidden;
+  border-radius:8px;
+  background:linear-gradient(135deg,#263b2e,#111a15);
+  border:1px solid rgba(255,255,255,.12);
+}
+.match-choice-image img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:50% 50%;
+}
+.match-choice-copy{display:block;min-width:0;overflow-wrap:anywhere}
+.match-choice-copy strong{line-height:1.25}
+.match-choice-copy small{line-height:1.4}
+.match-log-row{align-items:center}
+.match-log-thumb{
+  display:block;
+  flex:0 0 76px;
+  width:76px;
+  height:43px;
+  aspect-ratio:16/9;
+  border-radius:6px;
+  object-fit:cover;
+  object-position:50% 50%;
+  background:#17251d;
+}
+@media(max-width:760px){
+  .choice-grid .match-choice.match-choice-with-image{grid-template-columns:94px 25px minmax(0,1fr);gap:8px;min-height:82px;padding:8px}
+  .match-choice-image{width:94px;height:53px}
+  .match-log-thumb{flex-basis:66px;width:66px;height:37px}
+}
+@media(max-width:420px){
+  .choice-grid .match-choice.match-choice-with-image{grid-template-columns:84px 23px minmax(0,1fr);gap:7px;min-height:78px;padding:7px}
+  .match-choice-image{width:84px;height:47px}
+  .match-choice-copy strong{font-size:9px}
+  .match-choice-copy small{font-size:8px}
+}
+
+/* Energy recovery clock and sponsor ad placements (v44). */
+.energy-panel{flex-wrap:wrap;align-items:center}
+.energy-actions{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+.energy-recovery-countdown{display:inline-block;margin-top:3px;color:var(--lime);font-weight:800;font-variant-numeric:tabular-nums}
+.zf-ad-slot{display:flex;align-items:center;gap:14px;justify-content:space-between;margin:12px 0 16px;padding:13px 16px;border:1px dashed rgba(200,255,68,.38);border-radius:13px;background:linear-gradient(100deg,rgba(200,255,68,.08),rgba(255,255,255,.025));min-width:0}
+.zf-ad-tag{flex:0 0 auto;font-size:9px;font-weight:950;letter-spacing:.1em;color:var(--lime);text-transform:uppercase}
+.zf-ad-copy{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.zf-ad-copy strong{font-size:13px;color:var(--text)}
+.zf-ad-copy span{font-size:10px;color:var(--muted);line-height:1.4}
+.zf-ad-slot .btn{flex:0 0 auto}
+@media(max-width:650px){.energy-actions{width:100%;margin-left:0}.energy-actions .btn{flex:1}.zf-ad-slot{align-items:flex-start;flex-wrap:wrap;gap:8px}.zf-ad-tag{width:100%}.zf-ad-copy{flex-basis:calc(100% - 4px)}.zf-ad-slot .btn{margin-left:auto}}

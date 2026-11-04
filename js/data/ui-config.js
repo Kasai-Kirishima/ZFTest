@@ -1,7 +1,7 @@
 /* Zero Football data module. Keep data-only edits in this file. */
 window.ZF_DATA = window.ZF_DATA || {};
 Object.assign(window.ZF_DATA, {
-  NAV_ITEMS: [['home','⌂','Главная'],['team','♧','Команда'],['packs','▧','Паки'],['collection','🎴','Коллекция'],['sponsors','🤝','Спонсоры'],['match','⚽','Матч'],['trophies','♜','Трофеи']],
+  NAV_ITEMS: [['home','⌂','Главная'],['team','♧','Команда'],['teamshop','🧰','Магазин команды'],['packs','▧','Паки'],['collection','🎴','Коллекция'],['sponsors','🤝','Спонсоры'],['match','⚽','Матч'],['trophies','♜','Трофеи'],['friends','♧','Друзья'],['market','⇄','Трансферный рынок'],['leagues','🏆','Лиги и турниры'],['clan','🛡','Клан']],
   THEME_OPTIONS: [
     ['classic','⚽','Classic','Тёмная','Базовые'],['graphite','▰','Graphite','Тёмная','Базовые'],['midnight','🌌','Midnight','Тёмная','Базовые'],
     ['pure-black','⬛','Pure Black','Тёмная','Монохромные'],['deep-black','🌑','Deep Black','Тёмная','Монохромные'],['obsidian','◼️','Obsidian','Тёмная','Монохромные'],['carbon','⚫','Carbon','Тёмная','Монохромные'],['slate','🪨','Slate','Тёмная','Монохромные'],['steel','🔩','Steel','Тёмная','Монохромные'],['silver','◻️','Silver','Светлая','Монохромные'],['pearl','⚪','Pearl','Светлая','Монохромные'],['ivory','🤍','Ivory','Светлая','Монохромные'],['pure-white','⬜','Pure White','Светлая','Монохромные'],
