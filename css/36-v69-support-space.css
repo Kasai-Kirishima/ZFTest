@@ -1,0 +1,22 @@
+/* Zero Football v69 — dedicated support space */
+.support-intro-card{display:flex;align-items:center;gap:22px;padding:24px;margin:0 0 16px;border:1px solid rgba(200,255,68,.18);border-radius:18px;background:radial-gradient(circle at 90% 10%,rgba(200,255,68,.12),transparent 34%),linear-gradient(115deg,rgba(200,255,68,.055),transparent 72%),var(--panel);}
+.support-intro-mark{width:86px;height:86px;flex:0 0 86px;display:grid;place-items:center;border-radius:22px;border:1px solid rgba(200,255,68,.28);background:linear-gradient(145deg,#26351a,#10150d);color:var(--lime);font:1000 40px 'Barlow Condensed',sans-serif;box-shadow:0 12px 30px #0004;}
+.support-intro-card h2{margin:4px 0 7px;font:900 clamp(22px,3vw,30px) 'Barlow Condensed',sans-serif;}
+.support-intro-card p,.support-method-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.65;}
+.support-method-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+.support-method-card{display:flex;flex-direction:column;align-items:stretch;gap:10px;min-width:0;padding:18px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(150deg,rgba(255,255,255,.035),transparent 55%),var(--panel);}
+.support-method-card h2{margin:0;font:900 22px/1.05 'Barlow Condensed',sans-serif;}
+.support-method-card p{min-height:40px;}
+.support-method-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;}
+.support-method-flag{font-size:30px;line-height:1;}
+.support-method-card .btn{margin-top:auto;white-space:normal;}
+.support-ua{border-color:rgba(85,180,115,.32);background:linear-gradient(145deg,rgba(85,180,115,.09),transparent 65%),var(--panel);}
+.support-ru{border-color:rgba(145,155,190,.24);}
+.support-world{border-color:rgba(200,255,68,.25);background:linear-gradient(145deg,rgba(200,255,68,.07),transparent 65%),var(--panel);}
+.support-disclaimer{margin:14px 2px 0;line-height:1.6;}
+.settings-support-entry{display:flex;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(100deg,rgba(200,255,68,.07),transparent 75%),var(--panel);}
+.settings-support-copy{min-width:0;}
+.settings-support-copy h2{margin:3px 0 5px;}
+.settings-support-copy p{margin:0;}
+@media(max-width:900px){.support-method-grid{grid-template-columns:1fr;}.support-method-card p{min-height:0;}}
+@media(max-width:560px){.support-intro-card{align-items:flex-start;padding:16px;gap:13px;}.support-intro-mark{width:58px;height:58px;flex-basis:58px;border-radius:15px;font-size:28px;}.support-method-card{padding:15px;}.settings-support-entry{align-items:stretch;flex-direction:column;}.settings-support-entry .btn{width:100%;}}

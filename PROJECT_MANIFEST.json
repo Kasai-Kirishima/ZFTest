@@ -1,8 +1,8 @@
 {
   "project": "Zero Football",
-  "version": "v67",
-  "name": "Zero Football v67 — Economy & Release Update",
-  "description": "Release build with updated economy, pack inventory artwork, manual tournament draw controls and transfer-market database fix.",
+  "version": "v69",
+  "name": "Zero Football v69 Release",
+  "description": "Dedicated support space with regional payment links, preserving existing game and online systems.",
   "files": [
     {
       "path": "ONLINE_CONNECT_RU_v63.md",
@@ -11,13 +11,13 @@
     },
     {
       "path": "README.md",
-      "size": 3202,
-      "sha256": "15211df0ab741a2dbda62124db83e095e5a7398e6b8832780bcb2aca70a3d626"
+      "size": 5422,
+      "sha256": "53bdd5300cf3269756ef0bcfea5ed8a59b3f07f546ceb5b1f854b1c54cedb4ff"
     },
     {
       "path": "SUPABASE_SETUP_RU.md",
       "size": 6820,
-      "sha256": "04cc11923cba458ad895b183932054aeff725ae4a618d24f18d8f9a354913420"
+      "sha256": "60d440fd9cb771daac7c8eee3ea216f45ae5413628672cb8963791d9cfeb4498"
     },
     {
       "path": "SUPABASE_UPDATE_V66_RU.md",
@@ -28,6 +28,11 @@
       "path": "SUPABASE_UPDATE_V67_RU.md",
       "size": 2647,
       "sha256": "e2d211871814a06b37818be49e04307340a859e430c2d1936fbf09af13e84e2c"
+    },
+    {
+      "path": "SUPABASE_UPDATE_V68_RU.md",
+      "size": 1770,
+      "sha256": "d8a3baea2a0ce955b142d475880d65cc4769dcf2164a8a17342bb324ac9f764d"
     },
     {
       "path": "assets/README.md",
@@ -405,6 +410,16 @@
       "sha256": "fab8c41a9c1c5f0ef132d6c2f8c7d608f8d4fc234ef8b63091b827d983dfbd3a"
     },
     {
+      "path": "css/35-v68-mobile-market-design.css",
+      "size": 6324,
+      "sha256": "7830cfc00ea8421b25a2277f2620a1e852ce67a85c807d5f9f38be00b24afe7d"
+    },
+    {
+      "path": "css/36-v69-support-space.css",
+      "size": 2661,
+      "sha256": "c915e2f191bac8416e3b143763e7aaf7b653e6b6178a788feda2a71e12e1be4b"
+    },
+    {
       "path": "docs/AD_INTEGRATION.md",
       "size": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -421,18 +436,18 @@
     },
     {
       "path": "docs/PROJECT_MAP.md",
-      "size": 3605,
-      "sha256": "744e6b74284f2da25ffaa2f7148766b3b3f10b8dd44a00243a33118258cee7ca"
+      "size": 3987,
+      "sha256": "aa9c9a63784869ac42f9ce73515b5a2a5bf4d39fb1d4a6ecafdae992099cc095"
     },
     {
       "path": "index.html",
-      "size": 3379,
-      "sha256": "2c17ac29c1d8251a4c28d850e5975c66b504aaa5fa1b017597ba7672e2f4f28b"
+      "size": 3522,
+      "sha256": "df2a37309f5e59c2d7deba9b99dd6d219480553f03906bcf9b3ab3ab763a0064"
     },
     {
       "path": "js/app.js",
-      "size": 593935,
-      "sha256": "7041882fbe6cc4deb02708fb7aa4617105682fcd2345ad63cdafb5b6d881d45b"
+      "size": 599450,
+      "sha256": "4cfb203f46a9d7a5ad31172690294d3e001944aedfafa0ec6bd915f795ff078c"
     },
     {
       "path": "js/data/economy.js",
@@ -456,8 +471,8 @@
     },
     {
       "path": "js/data/ui-config.js",
-      "size": 3898,
-      "sha256": "e3069ad6e2a1fd8b37b7cefaad9784baca43927b4450998416fba7bbf7e0deb8"
+      "size": 3952,
+      "sha256": "a925dbcd37238ac03f42708bdad7704ce9773dbb14b5d7b98773f85a8a25d3f0"
     },
     {
       "path": "js/data/v51-translations.js",
