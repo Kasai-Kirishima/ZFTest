@@ -1,0 +1,95 @@
+/* v66 — match action imagery and denser choices in both match modes. */
+.match-event .choice-grid .match-choice-with-image,
+.zf-online-choice {
+  overflow: hidden;
+}
+.match-choice-image img,
+.zf-online-choice-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+.zf-online-event-card .event-visual.match-action-hero {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 0;
+  overflow: hidden;
+  margin: 14px 0 12px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 14px;
+  background: #17251d;
+  isolation: isolate;
+}
+.zf-online-event-card .match-action-hero > img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+.zf-online-choice-image {
+  display: block;
+  width: 88px;
+  height: 50px;
+  flex: 0 0 88px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #17251d;
+  border: 1px solid rgba(255,255,255,.12);
+}
+.zf-online-choice { min-height: 94px; }
+.zf-penalty-choice .zf-online-choice-image {
+  width: 100%;
+  height: 58px;
+  flex: 0 0 58px;
+}
+.zf-penalty-choice .zf-online-choice-icon {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  flex-basis: 28px;
+  margin-top: -3px;
+  border: 1px solid rgba(255,255,255,.2);
+  background: rgba(0,0,0,.58);
+}
+.zf-penalty-choice { position: relative; }
+@media (max-width: 620px) {
+  .zf-online-choice-image { width: 66px; height: 42px; flex-basis: 66px; }
+  .zf-online-choice { min-height: 82px; padding: 8px 7px; gap: 7px; }
+  .zf-penalty-choice .zf-online-choice-image { width: 100%; height: 48px; flex-basis: 48px; }
+}
+
+/* Restore the match choice artwork hidden by an older compact-layout override. */
+.match-event .choice-grid .match-choice.match-choice-with-image {
+  grid-template-columns: 100px 25px minmax(0, 1fr) !important;
+}
+.match-event .choice-grid .match-choice.match-choice-with-image .match-choice-image {
+  display: block !important;
+  position: relative;
+  width: 100px;
+  height: 56px;
+  flex: 0 0 100px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #17251d;
+}
+.match-event .choice-grid .match-choice.match-choice-with-image .match-choice-image img {
+  display: block !important;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@media (max-width: 760px) {
+  .match-event .choice-grid .match-choice.match-choice-with-image { grid-template-columns: 82px 22px minmax(0, 1fr) !important; }
+  .match-event .choice-grid .match-choice.match-choice-with-image .match-choice-image { width: 82px; height: 46px; flex-basis: 82px; }
+}
+@media (max-width: 420px) {
+  .match-event .choice-grid .match-choice.match-choice-with-image { grid-template-columns: 72px 20px minmax(0, 1fr) !important; }
+  .match-event .choice-grid .match-choice.match-choice-with-image .match-choice-image { width: 72px; height: 41px; flex-basis: 72px; }
+}

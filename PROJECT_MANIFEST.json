@@ -1,23 +1,48 @@
 {
   "project": "Zero Football",
-  "version": "v62",
-  "name": "Zero Football v62 — Live Online Matches",
-  "description": "Supabase matchmaking up to 30 seconds with bot fallback, synchronized 10-event 1v1 matches, six-zone penalties, player database updates, unified Newcastle club label, duplicate coin-only rewards and improved substitution cards.",
+  "version": "v66",
+  "name": "Zero Football v66 — Match Visuals and 12-Episode Matches",
+  "description": "Restored match action photography and thumbnails, expanded local and online action choices to eight, added 12-episode matches and a Supabase migration preserving 10-event compatibility.",
   "files": [
     {
       "path": "CHANGELOG.md",
-      "size": 3180,
-      "sha256": "f117d60c3d83f9e846f3bf1a30ed3b3ddbb98b7e28f0dd48b503d479652d7f89"
+      "size": 3846,
+      "sha256": "2be30d207198ad5339aced6d6b5093cedf486f964dfb03f8dd44d6d5d50c068f"
+    },
+    {
+      "path": "CHANGELOG_V64.md",
+      "size": 1048,
+      "sha256": "e734aa02b2adcab6e53b88444f590a3f1e5cf622720a4167823cd6b2f036e023"
+    },
+    {
+      "path": "CHANGELOG_V65.md",
+      "size": 559,
+      "sha256": "77e8640f76e9d94020b1ad6021b40d3e8d50b9a213d40c7a2838e75d3573c5c7"
+    },
+    {
+      "path": "CHANGELOG_V66.md",
+      "size": 2313,
+      "sha256": "783908fa21cf4428fad6328cefbe80d5f97f4a64fa237a66b163f2e9f5090471"
+    },
+    {
+      "path": "CHANGELOG_v63.md",
+      "size": 1214,
+      "sha256": "efab16f4f5905344f47df29022357eb93352f456ed744ce131311b4b1b9f5d4e"
+    },
+    {
+      "path": "ONLINE_CONNECT_RU_v63.md",
+      "size": 2168,
+      "sha256": "7345bbe206f78359fe33aec4765233549e1f972f757695cbfd2e9560010f3dd5"
     },
     {
       "path": "README.md",
-      "size": 36338,
-      "sha256": "cddd9946e54a9df349aef1654d2f56e63308ee24e4045a508dad478c291cd513"
+      "size": 37054,
+      "sha256": "33432685e05e278995b1e1fb60394f4b0ef508624bc20699df1d8d65ab7c6433"
     },
     {
       "path": "SUPABASE_SETUP_RU.md",
-      "size": 6247,
-      "sha256": "2d2acef94ea67e3a2d462a73f9740fa55772ce42ce4e9dc93a1fefd5616e2a71"
+      "size": 7320,
+      "sha256": "3266ddbe37723bdc8af364c08c7f78e76996652e18a14164d48d6e37f8dabdc3"
     },
     {
       "path": "assets/README.md",
@@ -675,6 +700,21 @@
       "sha256": "3d05c7f1f4c33aea59d43195523fa4023d1c402846883bec4e26f08ff5932f98"
     },
     {
+      "path": "css/30-v63-pack-inventory.css",
+      "size": 775,
+      "sha256": "8f8f6204be51201664560967aca7000f9e6d6065a3f9f9684f0172478696aa59"
+    },
+    {
+      "path": "css/31-v64-duplicate-batch-stability.css",
+      "size": 1054,
+      "sha256": "b169e82f24936260dde2b7d3d46b921b4527887f0efcc486eab42948b49c9ae6"
+    },
+    {
+      "path": "css/32-v66-match-visuals-and-variety.css",
+      "size": 2911,
+      "sha256": "71963bd0e40543eb68f2f0cb51ec72b393c5fc1f8c660fa581ae64bf9ed1c9d9"
+    },
+    {
       "path": "docs/AD_INTEGRATION.md",
       "size": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -696,13 +736,13 @@
     },
     {
       "path": "index.html",
-      "size": 3008,
-      "sha256": "dc03e1a6114ec18dbfb7aa1313c59dc82d219f990b5d426b0c2c9709646b9960"
+      "size": 3235,
+      "sha256": "6f720ebe993af5e4210c2708e12e1f04d6531e78bb78364b00d8ec96b0b5971c"
     },
     {
       "path": "js/app.js",
-      "size": 525569,
-      "sha256": "b321e0ac7604a01f9d611dd884c3a9f1329e7f3a2340e8dff52d61d8a31859d0"
+      "size": 554109,
+      "sha256": "918444e61f3a7f1f5a036c0de49ee3cf57dc315f035eb041d119de1a107ddd3c"
     },
     {
       "path": "js/data/economy.js",
@@ -753,6 +793,11 @@
       "path": "supabase/003_quick_match_live.sql",
       "size": 13241,
       "sha256": "d33da19a0cd1642099dda522d17cc1729127d24cfa36fe155c9e525e1c50962f"
+    },
+    {
+      "path": "supabase/004_twelve_match_events.sql",
+      "size": 1892,
+      "sha256": "03a8704ecbc2e0b712346ad0000dc4cf56ce6fb9d70028792f028f9c1da77737"
     }
   ]
 }

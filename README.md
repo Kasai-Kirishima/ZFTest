@@ -258,3 +258,11 @@ The daily shop now offers three purchasable player cards, with prices derived fr
 ## Supabase (v60)
 
 See `SUPABASE_SETUP_RU.md`. Run `supabase/002_multiplayer.sql` after the previously installed `supabase/001_cloud_saves.sql` in the Supabase SQL Editor. Registration and sign-in now open at startup; the offline bypass is limited to single-player. Cloud upload/download remain manual.
+
+
+## Zero Football v66 — Match presentation and variety
+
+- Вернул фотографии/иллюстрации ключевых эпизодов и миниатюры к вариантам действий.
+- Обычные игровые ситуации предлагают 8 решений; стандартные положения в одиночном режиме — 8 вариантов.
+- Добавлены новые игровые эпизоды; одиночный и онлайн-матч теперь проходят в 12 эпизодов.
+- Для онлайн-матчей v66 после `001`–`003` нужно один раз выполнить `supabase/004_twelve_match_events.sql`.
