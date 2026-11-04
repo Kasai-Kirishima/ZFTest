@@ -1,0 +1,50 @@
+/* Zero Football v86 — race-safe matchmaking cancellation and balanced two-pack reveal. */
+
+.pack-inventory-item .inventory-open-controls{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex:0 0 auto;min-width:0}
+.pack-inventory-item .inventory-open-quantity{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:11px;white-space:nowrap}
+.pack-inventory-item .inventory-open-quantity .select-compact{min-width:82px;max-width:100px;padding:7px 24px 7px 8px}
+.pack-inventory-item .inventory-open-controls>.btn{min-width:88px}
+@media(max-width:640px){
+  .pack-inventory-item .inventory-open-controls{width:100%;justify-content:space-between}
+  .pack-inventory-item .inventory-open-quantity{flex:1}
+}
+
+/* 2-pack batches can contain up to 12 player cards. The grid uses four columns on
+   desktop and three on phones; all cards retain a consistent portrait proportion. */
+.pack-opening .revealed-cards[data-reveal-count="6"],
+.pack-opening .revealed-cards[data-reveal-count="8"],
+.pack-opening .revealed-cards[data-reveal-count="10"],
+.pack-opening .revealed-cards[data-reveal-count="12"]{
+  justify-items:center!important;
+  align-items:center!important;
+  align-content:center!important;
+}
+.pack-opening .revealed-cards[data-reveal-count="8"]{grid-template-columns:repeat(4,minmax(0,1fr))!important;--reveal-rows:2!important}
+.pack-opening .revealed-cards[data-reveal-count="10"],
+.pack-opening .revealed-cards[data-reveal-count="12"]{grid-template-columns:repeat(4,minmax(0,1fr))!important;--reveal-rows:3!important}
+.pack-opening .revealed-card{
+  width:min(100%,260px,max(62px,calc((100dvh - 300px) * .75 / var(--reveal-rows,1))))!important;
+  height:auto!important;
+  aspect-ratio:3 / 4!important;
+  align-self:center!important;
+}
+.pack-opening .revealed-card .player-card{aspect-ratio:3 / 4!important}
+.pack-opening .revealed-card .player-portrait{flex:0 0 auto!important}
+.pack-opening .duplicate-rewards-panel{
+  max-height:clamp(70px,22vh,180px)!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  grid-auto-rows:minmax(0,1fr)!important;
+}
+.pack-opening .duplicate-choice-row{min-height:0!important}
+@media(max-width:600px){
+  .pack-opening .revealed-cards[data-reveal-count="6"]{grid-template-columns:repeat(3,minmax(0,1fr))!important;--reveal-rows:2!important}
+  .pack-opening .revealed-cards[data-reveal-count="8"]{grid-template-columns:repeat(3,minmax(0,1fr))!important;--reveal-rows:3!important}
+  .pack-opening .revealed-cards[data-reveal-count="10"],
+  .pack-opening .revealed-cards[data-reveal-count="12"]{grid-template-columns:repeat(3,minmax(0,1fr))!important;--reveal-rows:4!important}
+  .pack-opening .revealed-card{width:min(100%,180px,max(48px,calc((100dvh - 300px) * .75 / var(--reveal-rows,1))))!important}
+  .pack-opening .duplicate-rewards-panel{grid-template-columns:repeat(3,minmax(0,1fr))!important;max-height:22vh!important}
+}
+@media(max-height:650px){
+  .pack-opening .revealed-card{width:min(100%,220px,max(48px,calc((100dvh - 250px) * .75 / var(--reveal-rows,1))))!important}
+  .pack-opening .duplicate-rewards-panel{max-height:18vh!important}
+}

@@ -284,6 +284,9 @@
   let themePanelOpen = false;
   let playerModalRef = null;
   let matchCountdownInterval = null;
+  let matchmakingGeneration = 0;
+  let matchmakingJoinPending = false;
+  let matchmakingCancelPending = false;
   const communityState = {profile:null,contacts:{contacts:[],incoming:[],outgoing:[]},offers:[],market:[],marketQuery:'',marketExact:false,marketFilters:{position:'all',rating:'',price:'',duplicate:'all'},myMarket:{listings:[],proceeds:[]},clan:null,clanApplications:[],clanSearch:[],clanInvites:[],competitions:[],myCompetitions:{invites:[],competitions:[]},searchResult:null,error:'',loading:false};
   const COMMUNITY_VIEWS = new Set(['friends','market','clan','leagues']);
 
@@ -1178,7 +1181,7 @@
   function renderPacks(club){
     const inventory=ensurePackInventory(club),shop=dailyShop(club),freeReady=club.freePackDay!==shop.day;
     const dailyCards=shop.offers.map(wiki=>{const player=REAL_PLAYERS.find(x=>x.wiki===wiki);if(!player)return '';const claimed=shop.claimed.includes(wiki);const owned=club.players.some(x=>x.wiki===wiki);const price=Math.max(.08,Math.round(marketValue(player.rating)*.06*100)/100);const unavailable=claimed||owned;return `<article class="daily-market-card">${renderPlayerCard({...player,id:null,realClub:player.club},false,false)}<button class="btn ${unavailable?'btn-quiet':'btn-primary'} btn-sm daily-market-buy" data-action="claim-daily-card" data-player-wiki="${esc(wiki)}" ${unavailable||club.coins<price?'disabled':''}>${claimed?'Куплено':owned?'Уже в клубе':`Купить · ${formatMoney(price)}`}</button></article>`;}).join('');
-    const inventoryMarkup=ZF_PACK_OPTIONS.filter(p=>inventory[p.id]>0).map(p=>`<article class="pack-inventory-item"><img class="pack-inventory-image" src="${p.image}" alt="${esc(p.name)}" loading="lazy"><div class="pack-inventory-copy"><strong>${p.name}</strong><small>${p.type}</small></div><span class="pill pill-lime">×${inventory[p.id]}</span><div class="inventory-open-controls"><button class="btn btn-primary btn-sm" data-action="open-inventory-pack" data-pack="${p.id}">Открыть 1 пак</button></div></article>`).join('');
+    const inventoryMarkup=ZF_PACK_OPTIONS.filter(p=>inventory[p.id]>0).map(p=>{const canOpenTwo=inventory[p.id]>=2;return `<article class="pack-inventory-item"><img class="pack-inventory-image" src="${p.image}" alt="${esc(p.name)}" loading="lazy"><div class="pack-inventory-copy"><strong>${p.name}</strong><small>${p.type}</small></div><span class="pill pill-lime">×${inventory[p.id]}</span><div class="inventory-open-controls"><label class="inventory-open-quantity"><span>Открыть</span><select class="select-compact" data-inventory-quantity="${p.id}"><option value="1">1 пак</option><option value="2" ${canOpenTwo?'':'disabled'}>2 пака</option></select></label><button class="btn btn-primary btn-sm" data-action="open-inventory-pack" data-pack="${p.id}">Открыть</button></div></article>`;}).join('');
     return `<div class="section-heading"><div><div class="eyebrow">Pack market</div><h1 class="h1">МАГАЗИН ПАКОВ</h1><p class="page-subtitle">Покупай наборы заранее. Все приобретённые паки хранятся в инвентаре.</p></div><div class="actions"><span class="coin-chip">${formatMoney(club.coins)}</span></div></div>${renderPromoPanel(club)}<section class="card daily-player-shop" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ЕЖЕДНЕВНЫЙ МАГАЗИН</div><h2 class="h2">КАРТОЧКИ ДЛЯ ПОКУПКИ</h2><p>Каждую из трёх карточек можно купить один раз. Весь ассортимент обновляется ежедневно в 00:00.</p></div><span class="pill pill-lime">Обновление · 00:00</span></div><div class="daily-player-cards player-grid">${dailyCards||'<p class="muted">Все доступные футболисты уже в твоём клубе.</p>'}</div></section><section class="card pack-inventory" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ТВОИ ПОКУПКИ</div><h2 class="h2">ИНВЕНТАРЬ ПАКОВ</h2><p>Открывай наборы в любое удобное время.</p></div><span class="pill">${Object.values(inventory).reduce((a,b)=>a+b,0)} паков</span></div><div class="pack-inventory-list">${inventoryMarkup||'<p class="muted small">Инвентарь пока пуст. Купленные паки появятся здесь.</p>'}</div></section><section class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ПАКИ ДЛЯ КОМАНДЫ</div><h2 class="h2">НАБОРЫ КАРТОЧЕК</h2><p>Выбери количество и добавь наборы в инвентарь. Открытие не происходит автоматически.</p></div></div></section><div class="pack-grid">${ZF_PACK_OPTIONS.map(p=>`<article class="pack-card" style="--pack-color:${p.color};--pack-glow:${p.glow}"><div class="pack-art pack-art-image"><img src="${p.image}" alt="${esc(p.name)}" loading="lazy"></div><div class="pack-type">${p.type}</div><h3>${p.name}</h3><p>${p.desc}</p><div class="pack-bottom"><span class="pack-price">${p.id==='daily'?'БЕСПЛАТНО':formatMoney(p.price)}</span><label class="pack-quantity-label">Количество <select class="select-compact pack-quantity" data-pack-quantity="${p.id}" ${p.id==='daily'?'disabled':''}>${[1,2,3,5,10].map(n=>`<option value="${n}">${n}</option>`).join('')}</select></label><button class="btn btn-primary btn-sm pack-purchase-button" type="button" data-action="buy-pack" data-pack="${p.id}" aria-label="${p.id==='daily'?'Получить бесплатный пак':`Купить ${p.name} за ${formatMoney(p.price)}`}" ${p.id==='daily'&&!freeReady?'disabled':(p.id!=='daily'&&club.coins<p.price)?'disabled':''}>${p.id==='daily'?(freeReady?'Забрать бесплатно':'Получен сегодня'):`Купить за ${formatMoney(p.price)}`}</button></div><div class="pack-footnote">${p.meta} · В инвентарь</div></article>`).join('')}</div>`;
   }
   function renderPlayerCard(p,actions=false,clickable=false){
@@ -1818,9 +1821,10 @@ function renderProgressionAndMissions(club){
     const zone=ONLINE_PENALTY_ZONES.find(z=>z.id===id);return zone?`${zone.glyph} ${zone.label}`:(common[id]||id);
   }
   function onlineRoomIsQuick(room=activeOnlineRoom){return room?.game_state?.mode==='quick_match';}
-  async function openQuickMatchRoom(roomId){
+  async function openQuickMatchRoom(roomId,expectedGeneration=null){
     const {data,error}=await ZF_SUPABASE.from('zf_multiplayer_rooms').select('*').eq('id',roomId).single();
     if(error)throw error;
+    if(expectedGeneration!==null&&(expectedGeneration!==matchmakingGeneration||matchState.stage!=='searching')){try{await ZF_SUPABASE.rpc('zf_leave_room',{p_room_id:roomId});}catch(_){}return;}
     clearMatchTimers();view='match';matchState={stage:'online',online:true};startOnlineRoomSync(data);
     await prepareQuickMatchRoom(data);render();toast('Соперник найден! Матч начинается.');
   }
@@ -1838,10 +1842,12 @@ function renderProgressionAndMissions(club){
   }
   async function pollQuickMatch(){
     if(matchState.stage!=='searching'||!ZF_SUPABASE||matchmakingPollBusy)return;
+    const pollGeneration=matchmakingGeneration;
     matchmakingPollBusy=true;
     try{
       const {data,error}=await ZF_SUPABASE.rpc('zf_matchmaking_status');if(error)throw error;
-      if(matchState.stage==='searching'&&data?.status==='matched'&&data.room_id){if(matchmakingPoll){clearInterval(matchmakingPoll);matchmakingPoll=null;}if(matchState.timer)clearTimeout(matchState.timer);await openQuickMatchRoom(data.room_id);}
+      if(pollGeneration!==matchmakingGeneration||matchState.stage!=='searching')return;
+      if(data?.status==='matched'&&data.room_id){if(matchmakingPoll){clearInterval(matchmakingPoll);matchmakingPoll=null;}if(matchState.timer)clearTimeout(matchState.timer);await openQuickMatchRoom(data.room_id,pollGeneration);}
     }catch(error){console.warn('Matchmaking poll error:',error);}
     finally{matchmakingPollBusy=false;}
   }
@@ -2027,9 +2033,9 @@ function renderProgressionAndMissions(club){
     const openingClub=currentClub(),openingInventory=openingClub?ensurePackInventory(openingClub):{};
     const openedPackMeta=ZF_PACK_OPTIONS.find(p=>p.id===reveal.type)||ZF_PACK_OPTIONS[0];
     const droppedNames=cards.map(p=>playerDisplayName(p)).join(' · ');
-    const revealCols=cards.length<=2?Math.max(1,cards.length):cards.length===4?2:3;
+    const revealCols=cards.length<=2?Math.max(1,cards.length):cards.length===4?2:cards.length>=10?4:cards.length===8?4:3;
     const revealRows=Math.max(1,Math.ceil(cards.length/revealCols));
-    const openingResultHeader=`<section class="opening-result-header"><div class="opening-result-pack"><img src="${packArt}" alt=""><div><span class="eyebrow">ПАК ОТКРЫТ</span><h2>${esc(openedPackMeta.name)}</h2><p>${esc(openedPackMeta.type||'Агентство')} · ${cards.length} карточек</p></div></div><div class="opening-result-list"><span class="eyebrow">ЧТО ВЫПАЛО</span><strong>${esc(droppedNames||'Нет новых карточек')}</strong></div></section>`;
+    const openingResultHeader=`<section class="opening-result-header"><div class="opening-result-pack"><img src="${packArt}" alt=""><div><span class="eyebrow">ПАК ОТКРЫТ</span><h2>${esc(openedPackMeta.name)}</h2><p>${esc(openedPackMeta.type||'Агентство')} · ${reveal.packCount||1} ${reveal.packCount===1?'пак':'пака'} · ${cards.length} карточек</p></div></div><div class="opening-result-list"><span class="eyebrow">ЧТО ВЫПАЛО</span><strong>${esc(droppedNames||'Нет новых карточек')}</strong></div></section>`;
     const availableNextPacks=ZF_PACK_OPTIONS.filter(p=>(Number(openingInventory[p.id])||0)>0);
     const nextPackControls=availableNextPacks.length?`<div class="opening-next-pack"><label for="opening-next-pack">Следующий пак</label><div class="opening-next-pack-controls"><select id="opening-next-pack" class="select-compact">${availableNextPacks.map(p=>`<option value="${p.id}">${p.name} · ×${openingInventory[p.id]}</option>`).join('')}</select><button class="btn btn-secondary btn-sm" data-action="open-next-pack" ${reveal.duplicateRewards?.length?'disabled title="Сначала разбери повторные карточки"':''}>Открыть</button></div></div>`:'';
     const duplicates=(reveal.duplicateRewards||[]);
@@ -2223,7 +2229,7 @@ function renderProgressionAndMissions(club){
   function openPack(type,fromInventory=false,requestedQuantity=1){
     const club=currentClub();if(!club)return;
     const packs={starter:{price:2,count:3,min:50,max:88,weights:[55,28,12,4,1]},national:{price:8,count:4,min:55,max:91,weights:[35,32,20,10,3]},pro:{price:25,count:5,min:60,max:94,weights:[20,30,27,17,6]},elite:{price:75,count:5,min:65,max:96,weights:[10,22,30,25,13]},legend:{price:200,count:6,min:70,max:99,weights:[4,14,27,32,23]},daily:{price:0,count:2,min:50,max:90,weights:[42,30,18,8,2]}};const pack=packs[type];if(!pack)return;
-    const today=currentDayKey();if(!fromInventory){toast('Сначала купи пак — он появится в инвентаре.','error');return;}const inventory=ensurePackInventory(club);const quantity=Math.min(1,Math.max(0,Number(inventory[type])||0));if(quantity<1){toast('Такого пака нет в инвентаре.','error');return;}inventory[type]-=quantity;saveDB();
+    const today=currentDayKey();if(!fromInventory){toast('Сначала купи пак — он появится в инвентаре.','error');return;}const inventory=ensurePackInventory(club);const requested=Math.max(1,Math.min(2,Math.floor(Number(requestedQuantity)||1)));const quantity=Math.min(requested,Math.max(0,Number(inventory[type])||0));if(quantity<1){toast('Такого пака нет в инвентаре.','error');return;}if(quantity<requested)toast('В инвентаре остался только один такой пак.','error');inventory[type]-=quantity;saveDB();
     const newPlayers=[];
     for(let packIndex=0;packIndex<quantity;packIndex++)for(let i=0;i<pack.count;i++){
       const pool=REAL_PLAYERS;
@@ -2276,6 +2282,9 @@ function renderProgressionAndMissions(club){
     return roster;
   }
   async function startSearch(){
+    if(matchmakingJoinPending||matchmakingCancelPending){toast('Предыдущий поиск ещё завершается. Подожди пару секунд.','error');return;}
+    const searchGeneration=++matchmakingGeneration;
+    const isCurrentSearch=()=>searchGeneration===matchmakingGeneration&&matchState.stage==='searching';
     const club=currentClub();if(!club)return;
     clearMatchTimers();
     const starters=activePlayers(club);
@@ -2287,25 +2296,34 @@ function renderProgressionAndMissions(club){
     refreshEnergy(club);if(club.energy<1){toast('Энергия команды закончилась. Подожди восстановления или используй пополнение.','error');view='match';render();return;}
     stopOnlineRoomSync();activeOnlineRoom=null;try{localStorage.removeItem('zfActiveOnlineRoomId');}catch(_){}
     const deadline=Date.now()+30000;matchState={stage:'searching',searchDeadline:deadline};view='match';render();
-    if(!ZF_SUPABASE||zfOfflineMode){matchState.timer=setTimeout(launchBotFallback,900);return;}
+    if(!ZF_SUPABASE||zfOfflineMode){matchState.timer=setTimeout(()=>{if(isCurrentSearch())launchBotFallback();},900);return;}
     try{
-      const user=await authenticatedUser();
-      const {data,error}=await ZF_SUPABASE.rpc('zf_join_matchmaking',{p_club:onlineClubSnapshot(club)});
-      if(error)throw error;
-      if(data?.status==='matched'&&data.room_id){await openQuickMatchRoom(data.room_id);return;}
-      if(matchState.stage!=='searching')return;
-      matchmakingPoll=setInterval(()=>{if(matchState.stage==='searching')pollQuickMatch();},1000);
-      matchState.timer=setTimeout(async()=>{
-        if(matchState.stage!=='searching')return;
-        if(matchmakingPoll){clearInterval(matchmakingPoll);matchmakingPoll=null;}
-        try{await ZF_SUPABASE.rpc('zf_cancel_matchmaking');}catch(_){}
-        launchBotFallback();
-      },30000);
-      await pollQuickMatch();
+      await authenticatedUser();
+      if(!isCurrentSearch())return;
+      matchmakingJoinPending=true;
+      try{
+        const {data,error}=await ZF_SUPABASE.rpc('zf_join_matchmaking',{p_club:onlineClubSnapshot(club)});
+        if(error)throw error;
+        if(!isCurrentSearch()){
+          try{await ZF_SUPABASE.rpc('zf_cancel_matchmaking');}catch(_){}
+          if(data?.status==='matched'&&data.room_id){try{await ZF_SUPABASE.rpc('zf_leave_room',{p_room_id:data.room_id});}catch(_){}}
+          return;
+        }
+        if(data?.status==='matched'&&data.room_id){await openQuickMatchRoom(data.room_id,searchGeneration);return;}
+        matchmakingPoll=setInterval(()=>{if(isCurrentSearch())pollQuickMatch();},1000);
+        matchState.timer=setTimeout(async()=>{
+          if(!isCurrentSearch())return;
+          if(matchmakingPoll){clearInterval(matchmakingPoll);matchmakingPoll=null;}
+          try{await ZF_SUPABASE.rpc('zf_cancel_matchmaking');}catch(_){}
+          if(isCurrentSearch())launchBotFallback();
+        },30000);
+        await pollQuickMatch();
+      }finally{matchmakingJoinPending=false;}
     }catch(error){
+      if(!isCurrentSearch())return;
       console.warn('Quick matchmaking unavailable:',error);
       clearMatchTimers();matchState={stage:'searching',searchDeadline:Date.now()+1500};render();
-      matchState.timer=setTimeout(()=>{if(matchState.stage==='searching'){launchBotFallback();toast('Онлайн-поиск недоступен. Запускаем матч с ботом.','error');}},1500);
+      matchState.timer=setTimeout(()=>{if(isCurrentSearch()){launchBotFallback();toast('Онлайн-поиск недоступен. Запускаем матч с ботом.','error');}},1500);
     }
   }
   function beginMatch(){
@@ -2869,7 +2887,7 @@ function renderProgressionAndMissions(club){
     if(action==='renew-player-contract'){const c=currentClub();const player=c?.players.find(p=>p.id===btn.dataset.playerId);if(!c||!player)return;const cost=contractRenewalCost(player);if(c.coins<cost){toast('Недостаточно средств для продления контракта.','error');return;}c.coins-=cost;player.contractUntil=Math.max(Date.now(),Number(player.contractUntil)||0)+30*86400000;saveDB();render();toast(`Контракт ${playerDisplayName(player)} продлён на 30 дней.`);return;}
     if(action==='redeem-promo'){redeemPromoCode();return;}
     if(action==='claim-daily-card'){const c=currentClub();if(!c)return;const shop=dailyShop(c),wiki=btn.dataset.playerWiki;if(!shop.offers.includes(wiki)||shop.claimed.includes(wiki))return;const base=REAL_PLAYERS.find(x=>x.wiki===wiki);if(!base)return;if(c.players.some(p=>p.wiki===wiki)){toast('Этот футболист уже есть в твоём клубе.','error');render();return;}const price=Math.max(.08,Math.round(marketValue(base.rating)*.06*100)/100);if(c.coins<price){toast(`Недостаточно средств. Нужно ${formatMoney(price)}.`,'error');return;}c.coins-=price;const created=createPlayer(base.position,base.rating,base.name,base.country,{id:'daily-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),wiki:base.wiki,realClub:base.club,realPlayer:true});created.positions=REAL_PLAYER_POSITIONS[base.wiki]||[base.position];created.name=base.name;created.rating=base.rating;created.country=base.country;created.realClub=base.club;created.wiki=base.wiki;created.realPlayer=true;created.contractUntil=Date.now()+30*86400000;c.players.push(created);shop.claimed.push(wiki);saveDB();render();toast(`${base.name} куплен за ${formatMoney(price)}.`);return;}
-        if(action==='buy-pack'){const c=currentClub();if(!c)return;const type=btn.dataset.pack,pack=ZF_PACK_OPTIONS.find(x=>x.id===type);if(!pack)return;const qty=type==='daily'?1:Math.max(1,Math.min(10,Number($(`[data-pack-quantity="${type}"]`)?.value)||1));const inv=ensurePackInventory(c);if(type==='daily'){if(c.freePackDay===currentDayKey()){toast('Бесплатный пак уже получен сегодня.','error');return;}c.freePackDay=currentDayKey();inv.daily=(inv.daily||0)+1;}else{const total=pack.price*qty;if(c.coins<total){toast('Недостаточно средств для выбранного количества паков.','error');return;}c.coins-=total;inv[type]=(inv[type]||0)+qty;}saveDB();render();toast(`${qty} ${qty===1?'пак добавлен': 'паков добавлено'} в инвентарь.`);return;}if(action==='open-inventory-pack'){openPack(btn.dataset.pack,true,1);return;}if(action==='open-pack'){openPack(btn.dataset.pack);return;}if(action==='forced-sub'||action==='forced-sub-pick'){const c=currentClub(),out=btn.dataset.out,inn=action==='forced-sub-pick'?btn.dataset.playerId:$('#forcedSubPlayer')?.value;if(!inn){toast('Выбери игрока для обязательной замены.','error');return;}const idx=c.lineup.indexOf(out);if(idx>=0){if(c.lineup.includes(inn))return;c.lineup[idx]=inn;if(c.captainId===out)c.captainId=inn;}else{toast('Игрок уже покинул поле после автоматической замены.','error');return;}matchState.pendingForcedSub=null;matchState.pendingForcedSlot=null;matchState.pendingForcedType=null;saveDB();if(matchState.eventIndex>=10){finishMatch();return;}render();toast('Обязательная замена выполнена.');return;}
+        if(action==='buy-pack'){const c=currentClub();if(!c)return;const type=btn.dataset.pack,pack=ZF_PACK_OPTIONS.find(x=>x.id===type);if(!pack)return;const qty=type==='daily'?1:Math.max(1,Math.min(10,Number($(`[data-pack-quantity="${type}"]`)?.value)||1));const inv=ensurePackInventory(c);if(type==='daily'){if(c.freePackDay===currentDayKey()){toast('Бесплатный пак уже получен сегодня.','error');return;}c.freePackDay=currentDayKey();inv.daily=(inv.daily||0)+1;}else{const total=pack.price*qty;if(c.coins<total){toast('Недостаточно средств для выбранного количества паков.','error');return;}c.coins-=total;inv[type]=(inv[type]||0)+qty;}saveDB();render();toast(`${qty} ${qty===1?'пак добавлен': 'паков добавлено'} в инвентарь.`);return;}if(action==='open-inventory-pack'){const type=btn.dataset.pack;const quantity=Number($(`[data-inventory-quantity="${type}"]`)?.value)||1;openPack(type,true,quantity);return;}if(action==='open-pack'){openPack(btn.dataset.pack);return;}if(action==='forced-sub'||action==='forced-sub-pick'){const c=currentClub(),out=btn.dataset.out,inn=action==='forced-sub-pick'?btn.dataset.playerId:$('#forcedSubPlayer')?.value;if(!inn){toast('Выбери игрока для обязательной замены.','error');return;}const idx=c.lineup.indexOf(out);if(idx>=0){if(c.lineup.includes(inn))return;c.lineup[idx]=inn;if(c.captainId===out)c.captainId=inn;}else{toast('Игрок уже покинул поле после автоматической замены.','error');return;}matchState.pendingForcedSub=null;matchState.pendingForcedSlot=null;matchState.pendingForcedType=null;saveDB();if(matchState.eventIndex>=10){finishMatch();return;}render();toast('Обязательная замена выполнена.');return;}
     if(action==='collection-mode'){collectionMode=btn.dataset.mode;$$('[data-action="collection-mode"]').forEach(b=>b.className='btn '+(b.dataset.mode===collectionMode?'btn-primary':'btn-secondary')+' btn-sm');applyCollectionFilters();return;}
     if(action==='skip-pack-animation'){if(!reveal)return;reveal.skipAnimation=true;render();return;}
     if(action==='replay-pack-animation'){if(!reveal||db.packAnimations===false)return;reveal.skipAnimation=false;reveal.animationSerial=++packAnimationSerial;render();if(db.packVibration!==false)vibrate([22,28,44,35,75]);playPackSoundSequence(reveal.players||[]);return;}
@@ -2888,7 +2906,7 @@ function renderProgressionAndMissions(club){
     if(action==='online-match-again'){await leaveQuickMatchAndSearch();return;}
     if(action==='online-match-menu'){try{if(activeOnlineRoom?.id&&onlineRoomIsQuick())await ZF_SUPABASE.rpc('zf_leave_room',{p_room_id:activeOnlineRoom.id});}catch(err){console.warn(err);}stopOnlineRoomSync();activeOnlineRoom=null;try{localStorage.removeItem('zfActiveOnlineRoomId');}catch(_){}matchState={stage:'idle'};view='home';render();return;}
     if(action==='match-search'){startSearch();return;}
-    if(action==='cancel-search'){if(matchState?.stage==='searching'&&ZF_SUPABASE)ZF_SUPABASE.rpc('zf_cancel_matchmaking').catch(()=>{});clearMatchTimers();matchState={stage:'idle'};render();return;}
+    if(action==='cancel-search'){const wasSearching=matchState?.stage==='searching';++matchmakingGeneration;clearMatchTimers();matchState={stage:'idle'};render();if(wasSearching&&ZF_SUPABASE){matchmakingCancelPending=true;try{await ZF_SUPABASE.rpc('zf_cancel_matchmaking');}catch(error){console.warn('Matchmaking cancel cleanup:',error);}finally{matchmakingCancelPending=false;}}toast('Поиск отменён.');return;}
     if(action==='start-match'){beginMatch();return;}
     if(action==='match-step'){matchState.setPiecePath=Array.isArray(matchState.setPiecePath)?matchState.setPiecePath:[];matchState.setPiecePath.push(btn.dataset.step||'');render();return;}if(action==='match-step-back'){matchState.setPiecePath=Array.isArray(matchState.setPiecePath)?matchState.setPiecePath:[];matchState.setPiecePath.pop();render();return;}if(action==='manual-sub'){const c=currentClub(),out=btn.dataset.out,sel=btn.parentElement.querySelector('select'),inn=sel?.value;if(!inn){toast('Выбери игрока на замену.','error');return;}const incoming=c.players.find(p=>p.id===inn);if(playerIsUnavailable(incoming)){toast(`Игрок недоступен: ${unavailableReason(incoming)}.`,'error');return;}const i=c.lineup.indexOf(out);if(i<0||c.lineup.includes(inn))return;c.lineup[i]=inn;if(c.captainId===out)c.captainId=inn;saveDB();render();toast('Замена выполнена.');return;}if(action==='match-choice'){resolveChoice(btn.dataset.choice);return;}
     if(action==='match-return-search'||action==='match-again'){clearMatchTimers();matchState={stage:'idle'};view='match';render();return;}
