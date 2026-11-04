@@ -1,0 +1,9 @@
+/* v64: duplicate decisions, batch pack opening and calmer online updates */
+.duplicate-choice-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line,rgba(255,255,255,.08))}
+.duplicate-choice-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.inventory-open-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.inventory-open-controls label{display:flex;align-items:center;gap:6px;color:var(--muted)}
+.pack-inventory-item{gap:12px}
+.pack-opening .revealed-cards{grid-template-columns:repeat(auto-fit,minmax(145px,1fr));max-height:min(62vh,760px);overflow:auto;padding:8px}
+.pack-opening .revealed-card{min-width:0}
+@media(max-width:640px){.duplicate-choice-row{align-items:flex-start;flex-direction:column}.duplicate-choice-actions{width:100%;justify-content:flex-start}.duplicate-choice-actions .btn{flex:1}.pack-inventory-item{align-items:flex-start;flex-wrap:wrap}.inventory-open-controls{width:100%;justify-content:space-between}}
