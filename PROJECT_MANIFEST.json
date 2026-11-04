@@ -1,8 +1,8 @@
 {
   "project": "Zero Football",
-  "version": "v71",
-  "name": "Zero Football v71 Release",
-  "description": "Team infirmary with player cards and detailed injuries, disciplinary card overview, ten realistic injury types and reduced injury frequency.",
+  "version": "v72",
+  "name": "Zero Football v72 Release",
+  "description": "Removed the legacy Reliz promo code, fixed missing mission icons and undefined mission labels, and standardized visible currency wording to euros.",
   "files": [
     {
       "path": "ONLINE_CONNECT_RU_v63.md",
@@ -11,8 +11,8 @@
     },
     {
       "path": "README.md",
-      "size": 8151,
-      "sha256": "be4177fff1885260766481768e21f33ec807917f7ae9d60596027f6271b76ed7"
+      "size": 912,
+      "sha256": "558678dd003db10d7b362aee76bfc8a362cc0d2c6f0b865b8c608e2ca8aef830"
     },
     {
       "path": "SUPABASE_SETUP_RU.md",
@@ -26,8 +26,8 @@
     },
     {
       "path": "SUPABASE_UPDATE_V67_RU.md",
-      "size": 2647,
-      "sha256": "e2d211871814a06b37818be49e04307340a859e430c2d1936fbf09af13e84e2c"
+      "size": 2471,
+      "sha256": "f581cc6096c9d51d67181888fea2397fe12b0212c2a71874789b36b94790cf0e"
     },
     {
       "path": "SUPABASE_UPDATE_V68_RU.md",
@@ -43,6 +43,11 @@
       "path": "SUPABASE_UPDATE_V71_RU.md",
       "size": 790,
       "sha256": "544a2e3f34ab953d7c60c02a29b513ae235e118d5c5d4cdbae14fa75f832a319"
+    },
+    {
+      "path": "SUPABASE_UPDATE_V72_RU.md",
+      "size": 966,
+      "sha256": "40cc96ba42c596cd07b8a848d1e026f43094d6e51ddd2228ea9f5d16b9345ac3"
     },
     {
       "path": "assets/README.md",
@@ -456,8 +461,8 @@
     },
     {
       "path": "docs/PROJECT_MAP.md",
-      "size": 3987,
-      "sha256": "aa9c9a63784869ac42f9ce73515b5a2a5bf4d39fb1d4a6ecafdae992099cc095"
+      "size": 3730,
+      "sha256": "b1804260d20836633bcf5473a73192a7848de70b143e181d77524d98b59a6f59"
     },
     {
       "path": "index.html",
@@ -466,8 +471,8 @@
     },
     {
       "path": "js/app.js",
-      "size": 609923,
-      "sha256": "2c387d93e86e1e2357f4d8dfe76897339f17b51e281467d27bdd8c0dfa337d9c"
+      "size": 608045,
+      "sha256": "385ef4e74711150896c9551c1681f9be52ab6921a310679edac52f15e3abc529"
     },
     {
       "path": "js/data/economy.js",
@@ -481,8 +486,8 @@
     },
     {
       "path": "js/data/localization.js",
-      "size": 120599,
-      "sha256": "e42bcb6e579c8ed81e34320a9dd5693e30d702bffac2d8c1db90dfb6376bea41"
+      "size": 120517,
+      "sha256": "dad4295b53407bac5e4c077ce9907207368f3c3caf4a276c60dae370d5e3705d"
     },
     {
       "path": "js/data/players.js",
@@ -496,8 +501,8 @@
     },
     {
       "path": "js/data/v51-translations.js",
-      "size": 65806,
-      "sha256": "df2d90433c95058de12e9baa3328a8b3c2d2efc6597570b456d0d3f8566c45f5"
+      "size": 65802,
+      "sha256": "a36c36b0586b97872f3d41cfefcc231e45c711ebd19bd61ea69994f489972908"
     },
     {
       "path": "js/supabase-config.js",
