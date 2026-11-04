@@ -1,0 +1,56 @@
+/* Zero Football v75 — match AI substitutions, set pieces, pack results and stamina defaults. */
+
+/* Penalty/free-kick option grids: show all six/eight choices cleanly. */
+.match-event:has(.match-choice[data-choice^="pen-"]) .choice-grid,
+.match-event:has(.match-choice[data-choice^="save-"]) .choice-grid,
+.match-event:has(.match-choice[data-choice^="fk-"]) .choice-grid,
+.match-event:has(.match-choice[data-choice^="wall"]) .choice-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.match-event:has(.match-choice[data-choice^="pen-"]) .match-choice,
+.match-event:has(.match-choice[data-choice^="save-"]) .match-choice,
+.match-event:has(.match-choice[data-choice^="fk-"]) .match-choice,
+.match-event:has(.match-choice[data-choice^="wall"]) .match-choice{min-height:108px}
+
+/* Pack opening summary is visible before the cards; avoid giant art pushing results below the fold. */
+.pack-opening .opening-box{width:min(100%,1160px);padding:clamp(12px,2vw,23px);}
+.pack-opening .opening-pack-scene{height:clamp(104px,13vh,145px);margin:0 auto;}
+.pack-opening .opening-pack-box{transform:scale(.82)}
+.opening-intro-copy{margin-top:0}
+.opening-intro-copy .opening-flash{font-size:clamp(28px,4vw,48px);margin:8px 0}
+.opening-result-header{display:grid;grid-template-columns:minmax(210px,.75fr) minmax(0,1.5fr);gap:12px;align-items:stretch;margin:10px auto 8px;max-width:1000px;text-align:left}
+.opening-result-pack,.opening-result-list{min-width:0;display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--pack-color) 34%,var(--line));border-radius:13px;background:linear-gradient(130deg,color-mix(in srgb,var(--pack-color) 9%,transparent),transparent 62%),var(--panel)}
+.opening-result-pack img{width:52px;height:66px;object-fit:contain;flex:0 0 52px;filter:drop-shadow(0 6px 12px #0008)}
+.opening-result-pack h2{margin:2px 0 0;font:900 clamp(17px,2vw,23px)/1.05 'Barlow Condensed',sans-serif;color:var(--text)}
+.opening-result-pack p,.opening-result-list small{display:block;margin:4px 0 0;color:var(--muted);font-size:10px;line-height:1.35}
+.opening-result-list{display:grid;align-content:center;gap:3px}
+.opening-result-list strong{font-size:12px;line-height:1.45;overflow-wrap:anywhere;color:var(--text)}
+.pack-opening .revealed-cards{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px auto 16px;max-width:1080px}
+.pack-opening .revealed-card{min-width:0;opacity:1;animation:zfCardReveal .55s var(--zf-motion-smooth) both;animation-delay:calc(var(--card-index,0)*.08s)}
+.pack-opening .revealed-card .player-card{height:100%;display:flex;flex-direction:column}
+.pack-opening .revealed-card .player-card-body{flex:1}
+.pack-opening .opening-description{margin:7px 0;font-size:10px}
+.pack-opening .opening-actions{position:sticky;bottom:0;z-index:5;display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:8px -6px -8px;padding:12px 6px 8px;background:linear-gradient(180deg,transparent,rgba(8,12,9,.98) 28%);backdrop-filter:blur(8px)}
+.pack-opening .opening-actions .btn{min-width:155px}
+
+/* Safe full stamina semantics for lineup and team-item selectors. */
+.slot-stamina-compact,.squad-info .pill{font-variant-numeric:tabular-nums}
+
+@media(max-width:760px){
+ .match-event:has(.match-choice[data-choice^="pen-"]) .choice-grid,
+ .match-event:has(.match-choice[data-choice^="save-"]) .choice-grid,
+ .match-event:has(.match-choice[data-choice^="fk-"]) .choice-grid,
+ .match-event:has(.match-choice[data-choice^="wall"]) .choice-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .match-event:has(.match-choice[data-choice^="pen-"]) .match-choice,
+ .match-event:has(.match-choice[data-choice^="save-"]) .match-choice,
+ .match-event:has(.match-choice[data-choice^="fk-"]) .match-choice,
+ .match-event:has(.match-choice[data-choice^="wall"]) .match-choice{min-height:88px}
+ .opening-result-header{grid-template-columns:1fr;gap:7px}
+ .opening-result-pack{padding:8px 10px}
+ .opening-result-pack img{width:42px;height:48px;flex-basis:42px}
+ .opening-result-list{padding:9px 10px}
+ .pack-opening .revealed-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:9px auto 12px}
+ .pack-opening .revealed-card .player-card-head{padding:8px 8px 4px}
+ .pack-opening .revealed-card .player-portrait{height:62px}
+ .pack-opening .revealed-card .player-card-body{padding:8px}
+ .pack-opening .revealed-card .player-card-body strong{font-size:10px}
+ .pack-opening .opening-actions .btn{min-width:0;flex:1 1 44%}
+}

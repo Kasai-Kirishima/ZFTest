@@ -1,8 +1,8 @@
 {
   "project": "Zero Football",
-  "version": "v74",
-  "name": "Zero Football v74 Release",
-  "description": "Restored and made pack purchase buttons explicitly visible and accessible in the pack catalogue; preserved v73 features.",
+  "version": "v75",
+  "name": "Zero Football v75 Release",
+  "description": "Automatic bot substitutions, expanded set-piece choices, improved pack-opening display and corrected stamina defaults.",
   "files": [
     {
       "path": "ONLINE_CONNECT_RU_v63.md",
@@ -11,8 +11,8 @@
     },
     {
       "path": "README.md",
-      "size": 942,
-      "sha256": "f356d81aa9e430a36ed76ce15bb7434c37233740d80e1b9e9106ce4490b65a93"
+      "size": 2317,
+      "sha256": "d26ee98d2943af6dd6fc6a7729facb0e0952b76cdf6d29bb4c714215007be01d"
     },
     {
       "path": "SUPABASE_SETUP_RU.md",
@@ -53,6 +53,11 @@
       "path": "SUPABASE_UPDATE_V73_RU.md",
       "size": 678,
       "sha256": "af1a8bf89f2afb1730c7d8d6de4eb1fb0ff3eeedc3864c21eac6ea6e4d75759e"
+    },
+    {
+      "path": "SUPABASE_UPDATE_V75_RU.md",
+      "size": 426,
+      "sha256": "d00d2ffaca31075f0f96afe5dd1460a69081b8b5e203e31c0e1a1f328cc16480"
     },
     {
       "path": "assets/README.md",
@@ -455,6 +460,11 @@
       "sha256": "782ad4bf3d642bd17885e685e63388abc4eca78c33cd01a3f7b727ffd8c56ae7"
     },
     {
+      "path": "css/40-v75-match-pack-stamina-fixes.css",
+      "size": 4500,
+      "sha256": "042ed3af819dc6bba9e19a6596f7ae8a153cfd7c96faaafe2fcab52a660fe4a5"
+    },
+    {
       "path": "docs/AD_INTEGRATION.md",
       "size": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -476,13 +486,13 @@
     },
     {
       "path": "index.html",
-      "size": 3747,
-      "sha256": "ef6e36dc1c50089c1fd7eb99fbebf3f25643cd839fa8e46e3fdb63c285840d18"
+      "size": 3825,
+      "sha256": "789a5135f868dbb69ce147b1a450d1ca8d2908745603f1b28b31aab84a5ff3b7"
     },
     {
       "path": "js/app.js",
-      "size": 610092,
-      "sha256": "6a2c94d460153b4ae81e8e2e22880c8ac0322d59e92eb3b56219d6fac5fce7a7"
+      "size": 619008,
+      "sha256": "822940481ccfc073ba5532e1db1bde9be9b3db768d005c007b00833a47278ed3"
     },
     {
       "path": "js/data/economy.js",
@@ -549,5 +559,12 @@
       "size": 2530,
       "sha256": "4d2e2833de8df571d3e7c1226585be0ed11e8a8c68d0068a1c64fe26f84a917e"
     }
+  ],
+  "release": "Zero Football v75",
+  "changes": [
+    "Bot teams have nine reserves and up to three automatic substitutions, shown in match commentary.",
+    "Penalty situations offer six player actions; free kicks offer expanded attacking or defensive choices.",
+    "Pack opening shows the pack name, revealed-player list, full cards and available actions together.",
+    "Missing stamina safely defaults to 100; new players start at full stamina and match eligibility checks use the same calculation."
   ]
 }
