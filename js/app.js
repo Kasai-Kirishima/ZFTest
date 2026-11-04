@@ -686,6 +686,44 @@
     if(matchmakingPoll){clearInterval(matchmakingPoll);matchmakingPoll=null;}
     if(matchCountdownInterval){clearInterval(matchCountdownInterval);matchCountdownInterval=null;}
   }
+  // Cancellation is deliberately handled before the normal delegated click handler.
+  // The UI exits search immediately; server cleanup then removes the queue row and
+  // leaves a room if the opponent was matched at the same moment.
+  async function cancelMatchSearch(){
+    const previousStage=matchState?.stage||'idle';
+    const hadServerSearch=!!ZF_SUPABASE&&!zfOfflineMode&&(previousStage==='searching'||matchmakingJoinPending);
+    let roomId=activeOnlineRoom?.id||null;
+    ++matchmakingGeneration; // invalidate pending join/status responses and bot timers
+    if(hadServerSearch)matchmakingCancelPending=true;
+    clearMatchTimers();
+    if(roomId||previousStage==='online')stopOnlineRoomSync();
+    matchState={stage:'idle'};
+    view='match';
+    render();
+    toast('Поиск отменён.');
+    if(!ZF_SUPABASE||zfOfflineMode){matchmakingCancelPending=false;return;}
+    try{
+      if(hadServerSearch){
+        // Read the queue before deleting a waiting row. A row that already became
+        // matched must be explicitly left instead of merely disappearing locally.
+        try{
+          const statusResult=await ZF_SUPABASE.rpc('zf_matchmaking_status');
+          if(!statusResult.error&&statusResult.data?.room_id)roomId=statusResult.data.room_id;
+        }catch(error){console.warn('Matchmaking status during cancellation:',error);}
+        const cancelResult=await ZF_SUPABASE.rpc('zf_cancel_matchmaking');
+        if(cancelResult.error)console.warn('Matchmaking queue cleanup:',cancelResult.error);
+      }
+      if(roomId){
+        try{
+          const leaveResult=await ZF_SUPABASE.rpc('zf_leave_room',{p_room_id:roomId});
+          if(leaveResult.error)console.warn('Matched room cleanup:',leaveResult.error);
+        }catch(error){console.warn('Matched room cleanup:',error);}
+        if(activeOnlineRoom?.id===roomId)activeOnlineRoom=null;
+        try{localStorage.removeItem('zfActiveOnlineRoomId');}catch(_){}
+      }
+    }catch(error){console.warn('Matchmaking cancellation cleanup:',error);}
+    finally{matchmakingCancelPending=false;}
+  }
   function renderAuthLoading(){
     return `<div class="start-screen"><div class="start-wrap"><div class="start-brand"><div class="brand-mark">ZF</div><div class="brand-name">ZERO <span>FOOTBALL</span></div></div><div class="auth-gate-card"><div class="search-visual"><span class="search-ring"></span><span class="search-ring"></span><span class="search-ring"></span><span class="search-ball">⚽</span></div><h1>ПОДКЛЮЧАЕМ АККАУНТ</h1><p>Проверяем защищённую сессию Zero Football…</p></div></div></div>`;
   }
@@ -1905,11 +1943,11 @@ function renderProgressionAndMissions(club){
     if(matchState.stage==='result')return renderMatchResult(club);
     return '';
   }
-  function renderSearching(club){const deadline=matchState.searchDeadline||Date.now()+30000;return `<div class="section-heading"><div><div class="eyebrow">Поиск соперника</div><h1 class="h1">ПОИСК СОПЕРНИКА</h1><p class="page-subtitle">Ищем реального игрока. После 30 секунд автоматически подберём бота.</p></div><span class="pill pill-lime">Онлайн-поиск</span></div><div class="match-shell"><div class="card" style="text-align:center;padding:30px"><div class="search-visual"><span class="search-ring"></span><span class="search-ring"></span><span class="search-ring"></span><span class="search-ball">⚽</span></div><h2 class="h2" style="font-size:34px">ИЩЕМ ТВОЕГО СОПЕРНИКА</h2><p class="muted small">Ожидаем подключение другого клуба. Осталось: <strong data-countdown-deadline="${deadline}">30 сек.</strong></p><div class="progress" style="max-width:300px;margin:20px auto"><span style="width:100%;animation:searchProgress 30s linear forwards"></span></div><button class="btn btn-quiet btn-sm" data-action="cancel-search">Отменить поиск</button></div></div><style>@keyframes searchProgress{0%{width:0}100%{width:100%}}</style>`;}
+  function renderSearching(club){const deadline=matchState.searchDeadline||Date.now()+30000;return `<div class="section-heading"><div><div class="eyebrow">Поиск соперника</div><h1 class="h1">ПОИСК СОПЕРНИКА</h1><p class="page-subtitle">Ищем реального игрока. После 30 секунд автоматически подберём бота.</p></div><span class="pill pill-lime">Онлайн-поиск</span></div><div class="match-shell"><div class="card" style="text-align:center;padding:30px"><div class="search-visual"><span class="search-ring"></span><span class="search-ring"></span><span class="search-ring"></span><span class="search-ball">⚽</span></div><h2 class="h2" style="font-size:34px">ИЩЕМ ТВОЕГО СОПЕРНИКА</h2><p class="muted small">Ожидаем подключение другого клуба. Осталось: <strong data-countdown-deadline="${deadline}">30 сек.</strong></p><div class="progress" style="max-width:300px;margin:20px auto"><span style="width:100%;animation:searchProgress 30s linear forwards"></span></div><button type="button" class="btn btn-quiet btn-sm cancel-search-button" data-action="cancel-search" aria-label="Отменить поиск">Отменить поиск</button></div></div><style>@keyframes searchProgress{0%{width:0}100%{width:100%}}</style>`;}
   function renderFound(club){
     const opp=matchState.opponent;
     const stars=(opp.players||[]).slice(0,11).map(p=>({...p,id:null,rating:playerOVRAt(p,p.assignedPosition||p.position,null),realClub:p.realClub||p.club,positions:p.positions||[p.position],contractUntil:Date.now()+30*86400000})).sort((a,b)=>b.rating-a.rating).slice(0,3);
-    return `<div class="section-heading"><div><div class="eyebrow">Соперник найден</div><h1 class="h1">СОПЕРНИК НАЙДЕН</h1><p class="page-subtitle">Разминка закончена. Пора выходить на поле.</p></div><span class="pill pill-lime">✓ Найден</span></div><div class="match-shell"><div class="card" style="text-align:center;padding:25px"><span class="pill pill-lime">СОПОСТАВЛЕНИЕ ЗАВЕРШЕНО</span><div class="found-vs"><div class="found-side"><div class="club-crest ${crestShape(club.logo)}" style="${clubVars(club)}">${crestContent(club.logo,.9)}</div><strong>${esc(club.name)}</strong><small>${teamRating(club)} OVR · Твой клуб</small></div><div class="vs-word">VS</div><div class="found-side"><div class="club-crest" style="--crest-color:${esc(opp.color)}">${esc(opp.symbol)}</div><strong>${esc(opp.name)}</strong><small>${opp.rating} OVR · Бот</small></div></div><div class="opponent-stars"><div class="eyebrow">⭐ ТРИ ЛУЧШИЕ КАРТОЧКИ СОПЕРНИКА</div><div class="player-grid opponent-best-grid">${stars.map(p=>renderPlayerCard(p,false,false)).join('')}</div></div><div class="divider"></div><div class="stat-grid" style="margin-bottom:18px"><div class="metric-card"><div class="metric-top">Твой состав</div><div class="metric-value">${teamRating(club)}</div><div class="metric-note">Общий рейтинг</div></div><div class="metric-card"><div class="metric-top">Соперник</div><div class="metric-value">${opp.rating}</div><div class="metric-note">Общий рейтинг</div></div><div class="metric-card"><div class="metric-top">Формат</div><div class="metric-value">10</div><div class="metric-note">Эпизодов</div></div><div class="metric-card"><div class="metric-top">Награда</div><div class="metric-value">€0.35 млн</div><div class="metric-note">Минимальная выплата</div></div></div><div class="match-agreement-timer">⏱ Осталось принять матч: <strong data-countdown-deadline="${matchState.agreementDeadline||Date.now()}">60 сек.</strong></div><button class="btn btn-primary" data-action="start-match" style="min-width:230px">Принять матч →</button><div style="margin-top:12px"><button class="btn btn-quiet btn-sm" data-action="cancel-search">Отменить</button></div></div></div>`;
+    return `<div class="section-heading"><div><div class="eyebrow">Соперник найден</div><h1 class="h1">СОПЕРНИК НАЙДЕН</h1><p class="page-subtitle">Разминка закончена. Пора выходить на поле.</p></div><span class="pill pill-lime">✓ Найден</span></div><div class="match-shell"><div class="card" style="text-align:center;padding:25px"><span class="pill pill-lime">СОПОСТАВЛЕНИЕ ЗАВЕРШЕНО</span><div class="found-vs"><div class="found-side"><div class="club-crest ${crestShape(club.logo)}" style="${clubVars(club)}">${crestContent(club.logo,.9)}</div><strong>${esc(club.name)}</strong><small>${teamRating(club)} OVR · Твой клуб</small></div><div class="vs-word">VS</div><div class="found-side"><div class="club-crest" style="--crest-color:${esc(opp.color)}">${esc(opp.symbol)}</div><strong>${esc(opp.name)}</strong><small>${opp.rating} OVR · Бот</small></div></div><div class="opponent-stars"><div class="eyebrow">⭐ ТРИ ЛУЧШИЕ КАРТОЧКИ СОПЕРНИКА</div><div class="player-grid opponent-best-grid">${stars.map(p=>renderPlayerCard(p,false,false)).join('')}</div></div><div class="divider"></div><div class="stat-grid" style="margin-bottom:18px"><div class="metric-card"><div class="metric-top">Твой состав</div><div class="metric-value">${teamRating(club)}</div><div class="metric-note">Общий рейтинг</div></div><div class="metric-card"><div class="metric-top">Соперник</div><div class="metric-value">${opp.rating}</div><div class="metric-note">Общий рейтинг</div></div><div class="metric-card"><div class="metric-top">Формат</div><div class="metric-value">10</div><div class="metric-note">Эпизодов</div></div><div class="metric-card"><div class="metric-top">Награда</div><div class="metric-value">€0.35 млн</div><div class="metric-note">Минимальная выплата</div></div></div><div class="match-agreement-timer">⏱ Осталось принять матч: <strong data-countdown-deadline="${matchState.agreementDeadline||Date.now()}">60 сек.</strong></div><button class="btn btn-primary" data-action="start-match" style="min-width:230px">Принять матч →</button><div style="margin-top:12px"><button type="button" class="btn btn-quiet btn-sm cancel-search-button" data-action="cancel-search">Отменить</button></div></div></div>`;
   }
   function matchBoard(club){const opp=matchState.opponent;return `<div class="match-scoreboard"><div class="match-team"><div class="club-crest ${crestShape(club.logo)}" style="${clubVars(club)}">${crestContent(club.logo,.9)}</div><strong>${esc(club.name)}</strong><span class="pill" style="margin-top:7px">${teamRating(club)} OVR</span></div><div class="match-center"><div class="match-minute">${matchState.minute||0}′</div><div class="match-score">${matchState.score[0]} : ${matchState.score[1]}</div><div class="match-status">${matchState.stage==='result'?'МАТЧ ОКОНЧЕН':'ZERO LEAGUE · MATCH'}</div></div><div class="match-team"><div class="club-crest" style="--crest-color:${esc(opp.color)}">${esc(opp.symbol)}</div><strong>${esc(opp.name)}</strong><span class="pill" style="margin-top:7px">${opp.rating} OVR</span></div></div>`;}
   // Match action photography supplied for Zero Football. All thumbnails use one shared 16:9 crop.
@@ -2826,6 +2864,18 @@ function renderProgressionAndMissions(club){
   // Disable context menus inside the game. Buttons and form controls remain usable.
   $('#app').addEventListener('contextmenu',e=>e.preventDefault());
   // ----- Event binding (delegated so it continues to work after re-rendering) -----
+  // Capture cancellation before any nested/parent handler can consume the click.
+  $('#app').addEventListener('click',e=>{
+    const target=e.target;
+    const cancelButton=target instanceof Element?target.closest('[data-action="cancel-search"]'):null;
+    if(!cancelButton)return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if(cancelButton.disabled)return;
+    cancelButton.disabled=true;
+    cancelButton.setAttribute('aria-busy','true');
+    void cancelMatchSearch();
+  },true);
   $('#app').addEventListener('click',async e=>{
     const btn=e.target.closest('[data-action]');if(!btn)return;
     const action=btn.dataset.action; if(['match-choice','open-pack','assign-player','quick-assign','set-theme'].includes(action))vibrate(action==='match-choice'?[25,20,35]:18);
@@ -2906,7 +2956,7 @@ function renderProgressionAndMissions(club){
     if(action==='online-match-again'){await leaveQuickMatchAndSearch();return;}
     if(action==='online-match-menu'){try{if(activeOnlineRoom?.id&&onlineRoomIsQuick())await ZF_SUPABASE.rpc('zf_leave_room',{p_room_id:activeOnlineRoom.id});}catch(err){console.warn(err);}stopOnlineRoomSync();activeOnlineRoom=null;try{localStorage.removeItem('zfActiveOnlineRoomId');}catch(_){}matchState={stage:'idle'};view='home';render();return;}
     if(action==='match-search'){startSearch();return;}
-    if(action==='cancel-search'){const wasSearching=matchState?.stage==='searching';++matchmakingGeneration;clearMatchTimers();matchState={stage:'idle'};render();if(wasSearching&&ZF_SUPABASE){matchmakingCancelPending=true;try{await ZF_SUPABASE.rpc('zf_cancel_matchmaking');}catch(error){console.warn('Matchmaking cancel cleanup:',error);}finally{matchmakingCancelPending=false;}}toast('Поиск отменён.');return;}
+    if(action==='cancel-search'){void cancelMatchSearch();return;}
     if(action==='start-match'){beginMatch();return;}
     if(action==='match-step'){matchState.setPiecePath=Array.isArray(matchState.setPiecePath)?matchState.setPiecePath:[];matchState.setPiecePath.push(btn.dataset.step||'');render();return;}if(action==='match-step-back'){matchState.setPiecePath=Array.isArray(matchState.setPiecePath)?matchState.setPiecePath:[];matchState.setPiecePath.pop();render();return;}if(action==='manual-sub'){const c=currentClub(),out=btn.dataset.out,sel=btn.parentElement.querySelector('select'),inn=sel?.value;if(!inn){toast('Выбери игрока на замену.','error');return;}const incoming=c.players.find(p=>p.id===inn);if(playerIsUnavailable(incoming)){toast(`Игрок недоступен: ${unavailableReason(incoming)}.`,'error');return;}const i=c.lineup.indexOf(out);if(i<0||c.lineup.includes(inn))return;c.lineup[i]=inn;if(c.captainId===out)c.captainId=inn;saveDB();render();toast('Замена выполнена.');return;}if(action==='match-choice'){resolveChoice(btn.dataset.choice);return;}
     if(action==='match-return-search'||action==='match-again'){clearMatchTimers();matchState={stage:'idle'};view='match';render();return;}
