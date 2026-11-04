@@ -1,0 +1,31 @@
+/* Zero Football v67 release polish */
+.pack-inventory-item{align-items:center;min-height:104px}
+.pack-inventory-image{width:68px;height:88px;flex:0 0 68px;object-fit:cover;object-position:center;border-radius:9px;border:1px solid color-mix(in srgb,var(--pack-color,#c8ff44) 35%,var(--line,rgba(255,255,255,.12)));background:rgba(255,255,255,.04);box-shadow:0 7px 18px rgba(0,0,0,.24)}
+.pack-inventory-copy{display:grid;gap:4px;flex:1;min-width:150px}
+.pack-inventory-copy strong{font-size:14px}
+.pack-inventory-copy small{color:var(--muted,#9aa49a);font-size:12px}
+.opening-pack-box{overflow:hidden}
+.opening-pack-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:12px;z-index:1;filter:saturate(1.08);box-shadow:inset 0 0 22px rgba(0,0,0,.4)}
+.opening-pack-box>span:not(.opening-pack-star){position:absolute;z-index:2;bottom:30px;left:0;right:0;text-align:center;padding:3px 0;background:linear-gradient(90deg,transparent,rgba(0,0,0,.66),transparent);color:#fff;text-shadow:0 2px 5px #000}
+.opening-pack-star{z-index:4}
+.opening-pack-box i{z-index:4}
+.opening-next-pack{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:14px 0;padding:13px 15px;border:1px solid var(--line,rgba(255,255,255,.1));border-radius:13px;background:linear-gradient(120deg,rgba(200,255,68,.055),rgba(255,255,255,.02))}
+.opening-next-pack>div:first-child{display:grid;gap:3px}
+.opening-next-pack>div:first-child strong{font-size:13px}
+.opening-next-pack>div:first-child small{font-size:11px;color:var(--muted)}
+.opening-next-pack-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.opening-next-pack-controls select{min-width:190px}
+.manual-seed-control{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);white-space:nowrap}
+.manual-seed-control select{min-width:66px}
+.competition-card{padding:18px;margin:12px 0;border:1px solid var(--line,rgba(255,255,255,.1));border-radius:15px;background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.012))}
+.competition-card .competition-head h3{letter-spacing:.2px}
+.competition-card .community-actions{margin-top:12px}
+.league-standings,.fixture-list{border-radius:12px}
+@media(max-width:650px){
+  .pack-inventory-image{width:58px;height:76px;flex-basis:58px}
+  .pack-inventory-copy{min-width:110px}
+  .opening-next-pack{align-items:flex-start}
+  .opening-next-pack-controls{width:100%}
+  .opening-next-pack-controls select,.opening-next-pack-controls button{flex:1 1 100%;width:100%}
+  .manual-seed-control{width:100%;justify-content:space-between}
+}

@@ -1,34 +1,9 @@
 {
   "project": "Zero Football",
-  "version": "v66",
-  "name": "Zero Football v66 — Community & Transfer Expansion",
-  "description": "Friends and acquaintances, card gifts and trades, server-backed card inventory, transfer market, leagues, knockout tournaments, clans, standings and responsive community UI.",
+  "version": "v67",
+  "name": "Zero Football v67 — Economy & Release Update",
+  "description": "Release build with updated economy, pack inventory artwork, manual tournament draw controls and transfer-market database fix.",
   "files": [
-    {
-      "path": "CHANGELOG.md",
-      "size": 7272,
-      "sha256": "676ee61484c7f04262b131c7988ed009e112cba8cd6df757d6fa201be932ed65"
-    },
-    {
-      "path": "CHANGELOG_V64.md",
-      "size": 1048,
-      "sha256": "e734aa02b2adcab6e53b88444f590a3f1e5cf622720a4167823cd6b2f036e023"
-    },
-    {
-      "path": "CHANGELOG_V65.md",
-      "size": 2961,
-      "sha256": "122ba740f0b2d57e5bae89b42b143fcde256a187fd35723ce5ae3aa96ae752ca"
-    },
-    {
-      "path": "CHANGELOG_V66.md",
-      "size": 4399,
-      "sha256": "15e807caa174804058dd65e953196759e2bb754fb3b3028b02769d3e910476b9"
-    },
-    {
-      "path": "CHANGELOG_v63.md",
-      "size": 1214,
-      "sha256": "efab16f4f5905344f47df29022357eb93352f456ed744ce131311b4b1b9f5d4e"
-    },
     {
       "path": "ONLINE_CONNECT_RU_v63.md",
       "size": 2168,
@@ -36,18 +11,23 @@
     },
     {
       "path": "README.md",
-      "size": 36338,
-      "sha256": "cddd9946e54a9df349aef1654d2f56e63308ee24e4045a508dad478c291cd513"
+      "size": 3202,
+      "sha256": "15211df0ab741a2dbda62124db83e095e5a7398e6b8832780bcb2aca70a3d626"
     },
     {
       "path": "SUPABASE_SETUP_RU.md",
-      "size": 6247,
-      "sha256": "2d2acef94ea67e3a2d462a73f9740fa55772ce42ce4e9dc93a1fefd5616e2a71"
+      "size": 6820,
+      "sha256": "04cc11923cba458ad895b183932054aeff725ae4a618d24f18d8f9a354913420"
     },
     {
       "path": "SUPABASE_UPDATE_V66_RU.md",
       "size": 4650,
       "sha256": "7bbd4bf6ff674597ec3b73d68226801cbd2840dc2d48d4fedcce8abbe182e393"
+    },
+    {
+      "path": "SUPABASE_UPDATE_V67_RU.md",
+      "size": 2647,
+      "sha256": "e2d211871814a06b37818be49e04307340a859e430c2d1936fbf09af13e84e2c"
     },
     {
       "path": "assets/README.md",
@@ -255,341 +235,6 @@
       "sha256": "cf2e72b5d4eac358c7f0546ecbf8d05bd539a9249569a59f15407350a6d69f7a"
     },
     {
-      "path": "backup/Zero_Football_v25_original.html",
-      "size": 358082,
-      "sha256": "057645c7a1d8ce08357990382b7839c9b8675b9c11d80664de27ebf25cd873bc"
-    },
-    {
-      "path": "backup/v27-09-theme-library.css",
-      "size": 5506,
-      "sha256": "b5b73e308951913dfaf996c119b81efa50f445b41f790122e1a95b01ac6a21f0"
-    },
-    {
-      "path": "backup/v27-app.js",
-      "size": 141792,
-      "sha256": "786c75c1d2c7f85478fb023d142ca8f2877bfa8e765570b24e41f991b535d241"
-    },
-    {
-      "path": "backup/v29-01-base.css",
-      "size": 48500,
-      "sha256": "828f3b89b7c9207c2c154396eebde50bc33502671cad84ac158776cc189fd562"
-    },
-    {
-      "path": "backup/v29-02-layout-and-responsive.css",
-      "size": 6240,
-      "sha256": "a4c60079760e5858a58ba7a5a84cd2972f62f54ef5b7e5e6a6ce13bb0c5d8ed8"
-    },
-    {
-      "path": "backup/v29-app.js",
-      "size": 146248,
-      "sha256": "a40c153a3bcc8140dd6137a834db1ada1df20fb71d63cf855df50258e360ef27"
-    },
-    {
-      "path": "backup/v29-economy.js",
-      "size": 3546,
-      "sha256": "b5814c090db960eb3b58166b57c66cddbf5cf8850887ff1a723c28cbb5c31f3f"
-    },
-    {
-      "path": "backup/v29-gameplay.js",
-      "size": 11707,
-      "sha256": "64a999f1e45dfae24352680638136ca0328dc233222b728ce9e72e291001979f"
-    },
-    {
-      "path": "backup/v29-players.js",
-      "size": 27916,
-      "sha256": "7489d719214f46043584094a2bc817836d1ceceaf5ab9f14dc82ffc2b0a6c887"
-    },
-    {
-      "path": "backup/v29-ui-config.js",
-      "size": 2165,
-      "sha256": "b4e0ea3fa95f922680c5242bb1095c3f44151d7cd8d3f003627e3c1b82969f76"
-    },
-    {
-      "path": "backup/v30-04-layout-economy.css",
-      "size": 2808,
-      "sha256": "ba0afad0c2d04317f48e5426cd14c185d682001f50877d63394d6b6643aa9724"
-    },
-    {
-      "path": "backup/v30-06-visual-refinements.css",
-      "size": 4888,
-      "sha256": "c23e8b3e63efe06484903bb530e0d9f486d1992a620f97822a51d7e69df9467a"
-    },
-    {
-      "path": "backup/v30-09-theme-library.css",
-      "size": 10468,
-      "sha256": "8154547b8a7e131aa7675d4f2f46e9d7e20576c225c9752713820675f59a1620"
-    },
-    {
-      "path": "backup/v30-app.js",
-      "size": 154574,
-      "sha256": "b0a54473a1400a9d20eae90f02c02f8b78f2b9e82bcd97a41cb18e76ea201287"
-    },
-    {
-      "path": "backup/v30-gameplay.js",
-      "size": 11871,
-      "sha256": "c1c1d585728246f8aea0c00864690310451fad4c134410f790e50399a63e02a9"
-    },
-    {
-      "path": "backup/v30-players.js",
-      "size": 30756,
-      "sha256": "97464ee6db6f718f4c0b14da8bfdccad02f1e263c2c7106a9484ecf92f009273"
-    },
-    {
-      "path": "backup/v32-04-layout-economy.css",
-      "size": 2808,
-      "sha256": "ba0afad0c2d04317f48e5426cd14c185d682001f50877d63394d6b6643aa9724"
-    },
-    {
-      "path": "backup/v32-06-visual-refinements.css",
-      "size": 9344,
-      "sha256": "f3f996c84c018c44d704666a7dfc7004703a869e08182c6ff20ea6ce70f06442"
-    },
-    {
-      "path": "backup/v32-09-theme-library.css",
-      "size": 10965,
-      "sha256": "8329684b4bd4a08f46fb525bd208c6130b96d2f14286efc4fd0bd605d29320db"
-    },
-    {
-      "path": "backup/v32-app.js",
-      "size": 158222,
-      "sha256": "2923d3a553b9f27ce2f0aa7397ae03a996eb4b16d1847b03ed002d3397478f3e"
-    },
-    {
-      "path": "backup/v32-gameplay.js",
-      "size": 11736,
-      "sha256": "c3e8fed656db0fb5418843cb5cc66f370352f66712decdd2329f36368e6d3a32"
-    },
-    {
-      "path": "backup/v32-players.js",
-      "size": 30756,
-      "sha256": "97464ee6db6f718f4c0b14da8bfdccad02f1e263c2c7106a9484ecf92f009273"
-    },
-    {
-      "path": "backup/v33-06-visual-refinements.css",
-      "size": 15756,
-      "sha256": "d46b6686f841087d14d109b2cc0215d38e8ca74974fffaf8564e4b9e20eaaabb"
-    },
-    {
-      "path": "backup/v33-app.js",
-      "size": 174626,
-      "sha256": "092d5a622a9378f284ff399e82b349d360bd4aca4e51d962328b128db5e6d5f3"
-    },
-    {
-      "path": "backup/v34-06-visual-refinements.css",
-      "size": 9467,
-      "sha256": "79cbee8832b40fdcdb9bddee182cf84a9e48ea83f20aaea924fa376240b933b5"
-    },
-    {
-      "path": "backup/v34-app.js",
-      "size": 175426,
-      "sha256": "2858a5c73d9f0769af33ec98479d2c28734415d91748a40f58bc9656f0d26159"
-    },
-    {
-      "path": "backup/v36-app.js",
-      "size": 175845,
-      "sha256": "455f48d4f9f1e9e6b5724f6c2efedecf3e02a0c17fef04a9e9dfcf2d500ef3ba"
-    },
-    {
-      "path": "backup/v36-players.js",
-      "size": 38329,
-      "sha256": "a56f334e0525f14bb587af0d5c2ad6f5d3a62f6afbd70cea2d545a1f37a5ff03"
-    },
-    {
-      "path": "backup/v37-09-theme-library.css",
-      "size": 11150,
-      "sha256": "924771ba7aa5b3aaa6a90506a61572ccbbbbaa34eaf2fe138657186b1a52dad3"
-    },
-    {
-      "path": "backup/v37-app.js",
-      "size": 175845,
-      "sha256": "455f48d4f9f1e9e6b5724f6c2efedecf3e02a0c17fef04a9e9dfcf2d500ef3ba"
-    },
-    {
-      "path": "backup/v38-01-base.css",
-      "size": 48680,
-      "sha256": "018b7ec6950e68f19e085a9a3660e2ff329cfc6de7758e10b3076839b84d4704"
-    },
-    {
-      "path": "backup/v38-06-visual-refinements.css",
-      "size": 9477,
-      "sha256": "a68a986db346fbb8f7c056e3d0353efe95c40bc08044f3f4250d72afe9531b76"
-    },
-    {
-      "path": "backup/v38-CHANGELOG.md",
-      "size": 19043,
-      "sha256": "491265e85318ce1eff444cd81ea644616ca85030571f3ecb12d09916286ddc73"
-    },
-    {
-      "path": "backup/v38-README.md",
-      "size": 16672,
-      "sha256": "a8b0bc6d515c81f6b575f7943a5f761092fcb9b1f72c66c7746a3b706b329e5d"
-    },
-    {
-      "path": "backup/v38-app.js",
-      "size": 179759,
-      "sha256": "59b94703538dbfa221f0ea359d47db500bea3ccd6fa9bdbbcffa11f9727c766d"
-    },
-    {
-      "path": "backup/v38-gameplay.js",
-      "size": 11892,
-      "sha256": "078cd33cb42fc05879f1bc5c6ea9ec6da533e5ebee99f64bf588f0ee73167f19"
-    },
-    {
-      "path": "backup/v39-01-base.css",
-      "size": 48680,
-      "sha256": "018b7ec6950e68f19e085a9a3660e2ff329cfc6de7758e10b3076839b84d4704"
-    },
-    {
-      "path": "backup/v39-02-layout-and-responsive.css",
-      "size": 6240,
-      "sha256": "a4c60079760e5858a58ba7a5a84cd2972f62f54ef5b7e5e6a6ce13bb0c5d8ed8"
-    },
-    {
-      "path": "backup/v39-05-pitch-and-mobile.css",
-      "size": 2725,
-      "sha256": "66a6f1c9ba96fe7174a336cfbba9edd77b59bb2905c06cb1182eb7921a3c45f3"
-    },
-    {
-      "path": "backup/v39-11-theme-and-squad-fixes.css",
-      "size": 13404,
-      "sha256": "a473e9c7b124513b61e618c6d523c2a365df156a1ce8959cfc689ca31dbbfe23"
-    },
-    {
-      "path": "backup/v39-app.js",
-      "size": 190400,
-      "sha256": "87e21eabc4b362d682ecb562e720568615eaea4c0fb08458f3767adef3b5fe1b"
-    },
-    {
-      "path": "backup/v39-gameplay.js",
-      "size": 12452,
-      "sha256": "5930627961b09170a10af02a98990c285527ee9274362a750cd94df0d956f51b"
-    },
-    {
-      "path": "backup/v39-index.html",
-      "size": 1560,
-      "sha256": "7b4b52fc95d6ec132b922016372cf49c06960eeac4a44f01da4cfb94bcceb5d7"
-    },
-    {
-      "path": "backup/v39-localization.js",
-      "size": 121054,
-      "sha256": "8ef01f6a79fc7cb17711d333f4a82290f29e88e3e365e60be020fecdd8f02f6f"
-    },
-    {
-      "path": "backup/v39-players.js",
-      "size": 38329,
-      "sha256": "a56f334e0525f14bb587af0d5c2ad6f5d3a62f6afbd70cea2d545a1f37a5ff03"
-    },
-    {
-      "path": "backup/v40-01-base.css",
-      "size": 48680,
-      "sha256": "018b7ec6950e68f19e085a9a3660e2ff329cfc6de7758e10b3076839b84d4704"
-    },
-    {
-      "path": "backup/v40-02-layout-and-responsive.css",
-      "size": 6240,
-      "sha256": "a4c60079760e5858a58ba7a5a84cd2972f62f54ef5b7e5e6a6ce13bb0c5d8ed8"
-    },
-    {
-      "path": "backup/v40-11-theme-and-squad-fixes.css",
-      "size": 16681,
-      "sha256": "aa55477f400d0d056a911070824096744bf99479698f8a1d0bde80d3d6b68d9f"
-    },
-    {
-      "path": "backup/v40-CHANGELOG.md",
-      "size": 25072,
-      "sha256": "0a69f8657a989298affc1c635d2ed0b29fdea543e844868e5de93633577bbafb"
-    },
-    {
-      "path": "backup/v40-PROJECT_MANIFEST.json",
-      "size": 10315,
-      "sha256": "303efb5160135addd6bd9b500c2f4d26e40c9671378d8a4aad57a630b3be97d7"
-    },
-    {
-      "path": "backup/v40-README.md",
-      "size": 21616,
-      "sha256": "84c9ec149e75c2ffc828682b09ed870b4bb0dcd8271f9dc1164ee66aafe576f0"
-    },
-    {
-      "path": "backup/v40-app.js",
-      "size": 225196,
-      "sha256": "d6e5ea320ba8a8176e73a825f65fbb57f569bc9d794698dc79c180a21ef424f7"
-    },
-    {
-      "path": "backup/v40-gameplay.js",
-      "size": 12723,
-      "sha256": "bdac52bd5576262dfc41821d837cf1b84771606fc2835c7a940cdc3d968d78e7"
-    },
-    {
-      "path": "backup/v40-index.html",
-      "size": 1628,
-      "sha256": "17203db835c0a3b12d883d4cd75d20ddfa5ea6ab6c56bdbf0b82aa1bab800356"
-    },
-    {
-      "path": "backup/v41-CHANGELOG.md",
-      "size": 25072,
-      "sha256": "0a69f8657a989298affc1c635d2ed0b29fdea543e844868e5de93633577bbafb"
-    },
-    {
-      "path": "backup/v41-PROJECT_MANIFEST.json",
-      "size": 10315,
-      "sha256": "303efb5160135addd6bd9b500c2f4d26e40c9671378d8a4aad57a630b3be97d7"
-    },
-    {
-      "path": "backup/v41-README.md",
-      "size": 21616,
-      "sha256": "84c9ec149e75c2ffc828682b09ed870b4bb0dcd8271f9dc1164ee66aafe576f0"
-    },
-    {
-      "path": "backup/v41-css-12-v41-audio-and-pitch.css",
-      "size": 6957,
-      "sha256": "8b87ed0d7fede974817e1793d63d0511a5ffc8701149bd7ed30ba8a77bb6f1cc"
-    },
-    {
-      "path": "backup/v41-docs-PROJECT_MAP.md",
-      "size": 5465,
-      "sha256": "fbbdb19586c9139d799d4a1d449c240da2a4f47bd65dca4bcb37067c15bec9ee"
-    },
-    {
-      "path": "backup/v41-index.html",
-      "size": 1694,
-      "sha256": "3ac671ce41fda0d1738d75a2d37a3201a1cce01dcb29a37eb475030d174c82ae"
-    },
-    {
-      "path": "backup/v41-js-app.js",
-      "size": 258515,
-      "sha256": "ad2079bb8d15effb17a83a36c0774bdb2cfd3c4f58255c75990d6af556cd0254"
-    },
-    {
-      "path": "backup/v42-13-final-layout.css",
-      "size": 8127,
-      "sha256": "bf3f10c69af4207cb5bf2594f324e0da6cbb8f13e8657eb02080709e4c10b9e7"
-    },
-    {
-      "path": "backup/v42-app.js",
-      "size": 275867,
-      "sha256": "58d8c69106b8a78fa56d550f1b7cd5a988c29e2b5c00f5b95cf5ec6ae7ee95dc"
-    },
-    {
-      "path": "backup/v42-index.html",
-      "size": 1824,
-      "sha256": "015ff49f721961a5fdaf4ee3324519764d455b4f64d9122170b8bbbfca7a666c"
-    },
-    {
-      "path": "backup/v43-14-match-action-gallery.css",
-      "size": 3689,
-      "sha256": "19af1e65613ed1b3de7c6dd9886e61208868c545b9d7d83dd3835b8cd7f80568"
-    },
-    {
-      "path": "backup/v43-app.js",
-      "size": 303223,
-      "sha256": "af749098c9fa1d39dfdd22a5a7128f613e135297faabedfd9299ae5eb8def1cd"
-    },
-    {
-      "path": "backup/v43-index.html",
-      "size": 1824,
-      "sha256": "015ff49f721961a5fdaf4ee3324519764d455b4f64d9122170b8bbbfca7a666c"
-    },
-    {
       "path": "css/01-base.css",
       "size": 48680,
       "sha256": "e4398c7ae6cfe48a6694be04142c76b8de0505a68dea166b8560c688b29e17ea"
@@ -755,6 +400,11 @@
       "sha256": "0f86972ed1f452152d5367afbdcc472174fc36cc919b0c89fc8f5e7c9b3e0bbb"
     },
     {
+      "path": "css/34-v67-release-polish.css",
+      "size": 2626,
+      "sha256": "fab8c41a9c1c5f0ef132d6c2f8c7d608f8d4fc234ef8b63091b827d983dfbd3a"
+    },
+    {
       "path": "docs/AD_INTEGRATION.md",
       "size": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -771,18 +421,18 @@
     },
     {
       "path": "docs/PROJECT_MAP.md",
-      "size": 7052,
-      "sha256": "4318daaa99bd82100f631b099617f24434a87dd5c15fdc6f0dbb3b5eec11c7fc"
+      "size": 3605,
+      "sha256": "744e6b74284f2da25ffaa2f7148766b3b3f10b8dd44a00243a33118258cee7ca"
     },
     {
       "path": "index.html",
-      "size": 3293,
-      "sha256": "606808b34918a703d6bf4339933d44e1ccc26c5917e6098d98df35da67769faa"
+      "size": 3379,
+      "sha256": "2c17ac29c1d8251a4c28d850e5975c66b504aaa5fa1b017597ba7672e2f4f28b"
     },
     {
       "path": "js/app.js",
-      "size": 591392,
-      "sha256": "bac4f69a39717c3fdc4ebca81bf872e47b4248aa601a8fe2e0cadb971e268665"
+      "size": 593935,
+      "sha256": "7041882fbe6cc4deb02708fb7aa4617105682fcd2345ad63cdafb5b6d881d45b"
     },
     {
       "path": "js/data/economy.js",
@@ -838,6 +488,11 @@
       "path": "supabase/004_social_market_competitions_clans.sql",
       "size": 94020,
       "sha256": "36f71b6873869e48e1bf9f6f9ea57d0c58afc280d6f5b31ace695c24cc842801"
+    },
+    {
+      "path": "supabase/005_v67_market_economy_fix.sql",
+      "size": 2553,
+      "sha256": "b9b042383c273cca84c279b84da0edb6284d3e32acdc72070d9fa2f51ed1719d"
     }
   ]
 }
