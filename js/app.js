@@ -1,5 +1,4 @@
-/* Zero Football — self-contained browser prototype.
-   Progress is saved locally in this browser. The matchmaking opponent is a bot in this version. */
+/* Zero Football — browser football club game with Supabase matchmaking and synchronized online matches. */
 (() => {
   'use strict';
   const STORE_KEY = 'zeroFootball.save.v1';
@@ -134,7 +133,20 @@
   })();
   let zfAuthSession = null;
   let zfAuthUser = null;
+  let zfAuthReady = false;
+  let authScreenMode = 'signup';
+  let authScreenNotice = '';
+  let zfOfflineMode = false;
   let zfCloudBusy = false;
+  let activeOnlineRoom = null;
+  let onlineRoomChannel = null;
+  let onlineRoomPoll = null;
+  let matchmakingPoll = null;
+  let matchmakingPollBusy = false;
+  let onlineInitBusy = false;
+  let onlineActionBusy = false;
+  let multiplayerBusy = false;
+  let publicRoomsCache = [];
   let zfCloudStatus = ZF_SUPABASE ? 'Подключение к Supabase…' : 'Supabase не настроен';
   async function refreshCloudAuth() {
     if (!ZF_SUPABASE) { zfCloudStatus = 'Supabase не настроен'; return; }
@@ -153,22 +165,45 @@
     if (password.length < 6) throw new Error('Пароль должен содержать минимум 6 символов.');
     const result = mode === 'signup' ? await ZF_SUPABASE.auth.signUp({ email, password }) : await ZF_SUPABASE.auth.signInWithPassword({ email, password });
     if (result.error) throw result.error;
-    zfAuthSession = result.data.session || null; zfAuthUser = result.data.user || null;
-    zfCloudStatus = mode === 'signup' && !zfAuthSession ? 'Проверь почту и подтверди регистрацию.' : `Вход выполнен: ${zfAuthUser?.email || email}`;
-    render(); toast(zfCloudStatus);
+    zfAuthSession = result.data.session || null; zfAuthUser = zfAuthSession?.user || null;
+    if (mode === 'signup' && !zfAuthSession) {
+      zfOfflineMode = false;
+      authScreenMode = 'signin';
+      authScreenNotice = 'Аккаунт создан. Проверь почту и подтверди адрес по ссылке из письма, затем войди.';
+      zfCloudStatus = 'Ожидается подтверждение почты.';
+    } else {
+      zfOfflineMode = false;
+      authScreenNotice = '';
+      zfCloudStatus = `Вход выполнен: ${zfAuthUser?.email || email}`;
+    }
+    zfAuthReady = true;
+    render(); toast(authScreenNotice || zfCloudStatus);
   }
   async function cloudSignOut() {
     if (!ZF_SUPABASE) return;
     const { error } = await ZF_SUPABASE.auth.signOut(); if (error) throw error;
     zfAuthSession = null; zfAuthUser = null; zfCloudStatus = 'Вы вышли из аккаунта'; render(); toast('Выход из облачного аккаунта выполнен.');
   }
+  async function authenticatedUser() {
+    if (!ZF_SUPABASE) throw new Error('Supabase не настроен.');
+    const { data, error } = await ZF_SUPABASE.auth.getUser();
+    if (error) throw error;
+    if (!data?.user) throw new Error('Сессия не найдена. Войди в аккаунт ещё раз.');
+    zfAuthUser = data.user;
+    const { data: sessionData, error: sessionError } = await ZF_SUPABASE.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!sessionData?.session?.access_token) throw new Error('Сессия истекла. Войди в аккаунт ещё раз.');
+    zfAuthSession = sessionData.session;
+    return data.user;
+  }
   async function cloudSave(mode) {
-    if (!ZF_SUPABASE || !zfAuthUser) throw new Error('Сначала войди в облачный аккаунт.');
+    if (!ZF_SUPABASE) throw new Error('Supabase не настроен.');
     if (zfCloudBusy) return; zfCloudBusy = true;
     try {
+      const user = await authenticatedUser();
       if (mode === 'upload') {
         const payload = JSON.parse(JSON.stringify(db));
-        const { error } = await ZF_SUPABASE.from('zf_cloud_saves').upsert({ user_id: zfAuthUser.id, payload, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+        const { error } = await ZF_SUPABASE.from('zf_cloud_saves').upsert({ user_id: user.id, payload, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
         if (error) throw error;
         zfCloudStatus = 'Локальное сохранение загружено в облако'; toast('Сохранение отправлено в облако.');
       } else {
@@ -183,12 +218,17 @@
     } finally { zfCloudBusy = false; }
   }
   if (ZF_SUPABASE) {
-    refreshCloudAuth().then(() => { if (view === 'settings') render(); });
-    ZF_SUPABASE.auth.onAuthStateChange((_event, session) => {
-      zfAuthSession = session || null; zfAuthUser = session?.user || null;
+    refreshCloudAuth().then(async () => { zfAuthReady = true; if(zfAuthSession)await restoreOnlineRoom(); render(); });
+    ZF_SUPABASE.auth.onAuthStateChange((event, session) => {
+      zfAuthSession = session || null; zfAuthUser = session?.user || null; zfAuthReady = true;
       zfCloudStatus = zfAuthUser ? `Вход выполнен: ${zfAuthUser.email || 'аккаунт'}` : 'Не выполнен вход';
-      if (view === 'settings') render();
+      if (event === 'SIGNED_OUT') { activeOnlineRoom = null; stopOnlineRoomSync(); try{localStorage.removeItem('zfActiveOnlineRoomId');}catch(_){} authScreenMode = 'signin'; zfOfflineMode = false; }
+      if (event === 'SIGNED_IN') restoreOnlineRoom().then(()=>render());
+      else if (event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') render();
     });
+  } else {
+    zfAuthReady = true;
+    zfCloudStatus = 'Supabase не подключён';
   }
 
   // Persistent presentation preferences; defaults keep the full experience enabled.
@@ -248,7 +288,7 @@
         if (!Array.isArray(c.history)) c.history = [];
         if (!c.style) c.style = 'balanced';
         if (!Number.isFinite(c.energy)) c.energy = 5; c.energy=Math.min(5,Math.max(0,c.energy)); if (!Number.isFinite(c.energyAt)) c.energyAt = Date.now(); if (!Array.isArray(c.sponsors)) c.sponsors = [];
-        c.players.forEach(p=>{const canonical=REAL_PLAYERS.find(r=>p&&(p.wiki===r.wiki||p.name===r.wiki));if(canonical)p.name=canonical.name;else if(p&&/[A-Za-z]/.test(String(p.name||'')))p.name=transliterateName(p.name);if(!p.contractUntil)p.contractUntil=Date.now()+30*86400000;if(!Array.isArray(p.positions))p.positions=[p.position];if(!p.internationalName)p.internationalName=latinizePlayerName(p.name);if(!Number.isFinite(Number(p.stamina)))p.stamina=100;p.stamina=clamp(Number(p.stamina),0,100);delete p.positionPenalty;}); c.players.forEach(p=>{const rb=REAL_PLAYERS.find(x=>x.wiki===p.wiki||x.name===p.name);if(rb){p.realClub=rb.club;p.rating=rb.rating;p.position=rb.position;p.positions=REAL_PLAYER_POSITIONS[rb.wiki]||p.positions||[rb.position];}});
+        c.players.forEach(p=>{const canonical=REAL_PLAYERS.find(r=>p&&(p.wiki===r.wiki||p.name===r.wiki));if(canonical)p.name=canonical.name;else if(p&&/[A-Za-z]/.test(String(p.name||'')))p.name=transliterateName(p.name);if(!p.contractUntil)p.contractUntil=Date.now()+30*86400000;if(!Array.isArray(p.positions))p.positions=[p.position];if(!p.internationalName)p.internationalName=latinizePlayerName(p.name);if(!Number.isFinite(Number(p.stamina)))p.stamina=100;p.stamina=clamp(Number(p.stamina),0,100);delete p.positionPenalty;}); c.players.forEach(p=>{const rb=REAL_PLAYERS.find(x=>x.wiki===p.wiki||x.name===p.name);if(rb){p.realClub=rb.club;p.rating=rb.rating;p.position=rb.position;p.positions=REAL_PLAYER_POSITIONS[rb.wiki]||p.positions||[rb.position];}if(p.realClub||p.club){p.realClub=canonicalPlayerClubName(p.realClub||p.club);}});
         if (!c.formation) c.formation = '4-3-3';
         if(c.lineup.length<11){const used=new Set(c.lineup);for(const p of c.players){if(c.lineup.length>=11)break;if(p?.id&&!used.has(p.id)){c.lineup.push(p.id);used.add(p.id);}}}
         if(c.captainId&&!c.lineup.includes(c.captainId))c.captainId=null;
@@ -317,7 +357,8 @@
     en:{'АЕК Афины':'AEK Athens','Аль-Наср':'Al Nassr','Арсенал':'Arsenal','Астон Вилла':'Aston Villa','Атлетико Мадрид':'Atlético Madrid','Бавария':'Bayern Munich','Барселона':'Barcelona','Борнмут':'Bournemouth','Боруссия Дортмунд':'Borussia Dortmund','Брайтон':'Brighton & Hove Albion','Брюгге':'Club Brugge','Будё-Глимт':'Bodø/Glimt','Вест Хэм':'West Ham United','Викинг':'Viking FK','Вильярреал':'Villarreal','Динамо Киев':'Dynamo Kyiv','Интер':'Inter Milan','Интер Майами':'Inter Miami','Комо':'Como 1907','Кристал Пэлас':'Crystal Palace','Кёльн':'1. FC Köln','Ливерпуль':'Liverpool','Лидс':'Leeds United','Лилль':'Lille','Манчестер Сити':'Manchester City','Манчестер Юнайтед':'Manchester United','Марсель':'Marseille','Милан':'AC Milan','Ньюкасл':'Newcastle United','Ньюкасл Юнайтед':'Newcastle United','ПСВ':'PSV Eindhoven','ПСЖ':'Paris Saint-Germain','Порту':'FC Porto','Реал Бетис':'Real Betis','Реал Мадрид':'Real Madrid','Рома':'AS Roma','Сабах':'Sabah FC','Сантос':'Santos FC','Слован Братислава':'ŠK Slovan Bratislava','Спортинг':'Sporting CP','Тоттенхэм':'Tottenham Hotspur','Фейеноорд':'Feyenoord','Челси':'Chelsea','Шахтёр':'Shakhtar Donetsk','Штутгарт':'VfB Stuttgart'},
     uk:{'АЕК Афины':'АЕК Афіни','Аль-Наср':'Аль-Наср','Арсенал':'Арсенал','Астон Вилла':'Астон Вілла','Атлетико Мадрид':'Атлетіко Мадрид','Бавария':'Баварія','Барселона':'Барселона','Борнмут':'Борнмут','Боруссия Дортмунд':'Боруссія Дортмунд','Брайтон':'Брайтон','Брюгге':'Брюгге','Будё-Глимт':'Буде-Глімт','Вест Хэм':'Вест Гем','Викинг':'Вікінг','Вильярреал':'Вільярреал','Динамо Киев':'Динамо Київ','Интер':'Інтер','Интер Майами':'Інтер Маямі','Комо':'Комо','Кристал Пэлас':'Крістал Пелес','Кёльн':'Кельн','Ливерпуль':'Ліверпуль','Лидс':'Лідс','Лилль':'Лілль','Манчестер Сити':'Манчестер Сіті','Манчестер Юнайтед':'Манчестер Юнайтед','Марсель':'Марсель','Милан':'Мілан','Ньюкасл':'Ньюкасл','Ньюкасл Юнайтед':'Ньюкасл Юнайтед','ПСВ':'ПСВ','ПСЖ':'ПСЖ','Порту':'Порту','Реал Бетис':'Реал Бетіс','Реал Мадрид':'Реал Мадрид','Рома':'Рома','Сабах':'Сабах','Сантос':'Сантус','Слован Братислава':'Слован Братислава','Спортинг':'Спортінг','Тоттенхэм':'Тоттенгем','Фейеноорд':'Феєнорд','Челси':'Челсі','Шахтёр':'Шахтар','Штутгарт':'Штутгарт'}
   };
-  function playerClubLabel(player){const club=String(player?.realClub||player?.club||'Клуб не указан');const lang=db.language||'ru';if(lang==='ru')return club;return PLAYER_CLUB_LABELS[lang]?.[club]||PLAYER_CLUB_LABELS.en[club]||translateUIText(club);} 
+  function canonicalPlayerClubName(value){const club=String(value||'').trim();return ['Ньюкасл','Ньюкасл Юнайтед','Newcastle','Newcastle United'].includes(club)?'Ньюкасл Юнайтед':club;}
+  function playerClubLabel(player){const club=canonicalPlayerClubName(player?.realClub||player?.club||'Клуб не указан');const lang=db.language||'ru';if(lang==='ru')return club;return PLAYER_CLUB_LABELS[lang]?.[club]||PLAYER_CLUB_LABELS.en[club]||translateUIText(club);} 
   function playerCountryLabel(code){return playerCountryData(code).name;}
   function effectiveOVRText(player,target,club=null){const value=playerOVRAt(player,target,club);const penalty=positionPenalty(player,target);return `${value} OVR${penalty<0?` · ${penalty}`:''}`;}
   function rarityFor(rating){return [...RARITY].reverse().find(r=>rating>=r.min)||RARITY[0];}
@@ -535,6 +576,8 @@
   function setInterfaceLanguage(value){const allowed=['ru','uk','en','de','fr','es','ja','zh','kk','pl'];const next=allowed.includes(String(value))?String(value):'ru';if(db.language===next){document.documentElement.lang=next;return;}db.language=next;document.documentElement.lang=next;saveDB();render();}
   document.addEventListener('change',e=>{const select=e.target?.closest?.('[data-setting="language"]');if(!select)return;e.stopPropagation();setInterfaceLanguage(select.value);},true);
   function render(){
+    if(!zfAuthReady){$('#app').innerHTML=renderAuthLoading();return;}
+    if((!zfAuthSession||!zfAuthUser)&&!zfOfflineMode){$('#app').innerHTML=renderAuthGate();applyLanguage();return;}
     const club=currentClub();
     if(!club){$('#app').innerHTML=renderStart();applyLanguage();return;}
     try {
@@ -552,7 +595,7 @@
         const safeName=esc(club.name||'Мой клуб');
         const safeCoins=formatMoney(Number.isFinite(Number(club.coins))?Number(club.coins):0);
         const rosterPreview=players.slice(0,8).map(p=>`<div class="list-row" style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)"><span>${esc(p.name||'Игрок')}</span><b>${Math.max(1,Math.min(99,Number(p.rating)||1))} OVR</b></div>`).join('');
-        const emergencyNav=[['home','Главная'],['team','Команда'],['packs','Паки'],['collection','Коллекция'],['sponsors','Спонсоры'],['match','Матч'],['trophies','Трофеи'],['settings','Настройки']];
+        const emergencyNav=[['home','Главная'],['multiplayer','Мультиплеер'],['team','Команда'],['packs','Паки'],['collection','Коллекция'],['sponsors','Спонсоры'],['match','Матч'],['trophies','Трофеи'],['settings','Настройки']];
         root.innerHTML=`<div class="game-layout" data-theme="${esc(db.theme||'classic')}" style="--crest-color:${esc(club.logo?.color||'#c8ff44')}"><aside class="sidebar"><div class="sidebar-brand"><div class="brand-mark">ZF</div><div class="brand-name">ZERO <span>FOOTBALL</span></div></div><div class="nav-label">Игровой центр</div><nav class="nav-menu">${emergencyNav.map(([id,label])=>`<button class="nav-item ${view===id?'active':''}" data-action="nav" data-view="${id}">${label}</button>`).join('')}</nav><div class="nav-label" style="margin-top:12px">Управление</div><nav class="nav-menu"><button class="nav-item" data-action="switch-club">⇄ Сменить клуб</button></nav></aside><main class="main-area"><header class="topbar"><div class="crumb"><span>ZERO FOOTBALL</span><span>／</span><b>${safeName}</b></div><div class="top-actions"><div class="coin-chip">${safeCoins}</div></div></header><section class="section-heading"><div><div class="eyebrow">КЛУБ ОТКРЫТ</div><h1 class="h1">${safeName}</h1><p class="page-subtitle">Совместимый режим отображения. Данные клуба не затронуты.</p></div></section><section class="stat-grid"><div class="metric-card"><div class="metric-top">Состав</div><div class="metric-value">${players.length}</div><div class="metric-note">игроков</div></div><div class="metric-card"><div class="metric-top">Стартовый состав</div><div class="metric-value">${lineup.length}</div><div class="metric-note">слотов</div></div><div class="metric-card"><div class="metric-top">Рейтинг клуба</div><div class="metric-value">${teamRating(club)}</div><div class="metric-note">OVR</div></div></section><section class="card" style="margin-top:18px"><h2 class="h2">Игроки клуба</h2>${rosterPreview||'<p class="muted">Состав пока пуст.</p>'}<div class="settings-actions" style="margin-top:16px"><button class="btn btn-primary" data-action="nav" data-view="team">Открыть команду</button><button class="btn btn-secondary" data-action="nav" data-view="match">Перейти к матчу</button><button class="btn btn-quiet" data-action="retry-club-render">Повторить обычный экран</button></div></section></main><nav class="mobile-nav">${emergencyNav.map(([id,label])=>`<button class="nav-item ${view===id?'active':''}" data-action="nav" data-view="${id}">${label}</button>`).join('')}</nav></div>`;
         try{applyLanguage();}catch(languageError){console.warn('Compatibility dashboard language pass skipped:',languageError);}
       }
@@ -580,7 +623,16 @@
   }
   function clearMatchTimers(){
     ['timer','agreementTimer','actionTimer'].forEach(key=>{if(matchState?.[key])clearTimeout(matchState[key]);});
+    if(matchmakingPoll){clearInterval(matchmakingPoll);matchmakingPoll=null;}
     if(matchCountdownInterval){clearInterval(matchCountdownInterval);matchCountdownInterval=null;}
+  }
+  function renderAuthLoading(){
+    return `<div class="start-screen"><div class="start-wrap"><div class="start-brand"><div class="brand-mark">ZF</div><div class="brand-name">ZERO <span>FOOTBALL</span></div></div><div class="auth-gate-card"><div class="search-visual"><span class="search-ring"></span><span class="search-ring"></span><span class="search-ring"></span><span class="search-ball">⚽</span></div><h1>ПОДКЛЮЧАЕМ АККАУНТ</h1><p>Проверяем защищённую сессию Zero Football…</p></div></div></div>`;
+  }
+  function renderAuthGate(){
+    const signup=authScreenMode==='signup';
+    const cloudUnavailable=!ZF_SUPABASE;
+    return `<div class="start-screen"><div class="start-wrap"><div class="start-brand"><div class="brand-mark">ZF</div><div class="brand-name">ZERO <span>FOOTBALL</span></div></div><div class="start-layout auth-start-layout"><section class="start-hero"><div><div class="eyebrow">YOUR CLUB. YOUR LEGACY.</div><h1>BUILD.<br><span>PLAY.</span><br>CONQUER.</h1></div><div class="hero-bottom"><p>Создай аккаунт, собери свой клуб и выходи на поле против игроков со всего мира.</p><div class="feature-row"><span>⚽ ONLINE MATCHES</span><span>🎴 PLAYER CARDS</span><span>🏆 YOUR LEGACY</span></div></div><div class="hero-orb"></div></section><section class="start-panel auth-start-panel"><div class="start-language"><label for="startLanguage">🌐 Язык интерфейса</label><select id="startLanguage" class="select-compact" data-setting="language"><option value="ru" ${db.language==="ru"?"selected":""}>🇷🇺 Русский</option><option value="uk" ${db.language==="uk"?"selected":""}>🇺🇦 Українська</option><option value="en" ${db.language==="en"?"selected":""}>🇬🇧 English</option><option value="de" ${db.language==="de"?"selected":""}>🇩🇪 Deutsch</option><option value="fr" ${db.language==="fr"?"selected":""}>🇫🇷 Français</option><option value="es" ${db.language==="es"?"selected":""}>🇪🇸 Español</option><option value="ja" ${db.language==="ja"?"selected":""}>🇯🇵 日本語</option><option value="zh" ${db.language==="zh"?"selected":""}>🇨🇳 中文</option><option value="kk" ${db.language==="kk"?"selected":""}>🇰🇿 Қазақша</option><option value="pl" ${db.language==="pl"?"selected":""}>🇵🇱 Polski</option></select></div><div class="eyebrow">ЗАЩИЩЁННЫЙ ВХОД</div><h2>${signup?'СОЗДАТЬ АККАУНТ':'С ВОЗВРАЩЕНИЕМ'}</h2><p>${signup?'Зарегистрируйся по электронной почте. Один аккаунт — один клуб.':'Войди, чтобы открыть свой клуб и онлайн-режим.'}</p>${authScreenNotice?`<div class="auth-notice">${esc(authScreenNotice)}</div>`:''}${cloudUnavailable?'<div class="auth-error">Supabase не подключён. Проверь js/supabase-config.js.</div>':''}<form id="zfStartAuthForm" class="zf-cloud-auth-form auth-start-form"><div class="field"><label for="zfStartEmail">Электронная почта</label><input id="zfStartEmail" name="email" type="email" autocomplete="email" required placeholder="name@example.com"></div><div class="field"><label for="zfStartPassword">Пароль</label><input id="zfStartPassword" name="password" type="password" autocomplete=${signup?'new-password':'current-password'} minlength="6" required placeholder="Минимум 6 символов"></div><button class="btn btn-primary btn-full" type="submit" data-auth-mode=${signup?'signup':'signin'} ${cloudUnavailable?'disabled':''}>${signup?'Создать аккаунт →':'Войти →'}</button></form><div class="auth-mode-switch">${signup?'Уже есть аккаунт?':'Впервые в Zero Football?'} <button type="button" class="text-button" data-action="auth-mode" data-mode=${signup?'signin':'signup'}>${signup?'Войти':'Зарегистрироваться'}</button></div><button type="button" class="btn btn-quiet btn-full auth-offline-btn" data-action="offline-continue">Продолжить без входа · только одиночный режим</button><p class="muted small auth-footnote">Пароль хранится и проверяется Supabase Auth. Игра не получает доступ к секретным ключам проекта.</p></section></div></div></div>`;
   }
   function renderStart(){
     const clubs=accountClubs();
@@ -613,7 +665,7 @@
   function navButtons(mobile=false){const items=mobile?NAV_ITEMS:NAV_ITEMS;return items.map(([id,icon,label])=>`<button class="nav-item ${view===id?'active':''}" data-action="nav" data-view="${id}"><span class="nav-icon">${icon}</span><span>${label}</span></button>`).join('');}
   function renderLayout(club){
     const style=clubVars(club);
-    return `<div class="game-layout" data-theme="${esc(db.theme||'classic')}" style="${style}"><aside class="sidebar"><div class="sidebar-brand"><div class="brand-mark">ZF</div><div class="brand-name">ZERO <span>FOOTBALL</span></div></div><div class="nav-label">Игровой центр</div><nav class="nav-menu">${navButtons()}</nav><div class="nav-label" style="margin-top:12px">Управление</div><nav class="nav-menu"><button class="nav-item" data-action="nav" data-view="settings"><span class="nav-icon">⚙</span><span>Настройки</span></button><button class="nav-item" data-action="switch-club"><span class="nav-icon">⇄</span><span>Сменить клуб</span></button></nav><div class="nav-spacer"></div><div class="sidebar-club"><div class="sidebar-club-head"><span class="club-crest ${crestShape(club.logo)}" style="--crest-color:${esc(club.logo.color)}">${crestContent(club.logo,.55)}</span><div><strong>${esc(countryData(club.country).flag)} ${esc(club.name)}</strong><small>${teamRating(club)} OVR · ${STYLES[club.style]?.name||'Баланс'}</small></div></div><div class="balance"><span>Баланс</span><b style="color:var(--lime)">${formatMoney(club.coins)}</b></div></div><div class="sidebar-bottom"><button class="btn btn-secondary" data-action="nav" data-view="settings">⚙ Настройки</button><button class="btn btn-quiet" data-action="switch-club">Выйти</button></div></aside><main class="main-area"><header class="topbar"><div class="crumb"><span>ZERO FOOTBALL</span><span>／</span><b>${esc(({home:'Главная',team:'Команда',packs:'Паки',collection:'Коллекция',sponsors:'Спонсоры',match:'Матч',trophies:'Трофеи',editor:'Редактор клуба'})[view]||'Главная')}</b></div><button class="icon-btn mobile-menu" data-action="nav" data-view="settings" aria-label="Настройки">☷</button><div class="top-actions"><button class="icon-btn zf-music-quick ${db.musicEnabled!==false&&db.sound!==false?'is-playing':''}" data-action="music-toggle" title="${db.musicEnabled!==false&&db.sound!==false?'Отключить музыку':'Включить музыку'}" aria-label="Музыка">${db.musicEnabled!==false&&db.sound!==false?'♫':'♪'}</button><div class="coin-chip"><span>${formatMoney(club.coins)}</span></div><div class="profile-circle">${esc(avatarLetters(club.name))}</div></div></header>${renderPage(club)}</main><nav class="mobile-nav">${navButtons(true)}</nav></div>`;
+    return `<div class="game-layout" data-theme="${esc(db.theme||'classic')}" style="${style}"><aside class="sidebar"><div class="sidebar-brand"><div class="brand-mark">ZF</div><div class="brand-name">ZERO <span>FOOTBALL</span></div></div><div class="nav-label">Игровой центр</div><nav class="nav-menu">${navButtons()}<button class="nav-item ${view==='multiplayer'?'active':''}" data-action="nav" data-view="multiplayer"><span class="nav-icon">🌐</span><span>Мультиплеер</span></button></nav><div class="nav-label" style="margin-top:12px">Управление</div><nav class="nav-menu"><button class="nav-item" data-action="nav" data-view="settings"><span class="nav-icon">⚙</span><span>Настройки</span></button><button class="nav-item" data-action="switch-club"><span class="nav-icon">⇄</span><span>Сменить клуб</span></button></nav><div class="nav-spacer"></div><div class="sidebar-club"><div class="sidebar-club-head"><span class="club-crest ${crestShape(club.logo)}" style="--crest-color:${esc(club.logo.color)}">${crestContent(club.logo,.55)}</span><div><strong>${esc(countryData(club.country).flag)} ${esc(club.name)}</strong><small>${teamRating(club)} OVR · ${STYLES[club.style]?.name||'Баланс'}</small></div></div><div class="balance"><span>Баланс</span><b style="color:var(--lime)">${formatMoney(club.coins)}</b></div></div><div class="sidebar-bottom"><button class="btn btn-secondary" data-action="nav" data-view="settings">⚙ Настройки</button><button class="btn btn-quiet" data-action="switch-club">Выйти</button></div></aside><main class="main-area"><header class="topbar"><div class="crumb"><span>ZERO FOOTBALL</span><span>／</span><b>${esc(({home:'Главная',multiplayer:'Мультиплеер',team:'Команда',packs:'Паки',collection:'Коллекция',sponsors:'Спонсоры',match:'Матч',trophies:'Трофеи',editor:'Редактор клуба'})[view]||'Главная')}</b></div><button class="icon-btn mobile-menu" data-action="nav" data-view="settings" aria-label="Настройки">☷</button><div class="top-actions"><button class="icon-btn zf-music-quick ${db.musicEnabled!==false&&db.sound!==false?'is-playing':''}" data-action="music-toggle" title="${db.musicEnabled!==false&&db.sound!==false?'Отключить музыку':'Включить музыку'}" aria-label="Музыка">${db.musicEnabled!==false&&db.sound!==false?'♫':'♪'}</button><div class="coin-chip"><span>${formatMoney(club.coins)}</span></div><div class="profile-circle">${esc(avatarLetters(club.name))}</div></div></header>${renderPage(club)}</main><nav class="mobile-nav">${navButtons(true)}<button class="nav-item ${view==='multiplayer'?'active':''}" data-action="nav" data-view="multiplayer"><span class="nav-icon">🌐</span><span>Мультиплеер</span></button></nav></div>`;
   }
   const THEME_OPTIONS = window.ZF_DATA.THEME_OPTIONS;
   function renderSettings(club){
@@ -631,9 +683,9 @@
   }
   function allPlayerClubNames(club){
     const names=new Set();
-    (REAL_PLAYERS||[]).forEach(p=>{const name=String(p.club||p.realClub||'').trim();if(name)names.add(name);});
-    (db.clubs||[]).forEach(c=>(c.players||[]).forEach(p=>{const name=String(p.realClub||p.club||'').trim();if(name)names.add(name);}));
-    (club?.players||[]).forEach(p=>{const name=String(p.realClub||p.club||'').trim();if(name)names.add(name);});
+    (REAL_PLAYERS||[]).forEach(p=>{const name=canonicalPlayerClubName(p.club||p.realClub||'');if(name)names.add(name);});
+    (db.clubs||[]).forEach(c=>(c.players||[]).forEach(p=>{const name=canonicalPlayerClubName(p.realClub||p.club||'');if(name)names.add(name);}));
+    (club?.players||[]).forEach(p=>{const name=canonicalPlayerClubName(p.realClub||p.club||'');if(name)names.add(name);});
     return [...names].sort((a,b)=>a.localeCompare(b,db.language||'ru'));
   }
   function renderCollection(club){
@@ -643,9 +695,161 @@
   }
   function applyCollectionFilters(){
     const grid=$('#collectionGrid');if(!grid)return;const club=currentClub();const owned=collectionMode==='owned';let list=owned?club.players.slice():REAL_PLAYERS.map(p=>({id:p.id,name:p.name,wiki:p.wiki,country:p.country,realClub:p.club,position:p.position,positions:REAL_PLAYER_POSITIONS[p.wiki]||[p.position],rating:p.rating,contractUntil:Date.now()+30*86400000}));
-    const q=($('#collectionSearch')?.value||'').toLowerCase(),pos=$('#collectionPosition')?.value||'',rar=$('#collectionRarity')?.value||'',country=$('#collectionCountry')?.value||'',clubName=$('#collectionClub')?.value||'',minRaw=$('#collectionPriceMin')?.value||'',maxRaw=$('#collectionPriceMax')?.value||'',minPrice=minRaw===''?0:Math.max(0,Number(minRaw)),maxPrice=maxRaw===''?Infinity:Math.max(0,Number(maxRaw)),sort=$('#collectionSort')?.value||'rating';list=list.filter(p=>{const value=marketValue(p.rating),pClub=String(p.realClub||p.club||'').trim();return (!q||p.name.toLowerCase().includes(q)||playerDisplayName(p).toLowerCase().includes(q)||String(pClub).toLowerCase().includes(q))&&(!pos||(p.positions||[p.position]).includes(pos))&&(!rar||({bronze:p.rating<65,silver:p.rating>=65&&p.rating<75,gold:p.rating>=75&&p.rating<85,elite:p.rating>=85&&p.rating<90,icon:p.rating>=90})[rar])&&(!country||p.country===country)&&(!clubName||pClub.localeCompare(clubName,undefined,{sensitivity:'accent'})===0)&&value>=minPrice&&value<=maxPrice;});list.sort(sort==='name'?(a,b)=>a.name.localeCompare(b.name,'ru'):sort==='price-high'?(a,b)=>marketValue(b.rating)-marketValue(a.rating):sort==='price-low'?(a,b)=>marketValue(a.rating)-marketValue(b.rating):(a,b)=>b.rating-a.rating);grid.innerHTML=list.map(p=>renderPlayerCard(p,owned,false)).join('');applyLanguage();resolvePlayerImages();
+    const q=($('#collectionSearch')?.value||'').toLowerCase(),pos=$('#collectionPosition')?.value||'',rar=$('#collectionRarity')?.value||'',country=$('#collectionCountry')?.value||'',clubName=$('#collectionClub')?.value||'',minRaw=$('#collectionPriceMin')?.value||'',maxRaw=$('#collectionPriceMax')?.value||'',minPrice=minRaw===''?0:Math.max(0,Number(minRaw)),maxPrice=maxRaw===''?Infinity:Math.max(0,Number(maxRaw)),sort=$('#collectionSort')?.value||'rating';list=list.filter(p=>{const value=marketValue(p.rating),pClub=canonicalPlayerClubName(p.realClub||p.club||'');return (!q||p.name.toLowerCase().includes(q)||playerDisplayName(p).toLowerCase().includes(q)||String(pClub).toLowerCase().includes(q))&&(!pos||(p.positions||[p.position]).includes(pos))&&(!rar||({bronze:p.rating<65,silver:p.rating>=65&&p.rating<75,gold:p.rating>=75&&p.rating<85,elite:p.rating>=85&&p.rating<90,icon:p.rating>=90})[rar])&&(!country||p.country===country)&&(!clubName||pClub.localeCompare(clubName,undefined,{sensitivity:'accent'})===0)&&value>=minPrice&&value<=maxPrice;});list.sort(sort==='name'?(a,b)=>a.name.localeCompare(b.name,'ru'):sort==='price-high'?(a,b)=>marketValue(b.rating)-marketValue(a.rating):sort==='price-low'?(a,b)=>marketValue(a.rating)-marketValue(b.rating):(a,b)=>b.rating-a.rating);grid.innerHTML=list.map(p=>renderPlayerCard(p,owned,false)).join('');applyLanguage();resolvePlayerImages();
   }
-  function renderPage(club){switch(view){case'settings':return renderSettings(club);case'team':return renderTeam(club);case'packs':return renderPacks(club);case'collection':return renderCollection(club);case'sponsors':return renderSponsors(club);case'match':return renderMatch(club);case'trophies':return renderTrophies(club);case'editor':return renderEditor(club);default:return renderHome(club);}}
+  function onlineClubSnapshot(club){
+    if(!club)return null;
+    const players=(club.lineup||[]).map(id=>(club.players||[]).find(p=>p.id===id)).filter(Boolean).slice(0,11).map(p=>({name:String(p.name||'Игрок').slice(0,42),rating:Math.max(1,Math.min(99,Number(p.rating)||1)),position:p.assignedPosition||p.position||'CM'}));
+    return {name:String(club.name||'Клуб').slice(0,28),country:club.country||'ua',rating:teamRating(club),logo:{symbol:club.logo?.symbol||'★',color:club.logo?.color||'#c8ff44'},players};
+  }
+  async function loadPublicRooms(){
+    if(!ZF_SUPABASE||!zfAuthUser)return;
+    const {data,error}=await ZF_SUPABASE.from('zf_multiplayer_rooms').select('id,room_code,host_club,created_at').eq('status','waiting').eq('is_public',true).order('created_at',{ascending:false}).limit(20);
+    if(error)throw error;
+    publicRoomsCache=data||[];
+  }
+  function stopOnlineRoomSync(){
+    if(onlineRoomPoll){clearInterval(onlineRoomPoll);onlineRoomPoll=null;}
+    if(onlineRoomChannel&&ZF_SUPABASE){try{ZF_SUPABASE.removeChannel(onlineRoomChannel);}catch(_){}}
+    onlineRoomChannel=null;
+  }
+  async function refreshOnlineRoom(){
+    if(!ZF_SUPABASE||!activeOnlineRoom?.id)return;
+    const {data,error}=await ZF_SUPABASE.from('zf_multiplayer_rooms').select('*').eq('id',activeOnlineRoom.id).single();
+    if(error)throw error;
+    activeOnlineRoom=data;
+    if(data.game_state?.mode==='quick_match'){
+      await prepareQuickMatchRoom(data);
+      if(view==='match')render();
+    }else if(view==='multiplayer')render();
+  }
+  async function prepareQuickMatchRoom(room){
+    if(!room?.id||room.game_state?.mode!=='quick_match')return;
+    activeOnlineRoom=room;
+    const startedKey='zfOnlineStarted:'+room.id;
+    if(!localStorage.getItem(startedKey)){
+      const club=currentClub();
+      if(club){refreshEnergy(club);if(club.energy>0)club.energy--;saveDB();}
+      try{localStorage.setItem(startedKey,'1');}catch(_){}
+    }
+    if(room.status==='finished'){
+      const appliedKey='zfOnlineResultApplied:'+room.id;
+      if(!localStorage.getItem(appliedKey)){
+        const club=currentClub(),score=room.game_state?.score||{host:0,guest:0},isHost=zfAuthUser?.id===room.host_user_id;
+        if(club){const own=Number(isHost?score.host:score.guest)||0,against=Number(isHost?score.guest:score.host)||0;club.stats=club.stats||{};club.stats.matches=(Number(club.stats.matches)||0)+1;club.stats.goalsFor=(Number(club.stats.goalsFor)||0)+own;club.stats.goalsAgainst=(Number(club.stats.goalsAgainst)||0)+against;if(own>against)club.stats.wins=(Number(club.stats.wins)||0)+1;else if(own===against)club.stats.draws=(Number(club.stats.draws)||0)+1;else club.stats.losses=(Number(club.stats.losses)||0)+1;club.coins=(Number(club.coins)||0)+0.35;saveDB();}
+        try{localStorage.setItem(appliedKey,'1');}catch(_){}
+      }
+    }
+    const events=room.game_state?.events;
+    if(room.status==='playing'&&(!Array.isArray(events)||events.length===0)&&zfAuthUser?.id===room.host_user_id&&!onlineInitBusy){
+      onlineInitBusy=true;
+      try{
+        const {data,error}=await ZF_SUPABASE.rpc('zf_initialize_live_match',{p_room_id:room.id,p_events:createOnlineMatchEvents()});
+        if(error)throw error;
+        const updated=Array.isArray(data)?data[0]:data;if(updated?.id)activeOnlineRoom=updated;
+      }catch(error){console.warn('Could not initialize live match:',error);}
+      finally{onlineInitBusy=false;}
+    }
+  }
+  async function restoreOnlineRoom(){
+    const id=localStorage.getItem('zfActiveOnlineRoomId');
+    if(!id||!zfAuthUser||!ZF_SUPABASE)return;
+    try{
+      const {data,error}=await ZF_SUPABASE.from('zf_multiplayer_rooms').select('*').eq('id',id).maybeSingle();
+      if(error)throw error;
+      if(data&&(data.host_user_id===zfAuthUser.id||data.guest_user_id===zfAuthUser.id))startOnlineRoomSync(data);
+      else localStorage.removeItem('zfActiveOnlineRoomId');
+    }catch(error){console.warn('Could not restore online room:',error);}
+  }
+  function startOnlineRoomSync(room){
+    stopOnlineRoomSync();
+    if(!room?.id||!ZF_SUPABASE)return;
+    activeOnlineRoom=room;
+    try{localStorage.setItem('zfActiveOnlineRoomId',room.id);}catch(_){}
+    const channel=ZF_SUPABASE.channel('zf-room-'+room.id)
+      .on('postgres_changes',{event:'*',schema:'public',table:'zf_multiplayer_rooms',filter:'id=eq.'+room.id},payload=>{
+        if(payload.new){activeOnlineRoom=payload.new;if(payload.new.game_state?.mode==='quick_match'){prepareQuickMatchRoom(payload.new).then(()=>{if(view==='match')render();}).catch(err=>console.warn(err));if(view==='match')render();}else if(view==='multiplayer')render();}
+      })
+      .on('postgres_changes',{event:'DELETE',schema:'public',table:'zf_multiplayer_rooms',filter:'id=eq.'+room.id},()=>{activeOnlineRoom=null;try{localStorage.removeItem('zfActiveOnlineRoomId');}catch(_){}stopOnlineRoomSync();if(view==='multiplayer'||view==='match'){render();toast('Комната закрыта создателем.','error');}});
+    onlineRoomChannel=channel.subscribe();
+    onlineRoomPoll=setInterval(()=>{if(activeOnlineRoom?.id)refreshOnlineRoom().catch(error=>console.warn('Online room refresh failed:',error));},1200);
+  }
+  async function multiplayerCreateRoom(){
+    const user=await authenticatedUser(),club=currentClub();
+    if(!club)throw new Error('Сначала создай клуб.');
+    if(multiplayerBusy)return;multiplayerBusy=true;
+    try{
+      const code=Array.from({length:6},()=> 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+      const isPublic=$('#mpPublicRoom')?.checked===true;
+      const {data,error}=await ZF_SUPABASE.from('zf_multiplayer_rooms').insert({room_code:code,host_user_id:user.id,host_club:onlineClubSnapshot(club),is_public:isPublic,status:'waiting',game_state:{}}).select('*').single();
+      if(error)throw error;
+      view='multiplayer';startOnlineRoomSync(data);await loadPublicRooms().catch(()=>{});render();toast(`Комната создана. Код: ${code}`);
+    }finally{multiplayerBusy=false;}
+  }
+  async function multiplayerJoinRoom(rawCode){
+    const user=await authenticatedUser(),club=currentClub();
+    if(!club)throw new Error('Сначала создай клуб.');
+    const code=String(rawCode||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if(code.length!==6)throw new Error('Код комнаты должен состоять из 6 символов.');
+    if(multiplayerBusy)return;multiplayerBusy=true;
+    try{
+      const {data,error}=await ZF_SUPABASE.rpc('zf_join_room',{p_room_code:code,p_guest_club:onlineClubSnapshot(club)});
+      if(error)throw error;
+      const room=Array.isArray(data)?data[0]:data;
+      if(!room?.id)throw new Error('Комната не найдена или уже занята.');
+      view='multiplayer';startOnlineRoomSync(room);await loadPublicRooms().catch(()=>{});render();toast('Ты подключился к комнате.');
+    }finally{multiplayerBusy=false;}
+  }
+  async function multiplayerStartMatch(){
+    const user=await authenticatedUser(),room=activeOnlineRoom;
+    if(!room||room.host_user_id!==user.id)throw new Error('Начать матч может создатель комнаты.');
+    if(!room.guest_user_id||room.status!=='ready')throw new Error('Ждём подключения второго игрока.');
+    const {data,error}=await ZF_SUPABASE.rpc('zf_start_room',{p_room_id:room.id});
+    if(error)throw error;
+    activeOnlineRoom=Array.isArray(data)?data[0]:data;render();
+  }
+  async function multiplayerLeaveRoom(){
+    if(!activeOnlineRoom?.id)return;
+    const roomId=activeOnlineRoom.id;
+    const {error}=await ZF_SUPABASE.rpc('zf_leave_room',{p_room_id:roomId});
+    if(error)throw error;
+    stopOnlineRoomSync();activeOnlineRoom=null;try{localStorage.removeItem('zfActiveOnlineRoomId');}catch(_){}view='multiplayer';
+    await loadPublicRooms().catch(()=>{});render();toast('Ты покинул онлайн-комнату.');
+  }
+  async function multiplayerSubmitAction(choice){
+    if(!['left','center','right'].includes(choice))throw new Error('Неверный вариант удара.');
+    const room=activeOnlineRoom;if(!room?.id)throw new Error('Комната не найдена.');
+    const user=await authenticatedUser();
+    const {data,error}=await ZF_SUPABASE.rpc('zf_submit_penalty_action',{p_room_id:room.id,p_expected_round:Number(room.game_state?.round)||1,p_expected_phase:room.game_state?.phase||'shoot',p_choice:choice});
+    if(error)throw error;
+    const updated=Array.isArray(data)?data[0]:data;
+    if(updated?.id)activeOnlineRoom=updated;else await refreshOnlineRoom();
+    render();
+  }
+  function renderMultiplayer(club){
+    if(!zfAuthSession||!zfAuthUser)return `<div class="section-heading"><div><div class="eyebrow">ZERO FOOTBALL · ONLINE</div><h1 class="h1">МУЛЬТИПЛЕЕР</h1><p class="page-subtitle">Для онлайн-игр нужен аккаунт.</p></div></div><section class="card"><h2 class="h2">ВОЙДИ В ZERO FOOTBALL</h2><p class="muted small">Ты сейчас в офлайн-режиме. Создай аккаунт или войди, чтобы открывать комнаты и играть с другими пользователями.</p><button class="btn btn-primary" data-action="nav" data-view="settings">Открыть настройки аккаунта →</button></section>`;
+    const room=activeOnlineRoom;
+    if(room){
+      const host=room.host_club||{},guest=room.guest_club||{};
+      const isHost=zfAuthUser?.id===room.host_user_id;
+      const ownName=isHost?host.name:guest.name;
+      const phase=room.game_state?.phase||'shoot',round=Number(room.game_state?.round)||1;
+      const shooterRole=round%2===1?'host':'guest';
+      const shooterId=shooterRole==='host'?room.host_user_id:room.guest_user_id;
+      const expectedId=phase==='shoot'?shooterId:(shooterRole==='host'?room.guest_user_id:room.host_user_id);
+      const myTurn=zfAuthUser?.id===expectedId;
+      const shooterName=shooterRole==='host'?(host.name||'Хозяева'):(guest.name||'Гости');
+      const roleText=phase==='shoot'?(myTurn?'Твой удар':'Соперник выбирает направление удара'):(myTurn?'Твоя задача — угадать направление':'Соперник выбирает направление для сейва');
+      const score=room.game_state?.score||{host:0,guest:0};
+      const log=Array.isArray(room.game_state?.log)?room.game_state.log:[];
+      const laneLabel={left:'ЛЕВО',center:'ЦЕНТР',right:'ПРАВО'};
+      const controls=room.status==='playing'&&myTurn?`<div class=\"mp-lanes\">${['left','center','right'].map(x=>`<button class=\"mp-lane\" data-action=\"mp-penalty-choice\" data-choice=\"${x}\"><span>${x==='left'?'↙':x==='center'?'↑':'↘'}</span><b>${laneLabel[x]}</b></button>`).join('')}</div>`:room.status==='playing'?`<div class=\"auth-notice\">${esc(roleText)}. Ход обновится автоматически.</div>`:'';
+      return `<div class=\"section-heading\"><div><div class=\"eyebrow\">ОНЛАЙН · КОМНАТА ${esc(room.room_code)}</div><h1 class=\"h1\">${room.status==='playing'?'СЕРИЯ ПЕНАЛЬТИ':'ОНЛАЙН-КОМНАТА'}</h1><p class=\"page-subtitle\">${room.status==='waiting'?'Ожидание второго игрока. Поделись кодом комнаты.':room.status==='ready'?'Соперник подключился. Можно начинать матч.':room.status==='finished'?'Серия завершена.':'Пять ударов каждому — кто точнее, тот победил.'}</p></div><span class=\"pill pill-lime\">${room.status==='waiting'?'Ожидание':room.status==='ready'?'2 игрока':'В сети'}</span></div><section class=\"card mp-room-card\"><div class=\"mp-room-code\"><span>КОД ПРИГЛАШЕНИЯ</span><strong>${esc(room.room_code)}</strong><button class=\"btn btn-secondary btn-sm\" data-action=\"copy-room-code\">Скопировать код</button></div><div class=\"mp-versus\"><div><div class=\"club-crest\" style=\"--crest-color:${esc(host.logo?.color||'#c8ff44')}\">${esc(host.logo?.symbol||'★')}</div><strong>${esc(host.name||'Хозяин')}</strong><small>${Number(host.rating)||0} OVR</small></div><b>VS</b><div><div class=\"club-crest\" style=\"--crest-color:${esc(guest.logo?.color||'#89938a')}\">${esc(guest.logo?.symbol||'?')}</div><strong>${esc(guest.name||'Ожидаем игрока')}</strong><small>${guest.rating?`${Number(guest.rating)} OVR`:'Не подключён'}</small></div></div>${room.status==='waiting'?`<div class=\"auth-notice\">${isHost?'Комната создана. Отправь код другу и дождись подключения.':'Подключение завершено.'}</div>`:''}${room.status==='ready'?`<div class=\"settings-actions\">${isHost?'<button class=\"btn btn-primary\" data-action=\"mp-start\">Начать онлайн-матч →</button>':'<div class=\"auth-notice\">Ожидаем, пока создатель начнёт матч.</div>'}</div>`:''}${room.status==='playing'?`<div class=\"mp-score\"><div class=\"eyebrow\">СЧЁТ СЕРИИ · ${Math.min(5,Math.ceil(round/2))}/5</div><strong>${Number(score.host)||0} : ${Number(score.guest)||0}</strong><small>${esc(host.name||'Хозяин')} — ${esc(guest.name||'Гость')}</small></div><div class=\"mp-turn-info\"><span class=\"pill\">${phase==='shoot'?'⚽ УДАР':'🧤 СЕЙВ'}</span><b>${esc(roleText)}</b><small>${phase==='shoot'?`${esc(shooterName)} бьёт`:`${esc(shooterName)} бьёт · второй игрок защищается`}</small></div>${controls}`:''}${room.status==='finished'?`<div class=\"mp-score\"><div class=\"eyebrow\">ФИНАЛЬНЫЙ СЧЁТ</div><strong>${Number(score.host)||0} : ${Number(score.guest)||0}</strong><small>${score.host===score.guest?'Ничья':score.host>score.guest?`${esc(host.name||'Хозяева')} победили`:`${esc(guest.name||'Гости')} победили`}</small></div>`:''}${log.length?`<div class=\"mp-log\"><div class=\"eyebrow\">ХРОНИКА СЕРИИ</div>${log.map((entry,i)=>`<div class=\"statline\"><span>${i+1}. ${esc(entry.shooter_name||'Игрок')} · ${esc(laneLabel[entry.shot]||entry.shot||'—')}</span><b>${entry.goal?'ГОЛ':'СЕЙВ'}</b></div>`).join('')}</div>`:''}<div class=\"settings-actions\"><button class=\"btn btn-secondary\" data-action=\"mp-refresh\">↻ Обновить</button><button class=\"btn btn-quiet\" data-action=\"mp-leave-room\">Покинуть комнату</button></div></section>`;
+    }
+    const rooms=publicRoomsCache.map(r=>`<div class=\"mp-public-room\"><div><strong>${esc(r.host_club?.name||'Клуб')}</strong><small>${Number(r.host_club?.rating)||0} OVR · Код ${esc(r.room_code)}</small></div><button class=\"btn btn-secondary btn-sm\" data-action=\"mp-join-room\" data-room-code=\"${esc(r.room_code)}\">Подключиться</button></div>`).join('');
+    return `<div class=\"section-heading\"><div><div class=\"eyebrow\">ZERO FOOTBALL · ONLINE</div><h1 class=\"h1\">МУЛЬТИПЛЕЕР</h1><p class=\"page-subtitle\">Создавай комнаты, приглашай друзей или подключайся к открытому матчу.</p></div><span class=\"pill pill-lime\">🌐 Supabase</span></div><div class=\"dashboard-grid mp-dashboard\"><section class=\"card\"><div class=\"eyebrow\">СОЗДАТЬ ИГРУ</div><h2 class=\"h2\">НОВАЯ КОМНАТА</h2><p class=\"muted small\">Создай приватную комнату по коду или открытую, чтобы другой игрок нашёл её в списке.</p><label class=\"setting-toggle\"><span><b>Открытая комната</b><small>Показывать комнату в общем поиске.</small></span><input type=\"checkbox\" id=\"mpPublicRoom\"></label><button class=\"btn btn-primary btn-full\" data-action=\"mp-create\" ${multiplayerBusy?'disabled':''}>＋ Создать комнату</button></section><section class=\"card\"><div class=\"eyebrow\">ПРИСОЕДИНИТЬСЯ</div><h2 class=\"h2\">ЕСТЬ КОД?</h2><p class=\"muted small\">Введи шестизначный код приглашения от другого игрока.</p><form id=\"mpJoinCodeForm\" class=\"mp-join-form\"><input name=\"roomCode\" maxlength=\"6\" minlength=\"6\" required placeholder=\"ABC123\" autocomplete=\"off\"><button class=\"btn btn-secondary\" type=\"submit\">Подключиться →</button></form></section></div><section class=\"card mp-public-list\"><div class=\"card-header\"><div><div class=\"eyebrow\">ОТКРЫТЫЕ КОМНАТЫ</div><h2 class=\"h2\">ПОИСК ИГРОКОВ</h2></div><button class=\"btn btn-quiet btn-sm\" data-action=\"mp-refresh\">↻ Обновить</button></div>${rooms||'<div class=\"empty-state\"><div class=\"empty-icon\">🌐</div><strong>Свободных комнат пока нет</strong><span class=\"small\">Создай свою или подключись по приглашению.</span></div>'}</section><section class=\"card\"><div class=\"eyebrow\">ПЕРВЫЙ ОНЛАЙН-РЕЖИМ</div><h2 class=\"h2\">СЕРИЯ ПЕНАЛЬТИ 1 НА 1</h2><p class=\"muted small\">Пять ударов каждому. Игроки по очереди бьют и становятся вратарями. Ходы и счёт синхронизируются через сервер.</p></section>`;
+  }
+  function renderPage(club){switch(view){case'multiplayer':return renderMultiplayer(club);case'settings':return renderSettings(club);case'team':return renderTeam(club);case'packs':return renderPacks(club);case'collection':return renderCollection(club);case'sponsors':return renderSponsors(club);case'match':return renderMatch(club);case'trophies':return renderTrophies(club);case'editor':return renderEditor(club);default:return renderHome(club);}}
   function renderAdSlot(club,placement='home'){
     if(db.adsEnabled===false)return '';
     const now=Date.now();const active=club.sponsorSlots?.title&&club.sponsorSlots.title.until>now?club.sponsorSlots.title:null;
@@ -657,7 +861,7 @@
   function renderHomeProgress(club){const p=progressionState(club);return `<section class="card home-progression"><div><span class="eyebrow">${translateUIText('УРОВЕНЬ КЛУБА')}</span><strong>${translateUIText('Уровень')} ${p.level}/30</strong><small>${p.level>=30?translateUIText('Максимальный уровень'):`${p.xp} / ${p.need} XP`}</small></div><div class="progression-bar"><span style="width:${p.percent}%"></span></div><button class="btn btn-secondary btn-sm" data-action="nav" data-view="trophies">${translateUIText('Задания и уровни')}</button></section>`;}
   function renderHome(club){
     const history=(club.history||[]).slice(0,3);
-    return `<div class="welcome-banner"><div class="welcome-copy"><div class="eyebrow">ДОБРО ПОЖАЛОВАТЬ В ТВОЮ ФУТБОЛЬНУЮ ЭРУ</div><h1>WELCOME BACK,<br><span>${esc(club.name)}.</span></h1><p>Твой клуб — твои правила. Усиливай состав, выбирай стиль игры и поднимайся по футбольной лестнице.</p><button class="btn btn-primary" data-action="nav" data-view="match">⚽ Найти соперника <span>→</span></button></div><div class="banner-crest-wrap"><div class="banner-crest ${crestShape(club.logo)}" style="--crest-color:${esc(club.logo.color)}">${crestContent(club.logo,.9)}</div></div></div>${renderAdSlot(club,'home')}${renderHomeProgress(club)}<div class="stat-grid"><div class="metric-card"><div class="metric-top">Рейтинг команды <span class="metric-symbol">★</span></div><div class="metric-value">${teamRating(club)} <span style="font-size:13px;color:var(--muted)">OVR</span></div><div class="metric-note">Средний рейтинг стартовых 11</div></div><div class="metric-card"><div class="metric-top">Матчи <span class="metric-symbol">⚽</span></div><div class="metric-value">${club.stats.matches}</div><div class="metric-note">${club.stats.wins} побед · ${club.stats.draws} ничьих</div></div><div class="metric-card"><div class="metric-top">Победы <span class="metric-symbol">🏆</span></div><div class="metric-value">${club.stats.wins}</div><div class="metric-note">${club.stats.losses} поражений</div></div><div class="metric-card"><div class="metric-top">Футболисты <span class="metric-symbol">♧</span></div><div class="metric-value">${club.players.length}</div><div class="metric-note">${activePlayers(club).length} в стартовом составе</div></div></div><div class="dashboard-grid"><section class="card"><div class="card-header"><div><div class="eyebrow">Быстрый доступ</div><h2 class="h2">ЧТО ДЕЛАЕМ СЕГОДНЯ?</h2><p>Пара действий — и команда станет сильнее.</p></div></div><div class="quick-actions"><button class="quick-action" data-action="nav" data-view="team"><div class="qa-icon">🧩</div><strong>Настроить команду</strong><small>Состав, схема и игровой стиль</small></button><button class="quick-action" data-action="nav" data-view="packs"><div class="qa-icon">🎴</div><strong>Магазин паков</strong><small>Паки и ежедневный бонус</small></button><button class="quick-action" data-action="nav" data-view="trophies"><div class="qa-icon">🏆</div><strong>Трофеи</strong><small>${Object.keys(club.trophyUnlocks||{}).length} из ${TROPHIES.length} достижений</small></button></div></section><section class="card"><div class="card-header"><div><div class="eyebrow">Последние события</div><h2 class="h2">ИСТОРИЯ КЛУБА</h2></div><button class="btn btn-quiet btn-sm" data-action="nav" data-view="match">Играть →</button></div>${history.length?`<div class="recent-list">${history.map(h=>`<div class="recent-row"><div class="recent-icon">${h.result==='W'?'🏆':h.result==='D'?'🤝':'⚽'}</div><div><strong>${esc(h.opponent)}</strong><small>${esc(h.date||'Недавно')} · ${h.result==='W'?'Победа':h.result==='D'?'Ничья':'Поражение'}</small></div><div class="right ${h.result==='W'?'positive':''}">${h.score}</div></div>`).join('')}</div>`:`<div class="empty-state"><div class="empty-icon">📋</div><strong>Первая глава ещё впереди</strong><span class="small">Сыграй матч, и он появится здесь.</span></div>`}</section></div>`;
+    return `<div class="welcome-banner"><div class="welcome-copy"><div class="eyebrow">ДОБРО ПОЖАЛОВАТЬ В ТВОЮ ФУТБОЛЬНУЮ ЭРУ</div><h1>WELCOME BACK,<br><span>${esc(club.name)}.</span></h1><p>Твой клуб — твои правила. Усиливай состав, выбирай стиль игры и поднимайся по футбольной лестнице.</p><button class="btn btn-primary" data-action="nav" data-view="match">⚽ Найти соперника <span>→</span></button></div><div class="banner-crest-wrap"><div class="banner-crest ${crestShape(club.logo)}" style="--crest-color:${esc(club.logo.color)}">${crestContent(club.logo,.9)}</div></div></div>${renderAdSlot(club,'home')}${renderHomeProgress(club)}<div class="stat-grid"><div class="metric-card"><div class="metric-top">Рейтинг команды <span class="metric-symbol">★</span></div><div class="metric-value">${teamRating(club)} <span style="font-size:13px;color:var(--muted)">OVR</span></div><div class="metric-note">Средний рейтинг стартовых 11</div></div><div class="metric-card"><div class="metric-top">Матчи <span class="metric-symbol">⚽</span></div><div class="metric-value">${club.stats.matches}</div><div class="metric-note">${club.stats.wins} побед · ${club.stats.draws} ничьих</div></div><div class="metric-card"><div class="metric-top">Победы <span class="metric-symbol">🏆</span></div><div class="metric-value">${club.stats.wins}</div><div class="metric-note">${club.stats.losses} поражений</div></div><div class="metric-card"><div class="metric-top">Футболисты <span class="metric-symbol">♧</span></div><div class="metric-value">${club.players.length}</div><div class="metric-note">${activePlayers(club).length} в стартовом составе</div></div></div><div class="dashboard-grid"><section class="card"><div class="card-header"><div><div class="eyebrow">Быстрый доступ</div><h2 class="h2">ЧТО ДЕЛАЕМ СЕГОДНЯ?</h2><p>Пара действий — и команда станет сильнее.</p></div></div><div class="quick-actions"><button class="quick-action" data-action="nav" data-view="multiplayer"><div class="qa-icon">🌐</div><strong>Мультиплеер</strong><small>Создать комнату или подключиться по коду</small></button><button class="quick-action" data-action="nav" data-view="team"><div class="qa-icon">🧩</div><strong>Настроить команду</strong><small>Состав, схема и игровой стиль</small></button><button class="quick-action" data-action="nav" data-view="packs"><div class="qa-icon">🎴</div><strong>Магазин паков</strong><small>Паки и ежедневный бонус</small></button><button class="quick-action" data-action="nav" data-view="trophies"><div class="qa-icon">🏆</div><strong>Трофеи</strong><small>${Object.keys(club.trophyUnlocks||{}).length} из ${TROPHIES.length} достижений</small></button></div></section><section class="card"><div class="card-header"><div><div class="eyebrow">Последние события</div><h2 class="h2">ИСТОРИЯ КЛУБА</h2></div><button class="btn btn-quiet btn-sm" data-action="nav" data-view="match">Играть →</button></div>${history.length?`<div class="recent-list">${history.map(h=>`<div class="recent-row"><div class="recent-icon">${h.result==='W'?'🏆':h.result==='D'?'🤝':'⚽'}</div><div><strong>${esc(h.opponent)}</strong><small>${esc(h.date||'Недавно')} · ${h.result==='W'?'Победа':h.result==='D'?'Ничья':'Поражение'}</small></div><div class="right ${h.result==='W'?'positive':''}">${h.score}</div></div>`).join('')}</div>`:`<div class="empty-state"><div class="empty-icon">📋</div><strong>Первая глава ещё впереди</strong><span class="small">Сыграй матч, и он появится здесь.</span></div>`}</section></div>`;
   }
   function pitchLineKey(role,formationId){
     if(role==='GK')return 'keeper';
@@ -701,19 +905,15 @@
     const now=new Date();return [now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
   }
   function renderPromoPanel(club){
-    const redeemed=Array.isArray(club.redeemedPromoCodes)&&club.redeemedPromoCodes.includes('1testgame');
-    return `<section class="card promo-code-panel" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">БОНУСЫ ZERO FOOTBALL</div><h2 class="h2">ПРОМОКОД</h2><p>Введи код и получи игровую валюту на баланс клуба.</p></div><span class="pill">🎁 Бонус</span></div><form id="promoCodeForm" class="promo-code-controls"><input id="promoCodeInput" name="promoCode" class="collection-search" type="text" maxlength="40" autocomplete="off" placeholder="Например, 1TestGame" aria-label="Промокод" ${redeemed?'disabled':''} required><button class="btn btn-primary" type="submit" ${redeemed?'disabled':''}>${redeemed?'Уже использован':'Активировать'}</button></form><p class="muted small">${redeemed?'Код 1TestGame уже активирован на этом клубе.':'1TestGame · награда +€100 млн · один раз на клуб.'}</p></section>`;
+    const redeemed=Array.isArray(club.redeemedPromoCodes)&&club.redeemedPromoCodes.includes('1testgame');const onlineRedeemed=Array.isArray(club.redeemedPromoCodes)&&club.redeemedPromoCodes.includes('1onlintest');
+    return `<section class="card promo-code-panel" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">БОНУСЫ ZERO FOOTBALL</div><h2 class="h2">ПРОМОКОД</h2><p>Введи код и получи игровую валюту на баланс клуба.</p></div><span class="pill">🎁 Бонус</span></div><form id="promoCodeForm" class="promo-code-controls"><input id="promoCodeInput" name="promoCode" class="collection-search" type="text" maxlength="40" autocomplete="off" placeholder="Например, 1TestGame" aria-label="Промокод" ${redeemed&&onlineRedeemed?'disabled':''} required><button class="btn btn-primary" type="submit" ${redeemed&&onlineRedeemed?'disabled':''}>${redeemed&&onlineRedeemed?'Оба кода использованы':'Активировать'}</button></form><p class="muted small">${redeemed?'1TestGame активирован. ':''}${onlineRedeemed?'1OnlinTest активирован. ':'1OnlinTest · по одному паку каждого типа.'}${!redeemed?'1TestGame · +€100 млн.':''}</p></section>`;
   }
   function redeemPromoCode(){
     const club=currentClub();if(!club)return;
     const input=$('#promoCodeInput');const code=String(input?.value||'').trim().toLowerCase();
     if(!code){toast('Введи промокод.','error');input?.focus();return;}
     club.redeemedPromoCodes=Array.isArray(club.redeemedPromoCodes)?club.redeemedPromoCodes:[];
-    if(code!=='1testgame'){toast('Такого промокода не существует.','error');return;}
-    if(club.redeemedPromoCodes.includes('1testgame')){toast('Этот промокод уже использован.','error');render();return;}
-    club.coins=(Number(club.coins)||0)+100;
-    club.redeemedPromoCodes.push('1testgame');
-    saveDB();render();toast('Промокод 1TestGame активирован: +€100 млн.');
+    if(code==='1onlintest'){if(club.redeemedPromoCodes.includes('1onlintest')){toast('Этот промокод уже использован.','error');return;}const inv=ensurePackInventory(club);for(const pack of ZF_PACK_OPTIONS)inv[pack.id]=(inv[pack.id]||0)+1;club.redeemedPromoCodes.push('1onlintest');saveDB();render();toast('1OnlinTest активирован: получено по одному паку каждого типа.');return;}if(code==='1testgame'){if(club.redeemedPromoCodes.includes('1testgame')){toast('Этот промокод уже использован.','error');render();return;}club.coins=(Number(club.coins)||0)+100;club.redeemedPromoCodes.push('1testgame');saveDB();render();toast('Промокод 1TestGame активирован: +€100 млн.');return;}toast('Такого промокода не существует.','error');
   }
 
   function dailyShop(club){
@@ -730,18 +930,20 @@
     club.dailyShop.offers=valid;saveDB();
     return club.dailyShop;
   }
+  const ZF_PACK_OPTIONS=[
+    {id:'starter',name:'Агентство ★',type:'Агентство · 1 звезда',price:2,count:3,color:'#c8ff44',glow:'rgba(200,255,68,.13)',desc:'3 футболиста. Базовый шанс на сильную карточку.',meta:'3 КАРТОЧКИ'},
+    {id:'national',name:'Агентство ★★',type:'Агентство · 2 звезды',price:8,count:4,color:'#79c9ff',glow:'rgba(121,201,255,.16)',desc:'4 футболиста. Более высокий шанс на рейтинг 70+.',meta:'4 КАРТОЧКИ'},
+    {id:'pro',name:'Агентство ★★★',type:'Агентство · 3 звезды',price:25,count:5,color:'#c296ff',glow:'rgba(194,150,255,.17)',desc:'5 футболистов. Повышенный шанс на рейтинг 75+.',meta:'5 КАРТОЧЕК'},
+    {id:'elite',name:'Агентство ★★★★',type:'Агентство · 4 звезды',price:75,count:5,color:'#ffb45e',glow:'rgba(255,180,94,.17)',desc:'5 футболистов. Высокий шанс на рейтинг 80+.',meta:'5 КАРТОЧЕК'},
+    {id:'legend',name:'Агентство ★★★★★',type:'Агентство · 5 звёзд',price:200,count:6,color:'#ff6f9e',glow:'rgba(255,111,158,.17)',desc:'6 футболистов. Лучшие шансы на элитных игроков.',meta:'6 КАРТОЧЕК'},
+    {id:'daily',name:'Ежедневный бесплатный пак',type:'Ежедневный бонус',price:0,count:2,color:'#f6ce58',glow:'rgba(246,206,88,.17)',desc:'2 футболиста. Один бесплатный набор каждые сутки.',meta:'БЕСПЛАТНО · 1 РАЗ В ДЕНЬ'}
+  ];
+  function ensurePackInventory(club){if(!club.packInventory||typeof club.packInventory!=='object')club.packInventory={};for(const p of ZF_PACK_OPTIONS)club.packInventory[p.id]=Math.max(0,Math.floor(Number(club.packInventory[p.id])||0));return club.packInventory;}
   function renderPacks(club){
-    const packOptions=[
-      {id:'starter',name:'Агентство ★',type:'Агентство · 1 звезда',price:2,count:3,color:'#c8ff44',glow:'rgba(200,255,68,.13)',desc:'3 футболиста. Базовый шанс на сильную карточку.',meta:'3 КАРТОЧКИ'},
-      {id:'national',name:'Агентство ★★',type:'Агентство · 2 звезды',price:8,count:4,color:'#79c9ff',glow:'rgba(121,201,255,.16)',desc:'4 футболиста. Более высокий шанс на рейтинг 70+.',meta:'4 КАРТОЧКИ'},
-      {id:'pro',name:'Агентство ★★★',type:'Агентство · 3 звезды',price:25,count:5,color:'#c296ff',glow:'rgba(194,150,255,.17)',desc:'5 футболистов. Повышенный шанс на рейтинг 75+.',meta:'5 КАРТОЧЕК'},
-      {id:'elite',name:'Агентство ★★★★',type:'Агентство · 4 звезды',price:75,count:5,color:'#ffb45e',glow:'rgba(255,180,94,.17)',desc:'5 футболистов. Высокий шанс на рейтинг 80+.',meta:'5 КАРТОЧЕК'},
-      {id:'legend',name:'Агентство ★★★★★',type:'Агентство · 5 звёзд',price:200,count:6,color:'#ff6f9e',glow:'rgba(255,111,158,.17)',desc:'6 футболистов. Лучшие шансы на элитных игроков.',meta:'6 КАРТОЧЕК'},
-      {id:'daily',name:'Ежедневный бесплатный пак',type:'Ежедневный бонус',price:0,count:2,color:'#f6ce58',glow:'rgba(246,206,88,.17)',desc:'2 футболиста. Один бесплатный набор каждые сутки.',meta:'БЕСПЛАТНО · 1 РАЗ В ДЕНЬ'}
-    ];
-    const shop=dailyShop(club);const freeReady=club.freePackDay!==shop.day;
-    const dailyCards=shop.offers.map(wiki=>{const player=REAL_PLAYERS.find(x=>x.wiki===wiki);if(!player)return '';const claimed=shop.claimed.includes(wiki);const owned=club.players.some(x=>x.wiki===wiki);const price=Math.max(.08,Math.round(marketValue(player.rating)*.06*100)/100);const unavailable=claimed||owned;return `<article class="daily-market-card">${renderPlayerCard({...player,id:null,realClub:player.club},false,false)}<button class="btn ${unavailable?'btn-quiet':'btn-primary'} btn-sm daily-market-buy" data-action="claim-daily-card" data-player-wiki="${esc(wiki)}" data-player-price="${price}" ${unavailable||club.coins<price?'disabled':''}>${claimed?'Куплено':owned?'Уже в клубе':`Купить · ${formatMoney(price)}`}</button></article>`;}).join('');
-    return `<div class="section-heading"><div><div class="eyebrow">Pack market</div><h1 class="h1">МАГАЗИН ПАКОВ</h1><p class="page-subtitle">Выбирай наборы карточек и усиливай состав через открытие паков.</p></div><div class="actions"><span class="coin-chip">${formatMoney(club.coins)}</span></div></div>${renderPromoPanel(club)}<section class="card daily-player-shop" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ЕЖЕДНЕВНЫЙ МАГАЗИН</div><h2 class="h2">КАРТОЧКИ ДЛЯ ПОКУПКИ</h2><p>Только футболисты, которых ещё нет в твоём клубе. Ассортимент и цены обновляются ежедневно.</p></div><span class="pill pill-lime">${shop.day}</span></div><div class="daily-player-cards player-grid">${dailyCards||'<p class="muted">Все доступные футболисты уже в твоём клубе.</p>'}</div></section><section class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ПАКИ ДЛЯ КОМАНДЫ</div><h2 class="h2">НАБОРЫ КАРТОЧЕК</h2><p>Все платные и бесплатные паки находятся в одном каталоге. Ежедневный бесплатный набор обновляется раз в сутки.</p></div><span class="pill">${shop.day}</span></div></section><div class="pack-grid">${packOptions.map(p=>`<article class="pack-card" style="--pack-color:${p.color};--pack-glow:${p.glow}"><div class="pack-art"><div class="pack-box"><span class="pack-art-star">✦</span><span class="pack-art-mark">ZF</span><span class="pack-art-lines"></span></div><span class="pack-orbit orbit-a"></span><span class="pack-orbit orbit-b"></span></div><div class="pack-type">${p.type}</div><h3>${p.name}</h3><p>${p.desc}</p><div class="pack-bottom"><span class="pack-price">${p.id==='daily'?'БЕСПЛАТНО':formatMoney(p.price)}</span><button class="btn btn-primary btn-sm" data-action="open-pack" data-pack="${p.id}" ${p.id==='daily'&&!freeReady?'disabled':(p.id!=='daily'&&club.coins<p.price)?'disabled':''}>${p.id==='daily'&&!freeReady?'Получен сегодня':'Открыть ↗'}</button></div><div class="pack-footnote">${p.meta} · Игроки добавятся в твою коллекцию</div></article>`).join('')}</div>`;
+    const inventory=ensurePackInventory(club),shop=dailyShop(club),freeReady=club.freePackDay!==shop.day;
+    const dailyCards=shop.offers.map(wiki=>{const player=REAL_PLAYERS.find(x=>x.wiki===wiki);if(!player)return '';const claimed=shop.claimed.includes(wiki);const owned=club.players.some(x=>x.wiki===wiki);const price=Math.max(.08,Math.round(marketValue(player.rating)*.06*100)/100);const unavailable=claimed||owned;return `<article class="daily-market-card">${renderPlayerCard({...player,id:null,realClub:player.club},false,false)}<button class="btn ${unavailable?'btn-quiet':'btn-primary'} btn-sm daily-market-buy" data-action="claim-daily-card" data-player-wiki="${esc(wiki)}" ${unavailable||club.coins<price?'disabled':''}>${claimed?'Куплено':owned?'Уже в клубе':`Купить · ${formatMoney(price)}`}</button></article>`;}).join('');
+    const inventoryMarkup=ZF_PACK_OPTIONS.filter(p=>inventory[p.id]>0).map(p=>`<article class="pack-inventory-item"><div><strong>${p.name}</strong><small>${p.type}</small></div><span class="pill pill-lime">×${inventory[p.id]}</span><button class="btn btn-primary btn-sm" data-action="open-inventory-pack" data-pack="${p.id}">Открыть один</button></article>`).join('');
+    return `<div class="section-heading"><div><div class="eyebrow">Pack market</div><h1 class="h1">МАГАЗИН ПАКОВ</h1><p class="page-subtitle">Покупай наборы заранее. Все приобретённые паки хранятся в инвентаре.</p></div><div class="actions"><span class="coin-chip">${formatMoney(club.coins)}</span></div></div>${renderPromoPanel(club)}<section class="card daily-player-shop" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ЕЖЕДНЕВНЫЙ МАГАЗИН</div><h2 class="h2">КАРТОЧКИ ДЛЯ ПОКУПКИ</h2><p>Каждую из трёх карточек можно купить один раз. Весь ассортимент обновляется ежедневно в 00:00.</p></div><span class="pill pill-lime">Обновление · 00:00</span></div><div class="daily-player-cards player-grid">${dailyCards||'<p class="muted">Все доступные футболисты уже в твоём клубе.</p>'}</div></section><section class="card pack-inventory" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ТВОИ ПОКУПКИ</div><h2 class="h2">ИНВЕНТАРЬ ПАКОВ</h2><p>Открывай наборы в любое удобное время.</p></div><span class="pill">${Object.values(inventory).reduce((a,b)=>a+b,0)} паков</span></div><div class="pack-inventory-list">${inventoryMarkup||'<p class="muted small">Инвентарь пока пуст. Купленные паки появятся здесь.</p>'}</div></section><section class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ПАКИ ДЛЯ КОМАНДЫ</div><h2 class="h2">НАБОРЫ КАРТОЧЕК</h2><p>Выбери количество и добавь наборы в инвентарь. Открытие не происходит автоматически.</p></div></div></section><div class="pack-grid">${ZF_PACK_OPTIONS.map(p=>`<article class="pack-card" style="--pack-color:${p.color};--pack-glow:${p.glow}"><div class="pack-art"><div class="pack-box"><span class="pack-art-star">✦</span><span class="pack-art-mark">ZF</span><span class="pack-art-lines"></span></div><span class="pack-orbit orbit-a"></span><span class="pack-orbit orbit-b"></span></div><div class="pack-type">${p.type}</div><h3>${p.name}</h3><p>${p.desc}</p><div class="pack-bottom"><span class="pack-price">${p.id==='daily'?'БЕСПЛАТНО':formatMoney(p.price)}</span><label class="pack-quantity-label">Количество <select class="select-compact pack-quantity" data-pack-quantity="${p.id}" ${p.id==='daily'?'disabled':''}>${[1,2,3,5,10].map(n=>`<option value="${n}">${n}</option>`).join('')}</select></label><button class="btn btn-primary btn-sm" data-action="buy-pack" data-pack="${p.id}" ${p.id==='daily'&&!freeReady?'disabled':(p.id!=='daily'&&club.coins<p.price)?'disabled':''}>${p.id==='daily'&&!freeReady?'Получен сегодня':'Купить в инвентарь'}</button></div><div class="pack-footnote">${p.meta} · В инвентарь</div></article>`).join('')}</div>`;
   }
   function renderPlayerCard(p,actions=false,clickable=false){
     const activeClub=currentClub();const lineupIndex=p.id&&activeClub?.lineup?activeClub.lineup.indexOf(p.id):-1;const assignedRole=lineupIndex>=0?(FORMATIONS[activeClub.formation]||FORMATIONS['4-3-3'])[lineupIndex]?.role:null;const shownRating=lineupIndex>=0?playerOVRAt(p,assignedRole||p.position,activeClub):(p.id&&activeClub?.captainId===p.id&&activeClub?.lineup?.includes(p.id)?p.rating+1:p.rating);const r=rarityFor(shownRating);const country=playerCountryData(p.country);const displayName=playerDisplayName(p);const displayPositions=playerPositionsLabel(p);const displayClub=playerClubLabel(p);
@@ -1337,28 +1539,113 @@ function renderProgressionAndMissions(club){
     return `<div class="section-heading"><div><div class="eyebrow">Зал славы клуба</div><h1 class="h1">ЗАЛ ТРОФЕЕВ</h1><p class="page-subtitle">Каждый матч — новая возможность вписать имя клуба в историю.</p></div><span class="pill pill-lime">🏆 ${unlocked} / ${TROPHIES.length}</span></div><div class="card" style="margin-bottom:17px;background:linear-gradient(100deg,rgba(247,200,90,.08),transparent 70%),var(--panel)"><div class="card-header" style="margin-bottom:0"><div><div class="eyebrow">Зал славы</div><h2 class="h2">ТВОЯ КОЛЛЕКЦИЯ ДОСТИЖЕНИЙ</h2><p>Продолжай играть, собирать игроков и улучшать клуб, чтобы разблокировать новые награды.</p></div><div style="font:900 33px 'Barlow Condensed',sans-serif;color:var(--gold)">${Math.round(unlocked/TROPHIES.length*100)}%</div></div><div class="progress" style="height:8px;margin-top:17px"><span style="width:${unlocked/TROPHIES.length*100}%;background:var(--gold)"></span></div></div>${renderProgressionAndMissions(club)}<div class="trophy-grid">${TROPHIES.map(t=>{const earned=!!club.trophyUnlocks[t.id];return `<article class="trophy-card ${earned?'':'locked'}"><div class="trophy-medal">${earned?t.icon:'🔒'}</div><h3>${t.name}</h3><p>${t.desc}</p><div class="trophy-status">${earned?'✓ Получен':`Цель: ${t.goal}`}</div>${earned?`<div class="tiny muted" style="margin-top:8px">${new Date(club.trophyUnlocks[t.id]).toLocaleDateString(({ru:'ru-RU',uk:'uk-UA',en:'en-GB',de:'de-DE',fr:'fr-FR',es:'es-ES',ja:'ja-JP',zh:'zh-CN',kk:'kk-KZ',pl:'pl-PL'})[db.language||'ru']||'ru-RU')}</div>`:''}</article>`;}).join('')}</div>`;
   }
   function energyWidget(club){refreshEnergy(club);return `<div class="energy-panel"><div><strong>⚡ Матчи команды</strong><div class="energy-pips">${Array.from({length:5},(_,i)=>`<span class="energy-pip ${i<(club.energy||0)?'on':''}"></span>`).join('')}</div></div><div class="energy-copy"><b id="energy-count-label">${club.energy||0}/5 матчей</b><br>+1 матч каждые 30 минут<br><span class="energy-recovery-countdown" data-energy-recovery>${energyCountdownText(club)}</span></div><div class="energy-actions"><button class="btn btn-secondary btn-sm" data-action="refill-energy" ${(club.energy||0)>=5?'disabled':''}>Купить +1 матч · €0.10M</button><button class="btn btn-quiet btn-sm" data-action="watch-ad" ${(club.energy||0)>=5?'disabled':''}>▶ Реклама · +1 матч</button></div></div>`;}
+  const ONLINE_PENALTY_ZONES=[
+    {id:'left-high',label:'Верхний левый',glyph:'↖'},{id:'left-low',label:'Нижний левый',glyph:'↙'},
+    {id:'center-high',label:'Верх по центру',glyph:'↑'},{id:'center-low',label:'Низ по центру',glyph:'↓'},
+    {id:'right-high',label:'Верхний правый',glyph:'↗'},{id:'right-low',label:'Нижний правый',glyph:'↘'}
+  ];
+  function createOnlineMatchEvents(){
+    const standard=[
+      {minute:8,zone:'ЦЕНТРАЛЬНАЯ ЗОНА',title:'Комбинация у штрафной',description:'Полузащитник нашёл пространство между линиями. Атакующий выбирает продолжение, защитник — способ остановить атаку.',attackChoices:[['safe-pass','Короткий пас'],['through','Пас за спину'],['dribble','Дриблинг'],['shot','Удар']],defenseChoices:[['press','Прессинг'],['block','Низкий блок'],['intercept','Перехват'],['tackle','Отбор']]},
+      {minute:17,zone:'ПРАВЫЙ ФЛАНГ',title:'Свободная зона на фланге',description:'Вингер получил пространство у боковой линии. Решение атакующего и ответ защитника определят развитие эпизода.',attackChoices:[['cross','Навес'],['cutback','Прострел'],['dribble','Обводка'],['switch-play','Перевод фланга']],defenseChoices:[['double','Удвоить опеку'],['block','Закрыть зону'],['tackle','Отбор'],['intercept','Перехват']]},
+      {minute:26,zone:'ПОСЛЕ ПЕРЕХВАТА',title:'Контратака',description:'Мяч перехвачен, впереди свободное пространство. Одна команда начинает атаку, другая пытается сорвать быстрый выход.',attackChoices:[['fast-break','Быстрый выход'],['through','Вертикальный пас'],['dribble','Продвижение с мячом'],['longshot','Дальний удар']],defenseChoices:[['press','Контрпрессинг'],['tackle','Тактический фол'],['offside','Офсайдная ловушка'],['block','Сдержать атаку']]},
+      {minute:35,zone:'КРАЙ ШТРАФНОЙ',title:'Момент для решающего паса',description:'Нападающий открывается между защитниками. Выбери способ завершения или правильное оборонительное действие.',attackChoices:[['shot','Удар'],['cutback','Прострел назад'],['through','Пас вразрез'],['hold','Подержать мяч']],defenseChoices:[['block','Блокировать удар'],['double','Удвоить опеку'],['intercept','Перекрыть пас'],['tackle','Вступить в отбор']]},
+      {minute:45,kind:'penalty',zone:'11 МЕТРОВ',title:'ПЕНАЛЬТИ!',description:'Бьющий выбирает один из шести участков ворот. Вратарь одновременно выбирает, куда прыгнуть.'},
+      {minute:54,zone:'ЛЕВЫЙ ФЛАНГ',title:'Подача в штрафную',description:'Игрок готовит доставку мяча в штрафную. Защита должна решить, какую зону закрыть.',attackChoices:[['cross','Навес'],['cutback','Прострел'],['dribble','Обводка'],['switch-play','Перевод фланга']],defenseChoices:[['double','Удвоить опеку'],['block','Закрыть ближнюю зону'],['clear','Выбить мяч'],['intercept','Перехват']]},
+      {minute:63,zone:'ВТОРОЙ ТЕМП',title:'Подбор у дуги штрафной',description:'Защита отбила первую волну, но атакующая команда сохранила мяч. Важно не дать сопернику пробить.',attackChoices:[['shot','Удар с подбора'],['safe-pass','Розыгрыш'],['dribble','Обострить дриблинг'],['through','Вертикальная передача']],defenseChoices:[['block','Закрыть удар'],['press','Выйти в прессинг'],['tackle','Отбор'],['clear','Вынос']]},
+      {minute:72,zone:'ПОЛУФЛАНГ',title:'Перегруз центра',description:'Несколько игроков стягивают оборону к мячу. Можно рискнуть передачей или сохранить владение.',attackChoices:[['through','Пас вразрез'],['one-two','Стенка'],['dribble','Обводка'],['shot','Удар']],defenseChoices:[['intercept','Перехват'],['double','Удвоить опеку'],['block','Компактный блок'],['tackle','Отбор']]},
+      {minute:81,zone:'ПЕРЕД ШТРАФНОЙ',title:'Опасный стандарт',description:'Игрок готовится исполнить стандарт. Атака выбирает подачу или прямой удар, защита организует стенку и опеку.',attackChoices:[['shot','Прямой удар'],['cross','Навес'],['cutback','Розыгрыш низом'],['hold','Разыграть коротко']],defenseChoices:[['block','Плотная стенка'],['double','Персональная опека'],['clear','Игра на вынос'],['intercept','Перекрыть передачу']]},
+      {minute:89,zone:'ПОСЛЕДНЯЯ АТАКА',title:'Последний шанс',description:'Финальный эпизод матча. Одна точная комбинация или грамотная защита решит исход встречи.',attackChoices:[['shot','Решающий удар'],['through','Пас за спину'],['fast-break','Рывок вперёд'],['safe-pass','Подготовить атаку']],defenseChoices:[['block','Защитить ворота'],['tackle','Отобрать мяч'],['intercept','Перехватить пас'],['clear','Выбить мяч']]}
+    ];
+    return standard.map(event=>event.kind==='penalty'?{...event,attackChoices:ONLINE_PENALTY_ZONES.map(z=>z.id),defenseChoices:ONLINE_PENALTY_ZONES.map(z=>z.id)}:{...event,kind:'open_play',attackChoices:event.attackChoices.map(x=>Array.isArray(x)?x[0]:x),defenseChoices:event.defenseChoices.map(x=>Array.isArray(x)?x[0]:x)});
+  }
+  function onlineChoiceLabel(id){
+    const common={shot:'Удар',longshot:'Дальний удар',dribble:'Дриблинг',through:'Пас за спину','fast-break':'Быстрая атака',cross:'Навес',cutback:'Прострел',hold:'Сохранить мяч','safe-pass':'Короткий пас','switch-play':'Перевод фланга','one-two':'Стенка',press:'Прессинг',block:'Низкий блок',intercept:'Перехват',tackle:'Отбор',double:'Удвоить опеку',offside:'Офсайдная ловушка',clear:'Вынос'};
+    const zone=ONLINE_PENALTY_ZONES.find(z=>z.id===id);return zone?`${zone.glyph} ${zone.label}`:(common[id]||id);
+  }
+  function onlineRoomIsQuick(room=activeOnlineRoom){return room?.game_state?.mode==='quick_match';}
+  async function openQuickMatchRoom(roomId){
+    const {data,error}=await ZF_SUPABASE.from('zf_multiplayer_rooms').select('*').eq('id',roomId).single();
+    if(error)throw error;
+    clearMatchTimers();view='match';matchState={stage:'online',online:true};startOnlineRoomSync(data);
+    await prepareQuickMatchRoom(data);render();toast('Соперник найден! Матч начинается.');
+  }
+  function launchBotFallback(){
+    if(matchmakingPoll){clearInterval(matchmakingPoll);matchmakingPoll=null;}
+    if(matchState?.timer)clearTimeout(matchState.timer);
+    const club=currentClub();if(!club)return;
+    const base=BOT_CLUBS[rand(0,BOT_CLUBS.length-1)];
+    const userR=teamRating(club),targetBotRating=clamp(userR+rand(-8,8),50,95);
+    const botPlayers=makeBotRoster(targetBotRating),opponentRating=rosterTeamRating(botPlayers,'4-3-3');
+    const token='match-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6);
+    matchState={stage:'found',matchToken:token,agreementDeadline:Date.now()+60000,opponent:{name:base.name,symbol:base.symbol,country:base.country,color:pick(['#f18b65','#76b8ff','#d3d5d0','#e6adff','#f6cf56']),rating:opponentRating,players:botPlayers},score:[0,0],log:[]};
+    matchState.agreementTimer=setTimeout(()=>{if(matchState.stage==='found'&&matchState.matchToken===token){clearMatchTimers();matchState={stage:'idle'};render();toast('Время на принятие матча истекло.','error');}},60000);
+    render();toast('Соперник не найден за 30 секунд. Подобран бот.');
+  }
+  async function pollQuickMatch(){
+    if(matchState.stage!=='searching'||!ZF_SUPABASE||matchmakingPollBusy)return;
+    matchmakingPollBusy=true;
+    try{
+      const {data,error}=await ZF_SUPABASE.rpc('zf_matchmaking_status');if(error)throw error;
+      if(matchState.stage==='searching'&&data?.status==='matched'&&data.room_id){if(matchmakingPoll){clearInterval(matchmakingPoll);matchmakingPoll=null;}if(matchState.timer)clearTimeout(matchState.timer);await openQuickMatchRoom(data.room_id);}
+    }catch(error){console.warn('Matchmaking poll error:',error);}
+    finally{matchmakingPollBusy=false;}
+  }
+  async function submitOnlineMatchChoice(choice){
+    const room=activeOnlineRoom;if(!room?.id||!onlineRoomIsQuick(room)||onlineActionBusy)return;
+    const idx=Number(room.game_state?.event_index)||0,events=room.game_state?.events||[],event=events[idx];if(!event)return;
+    const host=zfAuthUser?.id===room.host_user_id,attackerRole=idx%2===0?'host':'guest';
+    const role=((attackerRole==='host'&&host)||(attackerRole==='guest'&&!host))?'attack':'defend';
+    if(role==='attack'&&!event.attackChoices.includes(choice))throw new Error('Недопустимый выбор атаки.');
+    if(role==='defend'&&!event.defenseChoices.includes(choice))throw new Error('Недопустимый выбор защиты.');
+    onlineActionBusy=true;
+    try{
+      const {data,error}=await ZF_SUPABASE.rpc('zf_submit_live_match_action',{p_room_id:room.id,p_expected_event:idx,p_role:role,p_choice:choice});
+      if(error)throw error;
+      const updated=Array.isArray(data)?data[0]:data;if(updated?.id)activeOnlineRoom=updated;
+      await prepareQuickMatchRoom(activeOnlineRoom);render();
+    }finally{onlineActionBusy=false;}
+  }
+  async function leaveQuickMatchAndSearch(){
+    const room=activeOnlineRoom;
+    if(room?.id&&onlineRoomIsQuick(room)){try{await ZF_SUPABASE.rpc('zf_leave_room',{p_room_id:room.id});}catch(error){console.warn('Could not leave previous quick match:',error);}}
+    stopOnlineRoomSync();activeOnlineRoom=null;try{localStorage.removeItem('zfActiveOnlineRoomId');}catch(_){}
+    matchState={stage:'idle'};startSearch();
+  }
+  function renderOnlineMatch(club){
+    const room=activeOnlineRoom,state=room?.game_state||{},events=state.events||[],idx=Number(state.event_index)||0;
+    const host=room?.host_user_id===zfAuthUser?.id,isHost=host;
+    const own=host?(room.host_club||{}):(room.guest_club||{}),opponent=host?(room.guest_club||{}):(room.host_club||{});
+    const score=state.score||{host:0,guest:0},ownScore=Number(host?score.host:score.guest)||0,oppScore=Number(host?score.guest:score.host)||0;
+    const ownName=own.name||'Твой клуб',oppName=opponent.name||'Соперник';
+    const scoreMarkup=`<div class="match-scoreboard"><div class="match-team"><div class="club-crest" style="--crest-color:${esc(own.logo?.color||'#c8ff44')}">${esc(own.logo?.symbol||'★')}</div><strong>${esc(ownName)}</strong><span class="pill" style="margin-top:7px">${Number(own.rating)||0} OVR · Ты</span></div><div class="match-center"><div class="match-minute">${Math.min(10,idx)}/10</div><div class="match-score">${ownScore} : ${oppScore}</div><div class="match-status">${room.status==='finished'?'ФИНАЛЬНЫЙ СВИСТОК':'ОНЛАЙН · LIVE'}</div></div><div class="match-team"><div class="club-crest" style="--crest-color:${esc(opponent.logo?.color||'#87918a')}">${esc(opponent.logo?.symbol||'★')}</div><strong>${esc(oppName)}</strong><span class="pill" style="margin-top:7px">${Number(opponent.rating)||0} OVR</span></div></div>`;
+    if(room.status==='finished'||idx>=events.length){
+      const log=(state.log||[]).map(entry=>`<div class="log-row"><span class="log-minute">${esc(entry.minute||'—')}′</span><span>${esc(entry.title||'Эпизод')} · ${entry.goal?'⚽ ГОЛ':'Без гола'} · ${esc(entry.attack_choice||'')} / ${esc(entry.defense_choice||'')}</span></div>`).join('');
+      return `<div class="section-heading"><div><div class="eyebrow">Онлайн-матч · 10 эпизодов</div><h1 class="h1">ФИНАЛЬНЫЙ СВИСТОК</h1><p class="page-subtitle">Все решения и итоговый счёт синхронизированы между игроками.</p></div><span class="pill pill-lime">Завершён</span></div><div class="match-shell">${scoreMarkup}<section class="card" style="padding:25px;text-align:center"><h2 class="h2">${ownScore>oppScore?'ПОБЕДА!':ownScore===oppScore?'НИЧЬЯ':'ПОРАЖЕНИЕ'}</h2><div class="result-stamp">${ownScore} : ${oppScore}</div><p class="muted small">События матча: ${events.length}. Все десять эпизодов завершены.</p><div class="match-log" style="text-align:left">${log}</div><div class="settings-actions" style="justify-content:center;margin-top:18px"><button class="btn btn-primary" data-action="online-match-again">🔎 Найти нового соперника</button><button class="btn btn-secondary" data-action="online-match-menu">В меню</button></div></section></div>`;
+    }
+    if(!events.length)return `<div class="section-heading"><div><div class="eyebrow">Онлайн-матч</div><h1 class="h1">ГОТОВИМ ПОЛЕ</h1><p class="page-subtitle">Соперник найден. Загружаем общие игровые события…</p></div><span class="pill pill-lime">Синхронизация</span></div><div class="match-shell">${scoreMarkup}<section class="card" style="padding:28px;text-align:center"><div class="search-visual"><span class="search-ball">⚽</span></div><h2 class="h2">ОЖИДАЕМ ЗАПУСКА МАТЧА</h2><p class="muted small">Первый подключившийся игрок подготавливает десять общих эпизодов.</p></section></div>`;
+    const event=events[idx],attackerRole=idx%2===0?'host':'guest',role=((attackerRole==='host'&&isHost)||(attackerRole==='guest'&&!isHost))?'attack':'defend';
+    const choices=state.choices||{},submitted=!!choices[role],otherSubmitted=!!choices[role==='attack'?'defend':'attack'];
+    const labels=role==='attack'?event.attackChoices:event.defenseChoices;
+    const penalty=event.kind==='penalty';
+    const buttons=labels.map((id,i)=>{
+      const zone=penalty?ONLINE_PENALTY_ZONES.find(z=>z.id===id):null;
+      return `<button class="zf-online-choice ${penalty?'zf-penalty-choice':''}" data-action="online-match-choice" data-choice="${esc(id)}" ${submitted||onlineActionBusy?'disabled':''}><span class="zf-online-choice-icon">${zone?zone.glyph:['⚽','↗','✦','🛡️'][i%4]}</span><strong>${esc(zone?zone.label:onlineChoiceLabel(id))}</strong></button>`;
+    }).join('');
+    const result=state.last_result&&state.last_result.event===idx-1?`<div class="zf-online-last-result">${state.last_result.goal?'⚽ ГОЛ!':'🧤 Атака остановлена'}</div>`:'';
+    const log=(state.log||[]).slice(-5).map(entry=>`<div class="log-row"><span class="log-minute">${esc(entry.minute||'—')}′</span><span>${esc(entry.title||'Эпизод')} · ${entry.goal?'⚽':'—'} · ${entry.attacker_role==='host'?esc(room.host_club?.name||'Хозяева'):esc(room.guest_club?.name||'Гости')}</span></div>`).join('');
+    return `<div class="section-heading"><div><div class="eyebrow">Онлайн-матч · Эпизод ${idx+1} из 10</div><h1 class="h1">МАТЧ ИДЁТ</h1><p class="page-subtitle">Одно событие отображается у обоих игроков. Атакующий выбирает действие, соперник отвечает защитой.</p></div><span class="pill pill-lime">${role==='attack'?'ТВОЯ АТАКА':'ТВОЯ ОБОРОНА'}</span></div><div class="match-shell">${scoreMarkup}<section class="card zf-online-event-card"><div class="eyebrow">${esc(event.zone||'КЛЮЧЕВОЙ ЭПИЗОД')} · ${esc(event.minute||'—')}′</div><h2 class="h2">${esc(event.title||'Игровой эпизод')}</h2><p class="muted small">${esc(event.description||'')}</p><div class="zf-online-role ${role==='attack'?'is-attack':'is-defend'}"><strong>${role==='attack'?'⚽ ТЫ АТАКУЕШЬ':'🛡️ ТЫ ЗАЩИЩАЕШЬСЯ'}</strong><span>${role==='attack'?`Твой соперник: ${esc(oppName)} — выбирает защиту.`:`Атакует ${esc(oppName)} — выбери способ защиты.`}</span></div><div class="zf-online-choice-grid ${penalty?'zf-penalty-grid':''}">${buttons}</div><div class="zf-online-wait">${submitted?'✓ Решение принято. Ждём ход соперника…':otherSubmitted?'Соперник уже выбрал. Твой ход!':'Выбери один вариант — решение сразу отправится сопернику.'}</div>${result}</section><section class="card"><div class="eyebrow">ХРОНИКА МАТЧА</div><div class="match-log">${log||'<p class="muted small">Матч только начался.</p>'}</div></section><div class="settings-actions"><button class="btn btn-quiet btn-sm" data-action="online-match-menu">Выйти в меню</button></div></div>`;
+  }
   function renderMatch(club){
-    if(!matchState||matchState.stage==='idle')return `<div class="section-heading"><div><div class="eyebrow">Центр матчей</div><h1 class="h1">МАТЧДЕЙ</h1><p class="page-subtitle">Играй матчи и получай небольшую выплату в миллионах евро.</p></div><span class="pill">⚽ Быстрый матч · лимит 5</span></div>${energyWidget(club)}${renderAdSlot(club,'match')}<div class="match-shell"><div class="match-scoreboard"><div class="match-team"><div class="club-crest ${crestShape(club.logo)}" style="--crest-color:${esc(club.logo.color)}">${crestContent(club.logo,.9)}</div><strong>${esc(club.name)}</strong><span class="pill pill-lime" style="margin-top:7px">${teamRating(club)} OVR</span></div><div class="match-center"><div class="match-minute">READY</div><div class="match-score">— : —</div><div class="match-status">ОЖИДАНИЕ МАТЧА</div></div><div class="match-team"><div class="club-crest" style="--crest-color:#d1d9d0">?</div><strong>Соперник</strong><span class="pill" style="margin-top:7px">Не найден</span></div></div><div class="card" style="text-align:center;padding:28px"><div class="eyebrow">Быстрый матч</div><h2 class="h2" style="font-size:34px;margin:9px 0">ГОТОВ ВЫЙТИ НА ПОЛЕ?</h2><p class="muted small" style="line-height:1.8;max-width:490px;margin:0 auto">Поиск соперника, несколько игровых эпизодов с выбором тактики и итоговый результат. В этой версии соперника контролирует бот — онлайн-режим подключим отдельно.</p><div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:18px 0"><span class="pill">⏱ 10 эпизодов</span><span class="pill">⚡ ${club.energy||0}/5 матчей</span><span class="pill">🎮 Выбор тактики</span><span class="pill">🪙 Награда за матч</span></div><button class="btn btn-primary" style="min-width:220px" data-action="match-search">🔎 Найти соперника</button></div><div class="dashboard-grid" style="margin-top:15px"><section class="card"><div class="eyebrow">Правила матча</div><h2 class="h2" style="margin-top:6px">КАК ИГРАТЬ</h2><div class="recent-list"><div class="recent-row"><div class="recent-icon">🎯</div><div><strong>Атакуй с умом</strong><small>Выбирай между пасом, дриблингом и ударом.</small></div></div><div class="recent-row"><div class="recent-icon">🧱</div><div><strong>Защищайся</strong><small>Прессинг, отбор или низкий блок — риск разный.</small></div></div><div class="recent-row"><div class="recent-icon">🎲</div><div><strong>Случайность решает</strong><small>Аутсайдер тоже способен удивить фаворита.</small></div></div></div></section><section class="card"><div class="eyebrow">Твои результаты</div><h2 class="h2" style="margin-top:6px">СТАТИСТИКА</h2><div class="statline"><span>Победы</span><b>${club.stats.wins}</b></div><div class="statline"><span>Ничьи</span><b>${club.stats.draws}</b></div><div class="statline"><span>Поражения</span><b>${club.stats.losses}</b></div><div class="statline"><span>Забито голов</span><b>${club.stats.goalsFor}</b></div></section></div></div>`;
+    if(onlineRoomIsQuick()&&(matchState?.stage==='online'||matchState?.stage==='searching'||matchState?.stage==='idle'))return renderOnlineMatch(club);
+    if(!matchState||matchState.stage==='idle')return `<div class="section-heading"><div><div class="eyebrow">Центр матчей</div><h1 class="h1">МАТЧДЕЙ</h1><p class="page-subtitle">Играй матчи и получай небольшую выплату в миллионах евро.</p></div><span class="pill">⚽ Быстрый матч · лимит 5</span></div>${energyWidget(club)}${renderAdSlot(club,'match')}<div class="match-shell"><div class="match-scoreboard"><div class="match-team"><div class="club-crest ${crestShape(club.logo)}" style="--crest-color:${esc(club.logo.color)}">${crestContent(club.logo,.9)}</div><strong>${esc(club.name)}</strong><span class="pill pill-lime" style="margin-top:7px">${teamRating(club)} OVR</span></div><div class="match-center"><div class="match-minute">READY</div><div class="match-score">— : —</div><div class="match-status">ОЖИДАНИЕ МАТЧА</div></div><div class="match-team"><div class="club-crest" style="--crest-color:#d1d9d0">?</div><strong>Соперник</strong><span class="pill" style="margin-top:7px">Не найден</span></div></div><div class="card" style="text-align:center;padding:28px"><div class="eyebrow">Быстрый матч</div><h2 class="h2" style="font-size:34px;margin:9px 0">ГОТОВ ВЫЙТИ НА ПОЛЕ?</h2><p class="muted small" style="line-height:1.8;max-width:490px;margin:0 auto">Поиск реального соперника до 30 секунд. Если игрок не найдётся, матч автоматически продолжится против бота.</p><div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:18px 0"><span class="pill">⏱ 10 эпизодов</span><span class="pill">🔎 Поиск 30 секунд</span><span class="pill">⚡ ${club.energy||0}/5 матчей</span><span class="pill">🪙 Награда за матч</span></div><button class="btn btn-primary" style="min-width:220px" data-action="match-search">🔎 Найти соперника</button></div><div class="dashboard-grid" style="margin-top:15px"><section class="card"><div class="eyebrow">Правила матча</div><h2 class="h2" style="margin-top:6px">КАК ИГРАТЬ</h2><div class="recent-list"><div class="recent-row"><div class="recent-icon">🎯</div><div><strong>Атакуй с умом</strong><small>Выбирай между пасом, дриблингом и ударом.</small></div></div><div class="recent-row"><div class="recent-icon">🧱</div><div><strong>Защищайся</strong><small>Прессинг, отбор или низкий блок — риск разный.</small></div></div><div class="recent-row"><div class="recent-icon">🎲</div><div><strong>Случайность решает</strong><small>Аутсайдер тоже способен удивить фаворита.</small></div></div></div></section><section class="card"><div class="eyebrow">Твои результаты</div><h2 class="h2" style="margin-top:6px">СТАТИСТИКА</h2><div class="statline"><span>Победы</span><b>${club.stats.wins}</b></div><div class="statline"><span>Ничьи</span><b>${club.stats.draws}</b></div><div class="statline"><span>Поражения</span><b>${club.stats.losses}</b></div><div class="statline"><span>Забито голов</span><b>${club.stats.goalsFor}</b></div></section></div></div>`;
     if(matchState.stage==='searching')return renderSearching(club);
     if(matchState.stage==='found')return renderFound(club);
     if(matchState.stage==='live')return renderLiveMatch(club);
     if(matchState.stage==='result')return renderMatchResult(club);
     return '';
   }
-  function renderSearching(club){return `<div class="section-heading"><div><div class="eyebrow">Поиск соперника</div><h1 class="h1">ПОИСК СОПЕРНИКА</h1><p class="page-subtitle">Подбираем клуб с подходящим рейтингом…</p></div><span class="pill pill-lime">Поиск</span></div><div class="match-shell"><div class="card" style="text-align:center;padding:30px"><div class="search-visual"><span class="search-ring"></span><span class="search-ring"></span><span class="search-ring"></span><span class="search-ball">⚽</span></div><h2 class="h2" style="font-size:34px">ИЩЕМ ТВОЕГО СОПЕРНИКА</h2><p class="muted small">Сравниваем силу составов и готовим матч. Сейчас поиск работает против ботов.</p><div class="progress" style="max-width:300px;margin:20px auto"><span style="width:75%;animation:searchProgress 1.6s linear infinite"></span></div><button class="btn btn-quiet btn-sm" data-action="cancel-search">Отменить поиск</button></div></div><style>@keyframes searchProgress{0%{width:4%}100%{width:100%}}
-/* v12: horizontal player portraits in squad list, with wrapped names. */
-.squad-item{align-items:center;min-height:72px}
-.squad-item .mini-player{width:58px;height:66px;flex:0 0 58px;clip-path:none;border-radius:7px;background:#17231c;position:relative;overflow:hidden;display:block}
-.squad-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 25%;display:block}
-.mini-rating{position:absolute;z-index:2;left:3px;top:3px;padding:2px 4px;border-radius:4px;background:#101610d9;color:#fff;font:900 11px 'Barlow Condensed',sans-serif}
-.squad-info{min-width:0;flex:1}
-.squad-info strong{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;word-break:normal;line-height:1.15}
-.squad-info small{white-space:normal;line-height:1.3}
-.slot-portrait{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%;border-radius:7px}
-.slot-card .rating{z-index:3;background:#101610c9;color:#fff;border-radius:4px;padding:1px 3px}
-@media(max-width:420px){.squad-item{gap:8px;padding:8px}.squad-item .mini-player{width:52px;height:60px;flex-basis:52px}.squad-info strong{font-size:10px}}
-
-  </style>`;}
+  function renderSearching(club){const deadline=matchState.searchDeadline||Date.now()+30000;return `<div class="section-heading"><div><div class="eyebrow">Поиск соперника</div><h1 class="h1">ПОИСК СОПЕРНИКА</h1><p class="page-subtitle">Ищем реального игрока. После 30 секунд автоматически подберём бота.</p></div><span class="pill pill-lime">Онлайн-поиск</span></div><div class="match-shell"><div class="card" style="text-align:center;padding:30px"><div class="search-visual"><span class="search-ring"></span><span class="search-ring"></span><span class="search-ring"></span><span class="search-ball">⚽</span></div><h2 class="h2" style="font-size:34px">ИЩЕМ ТВОЕГО СОПЕРНИКА</h2><p class="muted small">Ожидаем подключение другого клуба. Осталось: <strong data-countdown-deadline="${deadline}">30 сек.</strong></p><div class="progress" style="max-width:300px;margin:20px auto"><span style="width:100%;animation:searchProgress 30s linear forwards"></span></div><button class="btn btn-quiet btn-sm" data-action="cancel-search">Отменить поиск</button></div></div><style>@keyframes searchProgress{0%{width:0}100%{width:100%}}</style>`;}
   function renderFound(club){
     const opp=matchState.opponent;
     const stars=(opp.players||[]).map(p=>({...p,id:null,rating:playerOVRAt(p,p.assignedPosition||p.position,null),realClub:p.realClub||p.club,positions:p.positions||[p.position],contractUntil:Date.now()+30*86400000})).sort((a,b)=>b.rating-a.rating).slice(0,3);
@@ -1478,8 +1765,8 @@ function renderProgressionAndMissions(club){
         <div class="opening-topline"><span class="opening-live-dot"></span><span>ZERO FOOTBALL · PLAYER ACQUISITION</span><span class="opening-pack-count">${cards.length} ${cards.length===1?'КАРТОЧКА':'КАРТОЧЕК'}</span></div>
         <div class="opening-pack-scene" aria-hidden="true"><div class="opening-scene-ring ring-one"></div><div class="opening-scene-ring ring-two"></div><div class="opening-pack-glow"></div><div class="opening-pack-box"><span class="opening-pack-star">✦</span><span>ZF</span><i></i></div><div class="opening-scene-particles"><b>✦</b><b>·</b><b>✧</b><b>·</b><b>✦</b><b>·</b><b>✧</b></div></div>
         <div class="opening-intro-copy"><div class="eyebrow" style="margin-top:8px">PACK OPENING · ${meta.label}</div><div class="opening-flash">НОВЫЕ <span>ПОДПИСАНИЯ</span></div><div class="opening-progress-track"><span></span></div><div class="opening-status">${skipped?'КАРТОЧКИ ГОТОВЫ':'СКАНИРОВАНИЕ КОНТРАКТОВ · ПОДГОТОВКА КАРТОЧЕК'}</div></div>
-        <p class="muted small opening-description">Контракт каждой новой карточки — 30 дней. Повторные карточки можно обменять на монеты.</p>
-        ${(reveal.duplicateRewards||[]).length?`<div class="card duplicate-rewards-panel" style="margin:12px 0"><strong>Повторные карточки: ${(reveal.duplicateRewards||[]).length}</strong>${reveal.duplicateRewards.map(p=>`<div class="statline"><span>${esc(playerDisplayName(p))} · OVR ${p.rating}</span><span><button class="btn btn-secondary btn-sm" data-action="duplicate-money" data-player-id="${esc(p.id)}">${formatMoney(saleValue(p,true))}</button></span></div>`).join('')}</div>`:''}
+        <p class="muted small opening-description">Контракт каждой новой карточки — 30 дней. Повторная карточка продлевает контракт такого же футболиста на 5 дней.</p>
+        ${(reveal.duplicateRewards||[]).length?`<div class="card duplicate-rewards-panel" style="margin:12px 0"><strong>Повторные карточки: ${(reveal.duplicateRewards||[]).length}</strong>${reveal.duplicateRewards.map(p=>`<div class="statline"><span>${esc(playerDisplayName(p))} · OVR ${p.rating}</span><span><button class="btn btn-secondary btn-sm" data-action="duplicate-money" data-player-id="${esc(p.id)}">Продлить +5 дней</button></span></div>`).join('')}</div>`:''}
         <div class="revealed-cards ${skipped?'cards-ready':''}">${cardMarkup}</div>
         <div class="opening-actions">
           ${animationEnabled&&!skipped?'<button class="btn btn-secondary" data-action="skip-pack-animation">Пропустить анимацию ⏭</button>':''}
@@ -1495,7 +1782,7 @@ function renderProgressionAndMissions(club){
   }
 
   // ----- User actions -----
-  function go(viewName){view=viewName;editSlotIndex=null;reveal=null;render();window.scrollTo({top:0,behavior:'smooth'});}
+  function go(viewName){view=viewName;editSlotIndex=null;reveal=null;render();if(viewName==='multiplayer')loadPublicRooms().then(()=>{if(view==='multiplayer'&&!activeOnlineRoom)render();}).catch(error=>{console.warn('Could not load public rooms:',error);toast('Не удалось загрузить список комнат. Проверь SQL-настройку мультиплеера.','error');});window.scrollTo({top:0,behavior:'smooth'});}
   function chooseClub(id){const c=db.clubs.find(x=>x.id===id);if(!c)return;db.activeClubId=id;view='home';matchState={stage:'idle'};saveDB();render();toast(`Добро пожаловать в ${c.name}!`);}
   async function createClubFromForm(form){
     if(form.dataset.submitting==='1')return false;
@@ -1542,11 +1829,10 @@ function renderProgressionAndMissions(club){
       if(submit&&submit.isConnected){submit.disabled=false;submit.textContent='Создать клуб и перейти к управлению →';}
     }
   }
-  function openPack(type){
+  function openPack(type,fromInventory=false){
     const club=currentClub();if(!club)return;
     const packs={starter:{price:2,count:3,min:50,max:88,weights:[55,28,12,4,1]},national:{price:8,count:4,min:55,max:91,weights:[35,32,20,10,3]},pro:{price:25,count:5,min:60,max:94,weights:[20,30,27,17,6]},elite:{price:75,count:5,min:65,max:96,weights:[10,22,30,25,13]},legend:{price:200,count:6,min:70,max:99,weights:[4,14,27,32,23]},daily:{price:0,count:2,min:50,max:90,weights:[42,30,18,8,2]}};const pack=packs[type];if(!pack)return;
-    const today=currentDayKey();if(type==='daily'){if(club.freePackDay===today){toast('Бесплатный пак уже получен сегодня.','error');return;}club.freePackDay=today;}else if(club.coins<pack.price){toast('Недостаточно монет для этого пака. Сыграй матч и получи награду.','error');return;}
-    club.coins-=pack.price;
+    const today=currentDayKey();if(!fromInventory){toast('Сначала купи пак — он появится в инвентаре.','error');return;}const inventory=ensurePackInventory(club);if((inventory[type]||0)<1){toast('Такого пака нет в инвентаре.','error');return;}inventory[type]--;saveDB();
     const newPlayers=[];
     for(let i=0;i<pack.count;i++){
       const pool=REAL_PLAYERS;
@@ -1587,24 +1873,36 @@ function renderProgressionAndMissions(club){
     }
     return roster;
   }
-  function startSearch(){
+  async function startSearch(){
     const club=currentClub();if(!club)return;
     clearMatchTimers();
     const starters=activePlayers(club);
     if(starters.length!==11){toast('Сначала собери полный стартовый состав из 11 игроков.','error');view='team';render();return;}
     const unavailable=starters.filter(playerIsUnavailable);
     if(unavailable.length){toast(`Поиск матча недоступен: ${unavailable.map(p=>`${p.name} — ${unavailableReason(p)}`).join('; ')}.`,'error');view='team';render();return;}
-    refreshEnergy(club);if(club.energy<1){toast('Энергия команды закончилась. Подожди восстановления или используй пополнение.','error');view='match';render();return;}matchState={stage:'searching'};render();
-    matchState.timer=setTimeout(()=>{
-      const base=BOT_CLUBS[rand(0,BOT_CLUBS.length-1)];
-      const userR=teamRating(club),targetBotRating=clamp(userR+rand(-8,8),50,95);const botPlayers=makeBotRoster(targetBotRating);const opponentRating=rosterTeamRating(botPlayers,'4-3-3');
-      const token='match-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6);
-      matchState={stage:'found',matchToken:token,agreementDeadline:Date.now()+60000,opponent:{name:base.name,symbol:base.symbol,country:base.country,color:pick(['#f18b65','#76b8ff','#d3d5d0','#e6adff','#f6cf56']),rating:opponentRating,players:botPlayers},score:[0,0],log:[]};
-      matchState.agreementTimer=setTimeout(()=>{
-        if(matchState.stage==='found'&&matchState.matchToken===token){clearMatchTimers();matchState={stage:'idle'};render();toast('Время на принятие матча истекло.','error');}
-      },60000);
-      render();
-    },1800);
+    refreshEnergy(club);if(club.energy<1){toast('Энергия команды закончилась. Подожди восстановления или используй пополнение.','error');view='match';render();return;}
+    stopOnlineRoomSync();activeOnlineRoom=null;try{localStorage.removeItem('zfActiveOnlineRoomId');}catch(_){}
+    const deadline=Date.now()+30000;matchState={stage:'searching',searchDeadline:deadline};view='match';render();
+    if(!ZF_SUPABASE||zfOfflineMode){matchState.timer=setTimeout(launchBotFallback,900);return;}
+    try{
+      const user=await authenticatedUser();
+      const {data,error}=await ZF_SUPABASE.rpc('zf_join_matchmaking',{p_club:onlineClubSnapshot(club)});
+      if(error)throw error;
+      if(data?.status==='matched'&&data.room_id){await openQuickMatchRoom(data.room_id);return;}
+      if(matchState.stage!=='searching')return;
+      matchmakingPoll=setInterval(()=>{if(matchState.stage==='searching')pollQuickMatch();},1000);
+      matchState.timer=setTimeout(async()=>{
+        if(matchState.stage!=='searching')return;
+        if(matchmakingPoll){clearInterval(matchmakingPoll);matchmakingPoll=null;}
+        try{await ZF_SUPABASE.rpc('zf_cancel_matchmaking');}catch(_){}
+        launchBotFallback();
+      },30000);
+      await pollQuickMatch();
+    }catch(error){
+      console.warn('Quick matchmaking unavailable:',error);
+      clearMatchTimers();matchState={stage:'searching',searchDeadline:Date.now()+1500};render();
+      matchState.timer=setTimeout(()=>{if(matchState.stage==='searching'){launchBotFallback();toast('Онлайн-поиск недоступен. Запускаем матч с ботом.','error');}},1500);
+    }
   }
   function beginMatch(){
     const club=currentClub();if(!club)return;
@@ -1785,7 +2083,7 @@ function renderProgressionAndMissions(club){
     }
     if(!m.pendingForcedSub&&m.eventIndex===4&&!m.substitutionsDone&&benchPlayers(club).length){m.substitutionsDone=true;const formation=FORMATIONS[club.formation]||FORMATIONS['4-3-3'];const outEntry=club.lineup.map((id,i)=>({p:club.players.find(x=>x.id===id),i,role:formation[i]?.role})).filter(x=>x.p).sort((a,b)=>playerOVRAt(a.p,a.role,club)-playerOVRAt(b.p,b.role,club))[0];if(outEntry){const sub=benchPlayers(club).filter(p=>!playerIsUnavailable(p)).map(p=>({p,ovr:playerOVRAt(p,outEntry.role,club)})).sort((a,b)=>b.ovr-a.ovr)[0]?.p;if(sub){club.lineup[outEntry.i]=sub.id;if(club.captainId===outEntry.p.id)club.captainId=sub.id;text+=` 🔄 Замена: ${playerDisplayName(outEntry.p)} (${positionLabel(outEntry.role)}) → ${playerDisplayName(sub)} (${playerOVRAt(sub,outEntry.role,club)} OVR).`;}}}
     m.availableChoices=[];
-    m.log.push({minute:ev.minute,imageKey:ev.imageKey||matchActionKey(ev.title)||(ev.kind==='corner'?'Угловой':ev.kind==='freekick'?'Штрафной':ev.kind==='penalty'?'Пенальти':''),text:`${playerDisplayName(chosenPlayer)} (${skillKey} ${Math.round(Number(chosenPlayer?.[skillKey])||chosenPlayer?.rating||70)}) · 🎲 Кубик ${dice} · модификаторы команды ${teamMod>=0?'+':''}${teamMod}, тактики ${tacticalMod>=0?'+':''}${tacticalMod}, игрока ${playerMod>=0?'+':''}${playerMod} = ${diceTotal}. ${text}`});
+    m.log.push({minute:ev.minute,imageKey:ev.imageKey||matchActionKey(ev.title)||(ev.kind==='corner'?'Угловой':ev.kind==='freekick'?'Штрафной':ev.kind==='penalty'?'Пенальти':''),text:`🎙️ ${text}`});
     m.completedEvents=(m.completedEvents||0)+1;
     if(m.eventIndex===9){
       // The tenth decision is the final whistle. Incidents in this last episode
@@ -2004,6 +2302,8 @@ function renderProgressionAndMissions(club){
     const btn=e.target.closest('[data-action]');if(!btn)return;
     const action=btn.dataset.action; if(['match-choice','open-pack','assign-player','quick-assign','set-theme'].includes(action))vibrate(action==='match-choice'?[25,20,35]:18);
     if(action==='create-club-submit'){const form=$('#createClubForm');if(!form)return;if(!form.reportValidity())return;try{await createClubFromForm(form);}catch(err){console.error('Club creation failed before save:',err);toast(err?.message||'Клуб не сохранён. Проверь данные и доступное место в браузере.','error');}return;}
+    if(action==='auth-mode'){authScreenMode=btn.dataset.mode==='signin'?'signin':'signup';authScreenNotice='';render();return;}
+    if(action==='offline-continue'){zfOfflineMode=true;view='home';render();toast('Открыт одиночный режим. Для мультиплеера войди в аккаунт.');return;}
     if(action==='cloud-upload'){try{await cloudSave('upload');}catch(err){console.error(err);toast(err.message||'Не удалось сохранить в облако.','error');}return;}
     if(action==='cloud-download'){try{await cloudSave('download');}catch(err){console.error(err);toast(err.message||'Не удалось загрузить облачное сохранение.','error');}return;}
     if(action==='cloud-logout'){try{await cloudSignOut();}catch(err){toast(err.message||'Не удалось выйти.','error');}return;}
@@ -2060,21 +2360,32 @@ function renderProgressionAndMissions(club){
     if(action==='renew-player-contract'){const c=currentClub();const player=c?.players.find(p=>p.id===btn.dataset.playerId);if(!c||!player)return;const cost=contractRenewalCost(player);if(c.coins<cost){toast('Недостаточно монет для продления контракта.','error');return;}c.coins-=cost;player.contractUntil=Math.max(Date.now(),Number(player.contractUntil)||0)+30*86400000;saveDB();render();toast(`Контракт ${playerDisplayName(player)} продлён на 30 дней.`);return;}
     if(action==='claim-daily-card'){const c=currentClub();if(!c)return;const shop=dailyShop(c),wiki=btn.dataset.playerWiki;if(!shop.offers.includes(wiki)||shop.claimed.includes(wiki))return;const base=REAL_PLAYERS.find(x=>x.wiki===wiki);if(!base)return;if(c.players.some(p=>p.wiki===wiki)){toast('Этот футболист уже есть в твоём клубе.','error');render();return;}const price=Math.max(.08,Math.round(marketValue(base.rating)*.06*100)/100);if(c.coins<price){toast(`Недостаточно монет. Нужно ${formatMoney(price)}.`,'error');return;}c.coins-=price;const created=createPlayer(base.position,base.rating,base.name,base.country,{id:'daily-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),wiki:base.wiki,realClub:base.club,realPlayer:true});created.positions=REAL_PLAYER_POSITIONS[base.wiki]||[base.position];created.name=base.name;created.rating=base.rating;created.country=base.country;created.realClub=base.club;created.wiki=base.wiki;created.realPlayer=true;created.contractUntil=Date.now()+30*86400000;c.players.push(created);shop.claimed.push(wiki);saveDB();render();toast(`${base.name} куплен за ${formatMoney(price)}.`);return;}
     if(action==='redeem-promo'){redeemPromoCode();return;}
-        if(action==='open-pack'){openPack(btn.dataset.pack);return;}if(action==='forced-sub'||action==='forced-sub-pick'){const c=currentClub(),out=btn.dataset.out,inn=action==='forced-sub-pick'?btn.dataset.playerId:$('#forcedSubPlayer')?.value;if(!inn){toast('Выбери игрока для обязательной замены.','error');return;}const idx=c.lineup.indexOf(out);if(idx>=0){if(c.lineup.includes(inn))return;c.lineup[idx]=inn;if(c.captainId===out)c.captainId=inn;}else{toast('Игрок уже покинул поле после автоматической замены.','error');return;}matchState.pendingForcedSub=null;matchState.pendingForcedSlot=null;matchState.pendingForcedType=null;saveDB();if(matchState.eventIndex>=10){finishMatch();return;}render();toast('Обязательная замена выполнена.');return;}
+        if(action==='buy-pack'){const c=currentClub();if(!c)return;const type=btn.dataset.pack,pack=ZF_PACK_OPTIONS.find(x=>x.id===type);if(!pack)return;const qty=type==='daily'?1:Math.max(1,Math.min(10,Number($(`[data-pack-quantity="${type}"]`)?.value)||1));const inv=ensurePackInventory(c);if(type==='daily'){if(c.freePackDay===currentDayKey()){toast('Бесплатный пак уже получен сегодня.','error');return;}c.freePackDay=currentDayKey();inv.daily=(inv.daily||0)+1;}else{const total=pack.price*qty;if(c.coins<total){toast('Недостаточно монет для выбранного количества паков.','error');return;}c.coins-=total;inv[type]=(inv[type]||0)+qty;}saveDB();render();toast(`${qty} ${qty===1?'пак добавлен': 'паков добавлено'} в инвентарь.`);return;}if(action==='open-inventory-pack'){openPack(btn.dataset.pack,true);return;}if(action==='open-pack'){openPack(btn.dataset.pack);return;}if(action==='forced-sub'||action==='forced-sub-pick'){const c=currentClub(),out=btn.dataset.out,inn=action==='forced-sub-pick'?btn.dataset.playerId:$('#forcedSubPlayer')?.value;if(!inn){toast('Выбери игрока для обязательной замены.','error');return;}const idx=c.lineup.indexOf(out);if(idx>=0){if(c.lineup.includes(inn))return;c.lineup[idx]=inn;if(c.captainId===out)c.captainId=inn;}else{toast('Игрок уже покинул поле после автоматической замены.','error');return;}matchState.pendingForcedSub=null;matchState.pendingForcedSlot=null;matchState.pendingForcedType=null;saveDB();if(matchState.eventIndex>=10){finishMatch();return;}render();toast('Обязательная замена выполнена.');return;}
     if(action==='collection-mode'){collectionMode=btn.dataset.mode;$$('[data-action="collection-mode"]').forEach(b=>b.className='btn '+(b.dataset.mode===collectionMode?'btn-primary':'btn-secondary')+' btn-sm');applyCollectionFilters();return;}
     if(action==='skip-pack-animation'){if(!reveal)return;reveal.skipAnimation=true;render();return;}
     if(action==='replay-pack-animation'){if(!reveal||db.packAnimations===false)return;reveal.skipAnimation=false;reveal.animationSerial=++packAnimationSerial;render();if(db.packVibration!==false)vibrate([22,28,44,35,75]);playPackSoundSequence(reveal.players||[]);return;}
     if(action==='close-opening'){if(reveal?.duplicateRewards?.length){toast('Сначала реши судьбу каждой повторной карточки.','error');return;}reveal=null;view='packs';render();toast('Новые футболисты в коллекции.');return;}
-    if(action==='duplicate-money'){if(!reveal)return;reveal.skipAnimation=true;const p=reveal.duplicateRewards?.find(x=>x.id===btn.dataset.playerId);if(!p)return;const c=currentClub();const amount=saleValue(p,true);c.coins+=amount;reveal.duplicateRewards=reveal.duplicateRewards.filter(x=>x.id!==p.id);reveal.players=reveal.players.filter(x=>x.id!==p.id);saveDB();render();toast('Повторная карточка обменена на монеты.');return;}
+    if(action==='duplicate-money'||action==='duplicate-renew'){if(!reveal)return;reveal.skipAnimation=true;const p=reveal.duplicateRewards?.find(x=>x.id===btn.dataset.playerId);if(!p)return;const c=currentClub();const original=c?.players.find(x=>x.id===p.duplicateOf)||c?.players.find(x=>x.wiki&&x.wiki===p.wiki)||c?.players.find(x=>x.name===p.name);if(!original){toast('Не удалось найти исходную карточку для продления.','error');return;}original.contractUntil=Math.max(Date.now(),Number(original.contractUntil)||0)+5*86400000;reveal.duplicateRewards=reveal.duplicateRewards.filter(x=>x.id!==p.id);reveal.players=reveal.players.filter(x=>x.id!==p.id);saveDB();render();toast(`Контракт ${playerDisplayName(original)} продлён на 5 дней.`);return;}
     
+    if(action==='copy-room-code'){if(activeOnlineRoom?.room_code){const code=activeOnlineRoom.room_code;if(navigator.clipboard?.writeText){navigator.clipboard.writeText(code).then(()=>toast('Код комнаты скопирован.')).catch(()=>toast('Код комнаты: '+code));}else toast('Код комнаты: '+code);}return;}
+    if(action==='mp-create'){try{await multiplayerCreateRoom();}catch(err){console.error(err);toast(err.message||'Не удалось создать комнату.','error');}return;}
+    if(action==='mp-refresh'){try{if(activeOnlineRoom)await refreshOnlineRoom();else{await loadPublicRooms();render();}}catch(err){toast(err.message||'Не удалось обновить комнаты.','error');}return;}
+    if(action==='mp-join-room'){try{await multiplayerJoinRoom(btn.dataset.roomCode||'');}catch(err){console.error(err);toast(err.message||'Не удалось подключиться к комнате.','error');}return;}
+    if(action==='mp-leave-room'){try{await multiplayerLeaveRoom();}catch(err){toast(err.message||'Не удалось покинуть комнату.','error');}return;}
+    if(action==='mp-start'){try{await multiplayerStartMatch();}catch(err){console.error(err);toast(err.message||'Не удалось начать онлайн-матч.','error');}return;}
+    if(action==='mp-penalty-choice'){try{await multiplayerSubmitAction(btn.dataset.choice||'');}catch(err){console.error(err);toast(err.message||'Ход не принят.','error');}return;}
+    if(action==='online-match-choice'){try{await submitOnlineMatchChoice(btn.dataset.choice||'');}catch(err){console.error(err);toast(err.message||'Ход не принят.','error');}return;}
+    if(action==='online-match-again'){await leaveQuickMatchAndSearch();return;}
+    if(action==='online-match-menu'){try{if(activeOnlineRoom?.id&&onlineRoomIsQuick())await ZF_SUPABASE.rpc('zf_leave_room',{p_room_id:activeOnlineRoom.id});}catch(err){console.warn(err);}stopOnlineRoomSync();activeOnlineRoom=null;try{localStorage.removeItem('zfActiveOnlineRoomId');}catch(_){}matchState={stage:'idle'};view='home';render();return;}
     if(action==='match-search'){startSearch();return;}
-    if(action==='cancel-search'){clearMatchTimers();matchState={stage:'idle'};render();return;}
+    if(action==='cancel-search'){if(matchState?.stage==='searching'&&ZF_SUPABASE)ZF_SUPABASE.rpc('zf_cancel_matchmaking').catch(()=>{});clearMatchTimers();matchState={stage:'idle'};render();return;}
     if(action==='start-match'){beginMatch();return;}
     if(action==='manual-sub'){const c=currentClub(),out=btn.dataset.out,sel=btn.parentElement.querySelector('select'),inn=sel?.value;if(!inn){toast('Выбери игрока на замену.','error');return;}const incoming=c.players.find(p=>p.id===inn);if(playerIsUnavailable(incoming)){toast(`Игрок недоступен: ${unavailableReason(incoming)}.`,'error');return;}const i=c.lineup.indexOf(out);if(i<0||c.lineup.includes(inn))return;c.lineup[i]=inn;if(c.captainId===out)c.captainId=inn;saveDB();render();toast('Замена выполнена.');return;}if(action==='match-choice'){resolveChoice(btn.dataset.choice);return;}
     if(action==='match-return-search'||action==='match-again'){clearMatchTimers();matchState={stage:'idle'};view='match';render();return;}
   });
   $('#app').addEventListener('submit',async e=>{
-    if(e.target.id==='zfCloudAuthForm'){e.preventDefault();const mode=e.submitter?.dataset.authMode||'signin';try{await cloudSignIn(mode,e.target);}catch(err){console.error('Supabase auth error:',err);toast(err.message||'Ошибка авторизации.','error');}return;}
+    if(e.target.id==='zfCloudAuthForm'||e.target.id==='zfStartAuthForm'){e.preventDefault();const mode=e.submitter?.dataset.authMode||authScreenMode||'signin';try{await cloudSignIn(mode,e.target);}catch(err){console.error('Supabase auth error:',err);toast(err.message||'Ошибка авторизации.','error');}return;}
+    if(e.target.id==='mpJoinCodeForm'){e.preventDefault();const fd=new FormData(e.target);try{await multiplayerJoinRoom(String(fd.get('roomCode')||''));}catch(err){console.error(err);toast(err.message||'Не удалось подключиться.','error');}return;}
     if(e.target.id==='promoCodeForm'){e.preventDefault();redeemPromoCode();return;}
     if(e.target.id==='createClubForm'){e.preventDefault();try{await createClubFromForm(e.target);}catch(err){console.error(err);toast(err?.message||'Не удалось создать клуб.','error');}}
     if(e.target.id==='editClubForm'){

@@ -1,12 +1,21 @@
-# Zero Football v60
+# Zero Football — v62
 
-## Supabase foundation
-- Added the user's Supabase project URL and public publishable key to `js/supabase-config.js`.
-- Added Supabase JS v2 browser client.
-- Added email/password registration, sign-in and sign-out in Settings.
-- Added manual cloud save upload/download for the local club database.
-- Added SQL migration `supabase/001_cloud_saves.sql` with per-user RLS policies.
-- Kept the single-player/local save path available without an account or connection.
-- Added setup instructions in `SUPABASE_SETUP_RU.md`.
+- Быстрый поиск игрока до 30 секунд через Supabase; если соперник не найден, запускается матч с ботом. Используется прежняя кнопка поиска матча.
+- Добавлен синхронизированный матч 1 на 1 из десяти одинаковых событий: атакующая и оборонительная роли чередуются, сервер рассчитывает общий результат.
+- В пенальти по шесть направлений удара и защиты.
+- Добавлена SQL-миграция `supabase/003_quick_match_live.sql` для очереди поиска и серверного разрешения событий.
+- Добавлены карточки игроков из последнего списка с присланными изображениями; Деклан Райс играет на позициях ОП/ЦП.
+- «Ньюкасл» и «Ньюкасл Юнайтед» сведены к одному клубу. Повторные карточки в паках обмениваются только на монеты, без продления контракта на 5 дней.
+- Исправлено отображение фотографий и компоновка карточек обязательной замены.
 
-Cloud synchronization is intentionally manual in this first integration. The SQL migration must be run in the Supabase SQL Editor before cloud saves can work.
+# Zero Football v61
+
+- Перенесена регистрация/авторизация на стартовый экран; регистрация открывается первой. Добавлена кнопка продолжения без входа для одиночного режима.
+- Добавлен раздел «Мультиплеер» в боковую и мобильную навигацию и на главную страницу.
+- Добавлены приватные и публичные онлайн-комнаты с шестизначными кодами приглашения.
+- Реализована первая синхронизированная онлайн-игра 1 на 1 — серия пенальти: серверная проверка ходов, подсчёт голов, журнал и Realtime-обновления.
+- Добавлена серверная миграция `supabase/002_multiplayer.sql` с RLS и RPC-функциями создания/вступления/выхода/старта/ходов.
+- Исправлена проверка действующей сессии и user ID перед облачной загрузкой сохранения; RLS не ослаблялся.
+- Одиночный игровой режим против ботов и локальные сохранения оставлены.
+
+**Важно:** после `001_cloud_saves.sql` необходимо выполнить `002_multiplayer.sql` в Supabase SQL Editor. Основные десятиэпизодные матчи пока не синхронизированы для онлайна; онлайн-матч v61 — это серия пенальти.

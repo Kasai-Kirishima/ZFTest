@@ -1,23 +1,23 @@
 {
   "project": "Zero Football",
-  "version": "v60",
-  "name": "Zero Football v59",
-  "description": "Fixed match finalization and shared mission/progression helpers, restored sponsor screens, made the 1TestGame +€100M promo form visible and cache-busted the release scripts.",
+  "version": "v62",
+  "name": "Zero Football v62 — Live Online Matches",
+  "description": "Supabase matchmaking up to 30 seconds with bot fallback, synchronized 10-event 1v1 matches, six-zone penalties, player database updates, unified Newcastle club label, duplicate coin-only rewards and improved substitution cards.",
   "files": [
     {
       "path": "CHANGELOG.md",
-      "size": 700,
-      "sha256": "037884ef9c3a7a5c4d90c2e5b3e353e25ea8a0678fc89a7b15b15e9e6ec334d4"
+      "size": 3180,
+      "sha256": "f117d60c3d83f9e846f3bf1a30ed3b3ddbb98b7e28f0dd48b503d479652d7f89"
     },
     {
       "path": "README.md",
-      "size": 34376,
-      "sha256": "36819bf7f1e0b36cb2ff612494c1819478a9632f47255f46166bb29a7af4840f"
+      "size": 36338,
+      "sha256": "cddd9946e54a9df349aef1654d2f56e63308ee24e4045a508dad478c291cd513"
     },
     {
       "path": "SUPABASE_SETUP_RU.md",
-      "size": 2493,
-      "sha256": "84bf24259c744a4c5581be4f4165c4fe188147a79999ea322c65ac3820f02fb7"
+      "size": 6247,
+      "sha256": "2d2acef94ea67e3a2d462a73f9740fa55772ce42ce4e9dc93a1fefd5616e2a71"
     },
     {
       "path": "assets/README.md",
@@ -665,6 +665,16 @@
       "sha256": "baeb8c2513668786affdfa95e7f3031666a30585eb0b95cd913185c260e0d2d2"
     },
     {
+      "path": "css/28-v61-auth-multiplayer.css",
+      "size": 4574,
+      "sha256": "38164e48e614d5fc8c4ea68ec6d1b5eb553440bc4a86dd7ec4ada3ff0da1a102"
+    },
+    {
+      "path": "css/29-v62-live-multiplayer.css",
+      "size": 3938,
+      "sha256": "3d05c7f1f4c33aea59d43195523fa4023d1c402846883bec4e26f08ff5932f98"
+    },
+    {
       "path": "docs/AD_INTEGRATION.md",
       "size": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -686,13 +696,13 @@
     },
     {
       "path": "index.html",
-      "size": 2864,
-      "sha256": "2b035cfc624dfe3c530f02fe384c5be9846b989e283bb755a65c20aad7830370"
+      "size": 3008,
+      "sha256": "dc03e1a6114ec18dbfb7aa1313c59dc82d219f990b5d426b0c2c9709646b9960"
     },
     {
       "path": "js/app.js",
-      "size": 479198,
-      "sha256": "851882def00d4a90545512dc6558f9db159fd4fa91ac4a24938d6c16db0faacb"
+      "size": 525569,
+      "sha256": "b321e0ac7604a01f9d611dd884c3a9f1329e7f3a2340e8dff52d61d8a31859d0"
     },
     {
       "path": "js/data/economy.js",
@@ -706,13 +716,13 @@
     },
     {
       "path": "js/data/localization.js",
-      "size": 120631,
-      "sha256": "f80109d32d90fd45aae1e3fe0f1b5a0a0985c755c90aa562514aefe3289b61df"
+      "size": 120599,
+      "sha256": "e42bcb6e579c8ed81e34320a9dd5693e30d702bffac2d8c1db90dfb6376bea41"
     },
     {
       "path": "js/data/players.js",
-      "size": 48843,
-      "sha256": "087ffc697964d1bf4ff09836b952aa72daa2635ee8809bd084092ee245427388"
+      "size": 58468,
+      "sha256": "5ea0dc29ba42247fd2e53a480f536335a6f898f51fec378b7b41ef54da8f2adf"
     },
     {
       "path": "js/data/ui-config.js",
@@ -721,8 +731,8 @@
     },
     {
       "path": "js/data/v51-translations.js",
-      "size": 66212,
-      "sha256": "af14316db7258a4530280d9d8422075dc70a9ca52412bc8d3197420a0c924901"
+      "size": 65806,
+      "sha256": "df2d90433c95058de12e9baa3328a8b3c2d2efc6597570b456d0d3f8566c45f5"
     },
     {
       "path": "js/supabase-config.js",
@@ -733,10 +743,16 @@
       "path": "supabase/001_cloud_saves.sql",
       "size": 1354,
       "sha256": "e4eb613fe7ffbb7f4abc6397995f63cf66c075d58a629b06f3da1facee163393"
+    },
+    {
+      "path": "supabase/002_multiplayer.sql",
+      "size": 11386,
+      "sha256": "5927f9d87688bc374198c9b75b0807fceedf264303b472dc7a130572cd56e9c9"
+    },
+    {
+      "path": "supabase/003_quick_match_live.sql",
+      "size": 13241,
+      "sha256": "d33da19a0cd1642099dda522d17cc1729127d24cfa36fe155c9e525e1c50962f"
     }
-  ],
-  "project_version": "52",
-  "release": "v56-single-player-release-pass",
-  "notes": "Single-player release pass: player cards/photos, sponsor-only daily/monthly missions, match finalization hardening and full-height match imagery.",
-  "build": "Zero Football v60 - Supabase cloud foundation"
+  ]
 }

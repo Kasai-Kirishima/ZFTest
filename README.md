@@ -1,3 +1,18 @@
+# Zero Football v62
+
+Текущая сборка включает стартовую авторизацию Supabase, одиночные матчи против ботов и быстрый онлайн-поиск до 30 секунд. Если второй игрок не находится, поиск автоматически переключается на бота. В онлайн-матче оба участника видят одинаковые события, один атакует, второй защищается; в пенальти доступно шесть направлений удара и шесть направлений для вратаря.
+
+Перед онлайн-матчем необходимо применить `supabase/003_quick_match_live.sql` после миграций `001_cloud_saves.sql` и `002_multiplayer.sql`. Подробности — в `SUPABASE_SETUP_RU.md`.
+
+# Zero Football v61
+
+## v61 — регистрация и первый мультиплеер
+- Регистрация и вход перенесены на стартовый экран; регистрация открывается первой. Одиночный режим доступен и без входа.
+- Добавлен раздел мультиплеера с приватными/публичными комнатами и кодами приглашений.
+- Первый синхронизированный режим — серия пенальти 1 на 1 с серверной проверкой очереди и подсчётом результата.
+- См. `SUPABASE_SETUP_RU.md`: обязательно выполнить `supabase/002_multiplayer.sql` после миграции `001_cloud_saves.sql`.
+- Обычный матч против бота сохранён. Полноценные десятиэпизодные онлайн-матчи пока не включены.
+
 # Zero Football v59
 
 Исправленный одиночный релизный билд. Включает исправления финализации матча, раздела спонсоров и формы промокода.
@@ -242,4 +257,4 @@ The daily shop now offers three purchasable player cards, with prices derived fr
 
 ## Supabase (v60)
 
-See `SUPABASE_SETUP_RU.md`. Run `supabase/001_cloud_saves.sql` in the project's Supabase SQL Editor before using cloud saves. Registration and sign-in are available in Settings. Cloud upload/download are manual; local single-player remains available offline.
+See `SUPABASE_SETUP_RU.md`. Run `supabase/002_multiplayer.sql` after the previously installed `supabase/001_cloud_saves.sql` in the Supabase SQL Editor. Registration and sign-in now open at startup; the offline bypass is limited to single-player. Cloud upload/download remain manual.
