@@ -1,0 +1,165 @@
+/* v77: every set-piece decision is shown at once. */
+.match-event .choice-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:12px}
+.match-event .choice-grid .match-choice{min-height:96px;padding:11px 10px;gap:8px}
+.match-event .choice-grid .choice-num{width:25px;height:25px;flex:0 0 25px}
+.match-event .choice-grid .match-choice-copy{min-width:0}
+.match-event .choice-grid .match-choice strong{font-size:11px;line-height:1.2}
+.match-event .choice-grid .match-choice small{font-size:9px;line-height:1.35}
+
+/* Pack reveal: all cards and actions fit inside the screen without a nested
+   mouse-wheel/touch scroll area. */
+.pack-opening{
+  box-sizing:border-box!important;
+  width:100vw!important;height:100vh!important;height:100dvh!important;
+  overflow:hidden!important;overscroll-behavior:none!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:6px!important;touch-action:manipulation!important;
+}
+.pack-opening .opening-box{
+  width:min(100%,1160px)!important;height:100%!important;max-height:100%!important;
+  min-height:0!important;box-sizing:border-box!important;margin:0 auto!important;
+  padding:7px clamp(8px,1.4vw,16px)!important;overflow:hidden!important;
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  gap:clamp(2px,.45vh,5px)!important;border-radius:16px!important;
+}
+.pack-opening .opening-box>*{flex:0 0 auto;min-width:0}
+.pack-opening .opening-topline{min-height:13px;font-size:7px;letter-spacing:.8px;gap:6px}
+.pack-opening .opening-pack-count{padding:2px 6px;font-size:7px}
+.pack-opening .opening-pack-scene{
+  height:clamp(42px,7vh,68px)!important;min-height:0!important;flex:0 0 clamp(42px,7vh,68px)!important;
+  width:100%!important;margin:0 auto!important;overflow:hidden!important;
+}
+.pack-opening .opening-pack-scene:before{bottom:4px;width:125px;height:12px}
+.pack-opening .opening-scene-ring{width:90px;height:90px}
+.pack-opening .opening-scene-ring.ring-two{width:118px;height:118px}
+.pack-opening .opening-pack-glow{width:110px;height:110px}
+.pack-opening .opening-pack-box{width:39px;height:55px;border-radius:6px;font-size:16px;transform:rotateY(-14deg) rotateX(4deg) scale(.82)}
+.pack-opening .opening-pack-box:before{inset:5px 4px;border-radius:4px}
+.pack-opening .opening-pack-box:after{bottom:4px;font-size:3px;letter-spacing:.3px}
+.pack-opening .opening-pack-star{top:5px;right:5px;font-size:9px}
+.pack-opening .opening-pack-box>span:not(.opening-pack-star){padding:1px 4px}
+.pack-opening .opening-pack-box i{height:1px}
+.pack-opening .opening-scene-particles{font-size:9px}
+.pack-opening .opening-intro-copy{margin:0;line-height:1.1}
+.pack-opening .opening-intro-copy .eyebrow{margin-top:0!important;font-size:7px;letter-spacing:.8px}
+.pack-opening .opening-flash{font-size:clamp(18px,2.3vw,27px)!important;line-height:1!important;margin:2px 0!important;letter-spacing:0!important}
+.pack-opening .opening-progress-track{height:2px;width:min(100%,220px);margin:0 auto 2px}
+.pack-opening .opening-status{font-size:6px;letter-spacing:.8px;line-height:1.1}
+.pack-opening .opening-result-header{
+  width:100%;max-width:none;margin:1px auto!important;gap:5px!important;
+  grid-template-columns:minmax(0,.85fr) minmax(0,1.45fr)!important;
+  text-align:left;align-items:stretch;
+}
+.pack-opening .opening-result-pack,.pack-opening .opening-result-list{padding:5px 7px!important;gap:6px!important;border-radius:9px!important;min-height:0}
+.pack-opening .opening-result-pack img{width:30px;height:38px;flex:0 0 30px}
+.pack-opening .opening-result-pack .eyebrow,.pack-opening .opening-result-list .eyebrow{font-size:6px;letter-spacing:.7px}
+.pack-opening .opening-result-pack h2{font-size:clamp(11px,1.4vw,16px)!important;line-height:1.05;margin:1px 0 0}
+.pack-opening .opening-result-pack p,.pack-opening .opening-result-list small{font-size:7px;line-height:1.2;margin:2px 0 0}
+.pack-opening .opening-result-list{display:flex;flex-direction:column;justify-content:center;gap:2px}
+.pack-opening .opening-result-list strong{font-size:clamp(8px,1vw,10px);line-height:1.2;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
+.pack-opening .opening-description{max-width:none;margin:0!important;font-size:7px!important;line-height:1.15!important}
+.pack-opening .duplicate-rewards-panel{
+  max-width:none!important;width:100%;margin:0!important;padding:4px!important;
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 6px;
+  border-radius:8px!important;text-align:left;overflow:hidden;
+}
+.pack-opening .duplicate-rewards-panel>strong{grid-column:1/-1;font-size:8px;line-height:1.1}
+.pack-opening .duplicate-choice-row{min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:2px;padding:3px 4px;border:1px solid var(--line);border-radius:6px}
+.pack-opening .duplicate-choice-row>span{font-size:7px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pack-opening .duplicate-choice-actions{display:flex;gap:3px;min-width:0}
+.pack-opening .duplicate-choice-actions .btn{min-width:0;flex:1 1 0;padding:3px 4px!important;min-height:21px!important;font-size:6px!important;line-height:1.05;white-space:normal}
+.pack-opening .revealed-cards{
+  flex:1 1 0!important;min-height:0!important;max-height:none!important;width:100%;
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-rows:repeat(var(--reveal-rows,2),minmax(0,1fr))!important;
+  align-content:stretch!important;justify-content:stretch!important;align-items:stretch!important;
+  gap:5px!important;margin:1px auto!important;padding:1px 3px!important;overflow:hidden!important;
+}
+.pack-opening .revealed-card{min-width:0!important;min-height:0!important;height:100%!important;overflow:hidden!important;animation:zfCardReveal var(--pack-card-duration,.55s) cubic-bezier(.16,.82,.22,1) var(--card-delay,0s) both!important}
+.pack-opening .revealed-card:before,.pack-opening .revealed-card:after{display:none!important}
+.pack-opening .revealed-card .player-card{
+  width:100%!important;height:100%!important;min-height:0!important;max-height:none!important;
+  display:flex!important;flex-direction:column!important;overflow:hidden!important;border-radius:8px!important;
+}
+.pack-opening .revealed-card .player-card-head{flex:0 0 auto!important;padding:3px 4px 1px!important;gap:3px!important}
+.pack-opening .revealed-card .player-overall{min-width:0!important;padding:2px 4px!important;font-size:15px!important;line-height:1!important}
+.pack-opening .revealed-card .player-position{font-size:6px!important;margin-top:1px!important}
+.pack-opening .revealed-card .rarity-badge{font-size:5px!important;padding:2px 3px!important;letter-spacing:0!important}
+.pack-opening .revealed-card .player-portrait{height:clamp(30px,7vh,58px)!important;min-height:0!important;max-height:58px!important;aspect-ratio:auto!important;flex:0 0 auto!important}
+.pack-opening .revealed-card .player-portrait .portrait-circle{width:34px!important;height:34px!important;font-size:14px!important}
+.pack-opening .revealed-card .player-card-body{flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;padding:3px 4px!important}
+.pack-opening .revealed-card .player-card-body>strong{font-size:clamp(7px,.85vw,9px)!important;line-height:1.12!important;min-height:0!important;max-height:2.25em!important;overflow:hidden!important;display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important}
+.pack-opening .revealed-card .player-meta,.pack-opening .revealed-card .player-status,.pack-opening .revealed-card .player-market-value{display:none!important}
+.pack-opening .opening-actions{
+  position:relative!important;inset:auto!important;z-index:5;flex:0 0 auto!important;
+  display:flex!important;flex-wrap:wrap;align-items:center;justify-content:center;gap:5px!important;
+  margin:0!important;padding:5px 0 0!important;border-top:1px solid var(--line);
+  background:transparent!important;backdrop-filter:none!important;
+}
+.pack-opening .opening-actions>.btn{min-width:110px;min-height:32px;padding:7px 10px;font-size:9px}
+.pack-opening .opening-next-pack{width:100%;display:flex;align-items:center;justify-content:space-between;gap:5px;padding:3px 5px;margin:0;border:1px solid var(--line);border-radius:7px;background:var(--panel2);text-align:left}
+.pack-opening .opening-next-pack>div:first-child{min-width:0;display:grid;gap:1px}
+.pack-opening .opening-next-pack strong{font-size:8px}
+.pack-opening .opening-next-pack small{font-size:6px}
+.pack-opening .opening-next-pack-controls{display:flex;align-items:center;gap:4px;min-width:0}
+.pack-opening .opening-next-pack-controls select{max-width:130px;min-height:25px;padding:3px 5px;font-size:7px}
+.pack-opening .opening-next-pack-controls .btn{min-height:25px;padding:4px 6px;font-size:7px;white-space:nowrap}
+.pack-opening.is-skipped .opening-pack-scene{height:clamp(42px,7vh,68px)!important;transform:none!important;opacity:.65}
+.pack-opening.is-skipped .opening-pack-box{transform:scale(.82)!important}
+
+@media(max-width:760px){
+  .match-event .choice-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}
+  .match-event .choice-grid .match-choice{min-height:82px;padding:9px 7px;gap:6px}
+  .match-event .choice-grid .choice-num{width:22px;height:22px;flex-basis:22px}
+  .match-event .choice-grid .match-choice strong{font-size:10px}
+  .match-event .choice-grid .match-choice small{font-size:8px;line-height:1.25}
+  .pack-opening{padding:4px!important}
+  .pack-opening .opening-box{padding:5px 6px!important;gap:2px!important;border-radius:11px!important}
+  .pack-opening .opening-topline{font-size:6px;letter-spacing:.5px}
+  .pack-opening .opening-pack-scene{height:clamp(36px,6vh,52px)!important;flex-basis:clamp(36px,6vh,52px)!important}
+  .pack-opening .opening-result-header{grid-template-columns:minmax(0,.85fr) minmax(0,1.4fr)!important;gap:3px!important}
+  .pack-opening .opening-result-pack,.pack-opening .opening-result-list{padding:4px!important;gap:4px!important}
+  .pack-opening .opening-result-pack img{width:24px;height:31px;flex-basis:24px}
+  .pack-opening .opening-result-pack h2{font-size:10px!important}
+  .pack-opening .opening-result-pack p,.pack-opening .opening-result-list small{font-size:6px}
+  .pack-opening .opening-description{font-size:6px!important}
+  .pack-opening .revealed-cards{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:3px!important;padding:1px!important}
+  .pack-opening .revealed-card .player-card-head{padding:2px 3px 1px!important}
+  .pack-opening .revealed-card .player-overall{font-size:13px!important}
+  .pack-opening .revealed-card .player-portrait{height:clamp(26px,6vh,48px)!important;max-height:48px!important}
+  .pack-opening .revealed-card .player-card-body{padding:2px 3px!important}
+  .pack-opening .revealed-card .player-card-body>strong{font-size:7px!important}
+  .pack-opening .opening-actions>.btn{flex:1 1 30%;min-width:0;min-height:29px;padding:6px 5px;font-size:8px}
+  .pack-opening .opening-next-pack{align-items:center}
+  .pack-opening .opening-next-pack small{display:none}
+  .pack-opening .opening-next-pack-controls select{max-width:105px}
+}
+@media(max-height:650px){
+  .pack-opening .opening-pack-scene{height:34px!important;flex-basis:34px!important}
+  .pack-opening .opening-intro-copy .opening-flash{font-size:17px!important}
+  .pack-opening .opening-result-pack img{width:22px;height:27px;flex-basis:22px}
+  .pack-opening .opening-description{display:none}
+  .pack-opening .revealed-card .player-portrait{height:30px!important;max-height:30px!important}
+  .pack-opening .opening-actions>.btn{min-height:25px;padding:4px 7px}
+}
+@media(prefers-reduced-motion:reduce){
+  .pack-opening .revealed-card{animation:none!important;opacity:1!important;transform:none!important}
+}
+
+
+/* The reveal is a single fitted screen, not a nested page requiring wheel/touch scrolling. */
+html:has(.pack-opening),body:has(.pack-opening){height:100%!important;overflow:hidden!important;overscroll-behavior:none!important}
+.pack-opening .opening-scene-ring{display:none!important}
+.pack-opening .opening-pack-star{animation:none!important}
+.pack-opening .opening-pack-glow{animation:none!important;opacity:.72}
+.pack-opening .opening-pack-box{animation:none!important;transform:rotateY(-8deg) rotateX(2deg) scale(.82)!important}
+.pack-opening .opening-pack-box i{animation:none!important;opacity:.45}
+.pack-opening .opening-scene-particles b{animation:none!important;opacity:.7}
+@media(max-height:560px){
+  .pack-opening .opening-pack-scene{height:28px!important;flex-basis:28px!important}
+  .pack-opening .opening-intro-copy .opening-flash{font-size:15px!important}
+  .pack-opening .opening-result-pack,.pack-opening .opening-result-list{padding:3px!important}
+  .pack-opening .opening-actions>.btn{min-height:23px;padding:3px 6px;font-size:7px}
+  .pack-opening .duplicate-choice-row{padding:2px 3px}
+  .pack-opening .duplicate-choice-actions .btn{min-height:18px!important;font-size:5px!important}
+}
