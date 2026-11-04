@@ -1,8 +1,8 @@
 {
   "project": "Zero Football",
-  "version": "v72",
-  "name": "Zero Football v72 Release",
-  "description": "Removed the legacy Reliz promo code, fixed missing mission icons and undefined mission labels, and standardized visible currency wording to euros.",
+  "version": "v73",
+  "name": "Zero Football v73 Release",
+  "description": "Restored the Reliz promo redemption form while hiding the promo code and reward details from the interface; preserved all v72 fixes.",
   "files": [
     {
       "path": "ONLINE_CONNECT_RU_v63.md",
@@ -11,8 +11,8 @@
     },
     {
       "path": "README.md",
-      "size": 912,
-      "sha256": "558678dd003db10d7b362aee76bfc8a362cc0d2c6f0b865b8c608e2ca8aef830"
+      "size": 942,
+      "sha256": "f356d81aa9e430a36ed76ce15bb7434c37233740d80e1b9e9106ce4490b65a93"
     },
     {
       "path": "SUPABASE_SETUP_RU.md",
@@ -46,8 +46,13 @@
     },
     {
       "path": "SUPABASE_UPDATE_V72_RU.md",
-      "size": 966,
-      "sha256": "40cc96ba42c596cd07b8a848d1e026f43094d6e51ddd2228ea9f5d16b9345ac3"
+      "size": 983,
+      "sha256": "9d1daae7e2c31230370dd2e9d65ffc05a00e61012aca1bac413c7b263329db5e"
+    },
+    {
+      "path": "SUPABASE_UPDATE_V73_RU.md",
+      "size": 678,
+      "sha256": "af1a8bf89f2afb1730c7d8d6de4eb1fb0ff3eeedc3864c21eac6ea6e4d75759e"
     },
     {
       "path": "assets/README.md",
@@ -467,12 +472,12 @@
     {
       "path": "index.html",
       "size": 3669,
-      "sha256": "251761c2cbaa2aaaa1918646ebd9da6411c35ce915a39cb6aa911022d01c14f6"
+      "sha256": "02e2f36da2e2e52f6a4973f28347502a58cd3b52988e5796bc3b6c6b93ea06c5"
     },
     {
       "path": "js/app.js",
-      "size": 608045,
-      "sha256": "385ef4e74711150896c9551c1681f9be52ab6921a310679edac52f15e3abc529"
+      "size": 609882,
+      "sha256": "bf2fc7c14f0bde4508d38aef583cb7ab37944cd33241e62f9f5115d86cf13eed"
     },
     {
       "path": "js/data/economy.js",
