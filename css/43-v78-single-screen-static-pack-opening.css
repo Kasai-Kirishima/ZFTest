@@ -17,9 +17,9 @@ body:has(.pack-opening){position:fixed!important;inset:0!important;}
   animation:none!important;transform:none!important;
 }
 .pack-opening *,.pack-opening *::before,.pack-opening *::after{
-  animation:none!important;transition:none!important;scroll-behavior:auto!important;
-  transform:none!important;rotate:none!important;translate:none!important;scale:none!important;
+  scroll-behavior:auto!important;
   scroll-snap-type:none!important;
+  overscroll-behavior:none!important;
 }
 .pack-opening .pack-opening-backdrop-grid,
 .pack-opening .opening-pack-scene,

@@ -142,9 +142,7 @@
   .pack-opening .revealed-card .player-portrait{height:30px!important;max-height:30px!important}
   .pack-opening .opening-actions>.btn{min-height:25px;padding:4px 7px}
 }
-@media(prefers-reduced-motion:reduce){
-  .pack-opening .revealed-card{animation:none!important;opacity:1!important;transform:none!important}
-}
+/* Pack reveal motion is controlled by the in-game setting, not the OS reduced-motion override. */
 
 
 /* The reveal is a single fitted screen, not a nested page requiring wheel/touch scrolling. */
