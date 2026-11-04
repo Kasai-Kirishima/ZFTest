@@ -245,6 +245,8 @@
   if(typeof db.sound!=='boolean')db.sound=true;
   if(typeof db.vibration!=='boolean')db.vibration=true;
   if(typeof db.packAnimations!=='boolean')db.packAnimations=true;
+  // v82: restore pack reveal motion once for saves that retained an old disabled flag.
+  if(db.packRevealMotionV82!==true){db.packAnimations=true;db.packRevealMotionV82=true;saveDB();}
   if(!['cinematic','normal','fast'].includes(db.packAnimationSpeed))db.packAnimationSpeed='normal';
   if(typeof db.packSound!=='boolean')db.packSound=true;
   if(!Number.isFinite(Number(db.soundVolume)))db.soundVolume=32;db.soundVolume=clamp(Number(db.soundVolume),0,100);

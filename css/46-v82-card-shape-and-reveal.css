@@ -1,0 +1,167 @@
+/* Zero Football v82 — correct player-card proportions and restore a visible pack reveal. */
+
+/* The reveal grid still fills the viewport, but each card keeps its own portrait shape. */
+.pack-opening .revealed-cards{
+  align-items:center!important;
+  justify-items:center!important;
+  align-content:stretch!important;
+}
+.pack-opening .revealed-card{
+  position:relative!important;
+  width:min(100%,220px)!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:3 / 4!important;
+  justify-self:center!important;
+  align-self:center!important;
+  overflow:hidden!important;
+  border-radius:10px!important;
+  isolation:isolate!important;
+}
+.pack-opening .revealed-card .player-card{
+  position:relative!important;
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:hidden!important;
+  border-radius:10px!important;
+}
+.pack-opening .revealed-card .player-card-head{
+  flex:0 0 auto!important;
+  min-height:0!important;
+  padding:clamp(4px,.8vh,8px) clamp(5px,.8vw,9px) 3px!important;
+}
+.pack-opening .revealed-card .player-overall{font-size:clamp(15px,2.5vh,24px)!important}
+.pack-opening .revealed-card .player-position{font-size:clamp(7px,.75vw,9px)!important}
+.pack-opening .revealed-card .rarity-badge{font-size:clamp(6px,.65vw,8px)!important;padding:2px 5px!important}
+
+/* Photo area receives the remaining card height; the photo itself is cropped, never stretched. */
+.pack-opening .revealed-card .player-portrait{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  flex:1 1 0!important;
+  aspect-ratio:auto!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,#111a14,#26372b)!important;
+}
+.pack-opening .revealed-card .player-portrait .portrait-photo{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  object-fit:cover!important;
+  object-position:50% 18%!important;
+  transform:none!important;
+  filter:none!important;
+}
+.pack-opening .revealed-card .player-card-body{
+  flex:0 0 auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:clamp(5px,.75vh,8px) clamp(5px,.8vw,9px)!important;
+  overflow:hidden!important;
+}
+.pack-opening .revealed-card .player-card-body>strong{
+  min-height:0!important;
+  max-height:2.35em!important;
+  font-size:clamp(9px,1vw,12px)!important;
+  line-height:1.15!important;
+}
+.pack-opening .revealed-card .player-meta{
+  display:block!important;
+  max-height:1.2em!important;
+  margin-top:3px!important;
+  overflow:hidden!important;
+  font-size:clamp(6px,.68vw,8px)!important;
+  line-height:1.1!important;
+}
+.pack-opening .revealed-card .player-market-value,
+.pack-opening .revealed-card .player-status{display:none!important}
+
+/* Clear, sequential motion: the cards rise into view and flash once in their rarity colour. */
+.pack-opening:not(.is-skipped){animation:zfV82OverlayIn 260ms ease-out both!important}
+.pack-opening:not(.is-skipped) .opening-box{animation:zfV82PanelIn var(--pack-panel-duration,320ms) cubic-bezier(.2,.8,.2,1) both!important}
+.pack-opening:not(.is-skipped) .opening-result-pack img{animation:zfV82PackGlow 900ms ease-out 100ms both!important}
+.pack-opening:not(.is-skipped) .revealed-card{
+  opacity:0;
+  will-change:opacity,transform,filter!important;
+  animation:zfV82CardReveal var(--pack-card-duration,470ms) cubic-bezier(.18,.78,.24,1) var(--card-delay,0ms) both!important;
+}
+.pack-opening:not(.is-skipped) .revealed-card:before{
+  content:""!important;
+  position:absolute!important;
+  z-index:4!important;
+  inset:0!important;
+  display:block!important;
+  border:1px solid var(--rarity-color,var(--lime))!important;
+  border-radius:10px!important;
+  background:radial-gradient(ellipse at 50% 45%,var(--rarity-glow,transparent),transparent 72%)!important;
+  opacity:0;
+  pointer-events:none!important;
+  animation:zfV82RarityFlash 760ms ease-out calc(var(--card-delay,0ms) + 80ms) both!important;
+}
+.pack-opening:not(.is-skipped) .revealed-card:after{
+  content:""!important;
+  position:absolute!important;
+  z-index:5!important;
+  top:-15%!important;
+  bottom:-15%!important;
+  left:-65%!important;
+  width:42%!important;
+  display:block!important;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.3),transparent)!important;
+  opacity:0;
+  pointer-events:none!important;
+  transform:skewX(-18deg)!important;
+  animation:zfV82CardSheen 760ms ease-out calc(var(--card-delay,0ms) + 160ms) both!important;
+}
+.pack-opening.is-skipped .revealed-card{opacity:1!important;animation:none!important;transform:none!important;filter:none!important}
+.pack-opening.is-skipped .revealed-card:before,
+.pack-opening.is-skipped .revealed-card:after{display:none!important;animation:none!important}
+
+@keyframes zfV82OverlayIn{from{opacity:0}to{opacity:1}}
+@keyframes zfV82PanelIn{from{opacity:0;transform:translateY(12px) scale(.985);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+@keyframes zfV82PackGlow{0%{filter:brightness(.75) drop-shadow(0 0 0 transparent)}55%{filter:brightness(1.35) drop-shadow(0 0 12px var(--pack-glow))}100%{filter:brightness(1) drop-shadow(0 0 4px var(--pack-glow))}}
+@keyframes zfV82CardReveal{0%{opacity:0;transform:translateY(22px) scale(.94);filter:brightness(1.55) blur(5px)}68%{opacity:1;transform:translateY(-2px) scale(1.01);filter:brightness(1.12) blur(0)}100%{opacity:1;transform:none;filter:brightness(1) blur(0)}}
+@keyframes zfV82RarityFlash{0%{opacity:0;box-shadow:0 0 0 transparent}32%{opacity:1;box-shadow:0 0 22px var(--rarity-glow)}100%{opacity:0;box-shadow:0 0 0 transparent}}
+@keyframes zfV82CardSheen{0%{left:-65%;opacity:0}20%{opacity:1}100%{left:135%;opacity:0}}
+
+@media(max-height:720px){
+  .pack-opening .revealed-card{width:min(100%,180px)!important}
+}
+@media(max-height:600px){
+  .pack-opening .revealed-card{width:min(100%,145px)!important}
+  .pack-opening .revealed-card .player-card-head{padding:3px 4px 2px!important}
+  .pack-opening .revealed-card .player-card-body{padding:3px 4px!important}
+}
+@media(max-width:600px){
+  .pack-opening .revealed-card{width:min(100%,200px)!important}
+  .pack-opening .revealed-card .player-card-head{padding:3px 4px 2px!important}
+  .pack-opening .revealed-card .player-card-body{padding:4px!important}
+  .pack-opening .revealed-card .player-card-body>strong{font-size:clamp(7px,2.2vw,10px)!important}
+  .pack-opening .revealed-card .player-meta{font-size:clamp(5px,1.5vw,7px)!important}
+}
+@media(max-width:380px){
+  .pack-opening .revealed-card{width:min(100%,170px)!important}
+}
+/* Pack reveal motion is explicitly requested and remains visible even when the OS
+   has a global reduced-motion preference; users can still turn it off in game settings. */
+@media(prefers-reduced-motion:reduce){
+  .pack-opening:not(.is-skipped),
+  .pack-opening:not(.is-skipped) .opening-box,
+  .pack-opening:not(.is-skipped) .opening-result-pack img{animation-duration:var(--pack-panel-duration,320ms)!important;animation-delay:0ms!important}
+  .pack-opening:not(.is-skipped) .revealed-card{animation-duration:var(--pack-card-duration,470ms)!important;animation-delay:var(--card-delay,0ms)!important}
+  .pack-opening:not(.is-skipped) .revealed-card:before,
+  .pack-opening:not(.is-skipped) .revealed-card:after{animation-duration:760ms!important}
+}
