@@ -1,8 +1,8 @@
 {
   "project": "Zero Football",
-  "version": "v69",
-  "name": "Zero Football v69 Release",
-  "description": "Dedicated support space with regional payment links, preserving existing game and online systems.",
+  "version": "v71",
+  "name": "Zero Football v71 Release",
+  "description": "Team infirmary with player cards and detailed injuries, disciplinary card overview, ten realistic injury types and reduced injury frequency.",
   "files": [
     {
       "path": "ONLINE_CONNECT_RU_v63.md",
@@ -11,13 +11,13 @@
     },
     {
       "path": "README.md",
-      "size": 5422,
-      "sha256": "53bdd5300cf3269756ef0bcfea5ed8a59b3f07f546ceb5b1f854b1c54cedb4ff"
+      "size": 8151,
+      "sha256": "be4177fff1885260766481768e21f33ec807917f7ae9d60596027f6271b76ed7"
     },
     {
       "path": "SUPABASE_SETUP_RU.md",
-      "size": 6820,
-      "sha256": "60d440fd9cb771daac7c8eee3ea216f45ae5413628672cb8963791d9cfeb4498"
+      "size": 7259,
+      "sha256": "468d4d82e3488c8a1d9f67232c86b4af125b3872b0d17c91cf04e32cb73f1cdc"
     },
     {
       "path": "SUPABASE_UPDATE_V66_RU.md",
@@ -33,6 +33,16 @@
       "path": "SUPABASE_UPDATE_V68_RU.md",
       "size": 1770,
       "sha256": "d8a3baea2a0ce955b142d475880d65cc4769dcf2164a8a17342bb324ac9f764d"
+    },
+    {
+      "path": "SUPABASE_UPDATE_V70_RU.md",
+      "size": 1237,
+      "sha256": "3fddfa309b663538cad1c90cf3fb4db1d39c1cd51db19607ba85afec4aa9631c"
+    },
+    {
+      "path": "SUPABASE_UPDATE_V71_RU.md",
+      "size": 790,
+      "sha256": "544a2e3f34ab953d7c60c02a29b513ae235e118d5c5d4cdbae14fa75f832a319"
     },
     {
       "path": "assets/README.md",
@@ -420,6 +430,16 @@
       "sha256": "c915e2f191bac8416e3b143763e7aaf7b653e6b6178a788feda2a71e12e1be4b"
     },
     {
+      "path": "css/37-v70-transfer-cards-and-admin.css",
+      "size": 3938,
+      "sha256": "44f0e2847ec64fa897d3ac24c9ef2791abcfe8eeb0c19087799653b7a227d278"
+    },
+    {
+      "path": "css/38-v71-medical-and-injuries.css",
+      "size": 2585,
+      "sha256": "c6dd2e28d301a558f2ef8b5e59854810a17c6b91fa9c3c94df8093fe9adddd8e"
+    },
+    {
       "path": "docs/AD_INTEGRATION.md",
       "size": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -441,13 +461,13 @@
     },
     {
       "path": "index.html",
-      "size": 3522,
-      "sha256": "df2a37309f5e59c2d7deba9b99dd6d219480553f03906bcf9b3ab3ab763a0064"
+      "size": 3669,
+      "sha256": "251761c2cbaa2aaaa1918646ebd9da6411c35ce915a39cb6aa911022d01c14f6"
     },
     {
       "path": "js/app.js",
-      "size": 599450,
-      "sha256": "4cfb203f46a9d7a5ad31172690294d3e001944aedfafa0ec6bd915f795ff078c"
+      "size": 609923,
+      "sha256": "2c387d93e86e1e2357f4d8dfe76897339f17b51e281467d27bdd8c0dfa337d9c"
     },
     {
       "path": "js/data/economy.js",
@@ -508,6 +528,11 @@
       "path": "supabase/005_v67_market_economy_fix.sql",
       "size": 2553,
       "sha256": "b9b042383c273cca84c279b84da0edb6284d3e32acdc72070d9fa2f51ed1719d"
+    },
+    {
+      "path": "supabase/006_v70_market_filters_and_competition_delete.sql",
+      "size": 2530,
+      "sha256": "4d2e2833de8df571d3e7c1226585be0ed11e8a8c68d0068a1c64fe26f84a917e"
     }
   ]
 }
