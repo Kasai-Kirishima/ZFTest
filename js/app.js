@@ -75,10 +75,10 @@
   }
   function loadPlayerImage(card){
     const key=card.dataset.wiki||card.dataset.portraitKey;const img=card.querySelector('.portrait-photo,.squad-photo');if(!key||!img)return;
+    const direct=PLAYER_PHOTOS[key] || (String(key).includes('Зубков') ? 'https://img.tsn.ua/cached/507/tsn-51cb131e/thumbs/1200x630/19/05/29b9acbff3ddc18cfb96adebbbf20519.jpg' : null);
+    if(direct){showPortrait(img,direct,key);return;}
     const fallback=makeFallbackPortrait(key);if(!img.dataset.fallbackShown){img.dataset.fallbackShown='1';if(card.classList.contains('opponent-star-card'))img.loading='eager';showPortrait(img,fallback,key);if(card.classList.contains('opponent-star-card'))card.querySelector('.opponent-star-photo')?.classList.add('has-photo');}
     if(!card.dataset.wiki)return;
-    const direct=PLAYER_PHOTOS[key];
-    if(direct){showPortrait(img,direct,key);return;}
     const cached=PLAYER_IMAGE_CACHE[key];
     if(cached&&cached!=='pending'){showPortrait(img,cached,key);return;}
     if(cached==='pending')return;
@@ -1977,6 +1977,8 @@ function renderProgressionAndMissions(club){
     const openingClub=currentClub(),openingInventory=openingClub?ensurePackInventory(openingClub):{};
     const openedPackMeta=ZF_PACK_OPTIONS.find(p=>p.id===reveal.type)||ZF_PACK_OPTIONS[0];
     const droppedNames=cards.map(p=>playerDisplayName(p)).join(' · ');
+    const revealCols=cards.length===4?2:Math.max(1,Math.min(3,cards.length));
+    const revealRows=Math.max(1,Math.ceil(cards.length/revealCols));
     const openingResultHeader=`<section class="opening-result-header"><div class="opening-result-pack"><img src="${packArt}" alt=""><div><span class="eyebrow">ПАК ОТКРЫТ</span><h2>${esc(openedPackMeta.name)}</h2><p>${esc(openedPackMeta.type||'Агентство')} · ${cards.length} карточек</p></div></div><div class="opening-result-list"><span class="eyebrow">ЧТО ВЫПАЛО</span><strong>${esc(droppedNames||'Нет новых карточек')}</strong></div></section>`;
     const availableNextPacks=ZF_PACK_OPTIONS.filter(p=>(Number(openingInventory[p.id])||0)>0);
     const nextPackControls=availableNextPacks.length?`<div class="opening-next-pack"><label for="opening-next-pack">Следующий пак</label><div class="opening-next-pack-controls"><select id="opening-next-pack" class="select-compact">${availableNextPacks.map(p=>`<option value="${p.id}">${p.name} · ×${openingInventory[p.id]}</option>`).join('')}</select><button class="btn btn-secondary btn-sm" data-action="open-next-pack" ${reveal.duplicateRewards?.length?'disabled title="Сначала разбери повторные карточки"':''}>Открыть</button></div></div>`:'';
@@ -1987,7 +1989,7 @@ function renderProgressionAndMissions(club){
       <div class="opening-box">
         <div class="opening-topline"><span>ZERO FOOTBALL · РЕЗУЛЬТАТ ОТКРЫТИЯ</span><span class="opening-pack-count">${cards.length} ${cards.length===1?'КАРТОЧКА':'КАРТОЧЕК'}</span></div>
         ${openingResultHeader}
-        <div class="opening-main">${duplicateMarkup}<div class="revealed-cards cards-ready" style="--reveal-cols:${Math.max(1,Math.min(3,cards.length))};--reveal-rows:${Math.max(1,Math.ceil(cards.length/3))}">${cardMarkup}</div></div>
+        <div class="opening-main">${duplicateMarkup}<div class="revealed-cards cards-ready" style="--reveal-cols:${revealCols};--reveal-rows:${revealRows}">${cardMarkup}</div></div>
         <div class="opening-actions">${nextPackControls}<button class="btn btn-primary" data-action="close-opening">Продолжить →</button></div>
       </div>
     </div>`;

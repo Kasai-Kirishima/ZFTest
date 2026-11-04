@@ -302,6 +302,7 @@ Object.assign(window.ZF_DATA, {
     "Murillo":"https://media.bongda.com.vn/news/editor/20260413_055127_xa9e77ft.png",
     "Bruno Fernandes":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrcNcXquarvu4GjgkLsmWxWbT892EaWyzQSTuR9Ua4Qw6OHZ4-SgJosRk&s=10",
     "Oleksandr Zubkov":"https://img.tsn.ua/cached/507/tsn-51cb131e/thumbs/1200x630/19/05/29b9acbff3ddc18cfb96adebbbf20519.jpg",
+    "Александр Зубков":"https://img.tsn.ua/cached/507/tsn-51cb131e/thumbs/1200x630/19/05/29b9acbff3ddc18cfb96adebbbf20519.jpg",
     "Pau Cubarsí":"https://www.fcbarcelona.com/photo-resources/2025/10/15/3e83a3f4-3a5b-4c13-abaf-5039de6ed4c3/_MGA5498.jpg?width=1200&height=750",
     "Lee Kang-in":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRlBEz61QZ8j60A0t8SJ_whhnsoGAUTKYpKRSisdYieYYkiBoJJ4o7O3k&s=10",
     "Bambasé Conté":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQP_TAeAEH1ph1WobrMqtMm8IiZRKLt3ISLlZEGG5LbXe35wwtHsbhxVDU&s=10",
