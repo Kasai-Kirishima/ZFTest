@@ -1,8 +1,8 @@
 {
   "project": "Zero Football",
-  "version": "v89",
-  "name": "Zero Football v89 Release",
-  "description": "Visible player portraits in pack opening results and cleaned release archive.",
+  "version": "v90",
+  "name": "Zero Football v90 Release",
+  "description": "Fixed player photo loading and compact count-aware pack reveal layout.",
   "files": [
     {
       "path": "ONLINE_CONNECT_RU_v63.md",
@@ -11,8 +11,8 @@
     },
     {
       "path": "README.md",
-      "size": 9853,
-      "sha256": "7a4c1e9ace0f089b596495ec0838c0e5fbd174ba4e45c228f0d8c19cba52526f"
+      "size": 10816,
+      "sha256": "a98d6bcf5075a32a1eed5ad4e596baeda2d0225b1333db09da140afae4b18a5c"
     },
     {
       "path": "SUPABASE_SETUP_RU.md",
@@ -20,9 +20,9 @@
       "sha256": "aefb400372ac46e7389822cead9f357e3aa65915c48671bf2e8d09ce247fd602"
     },
     {
-      "path": "SUPABASE_UPDATE_V89_RU.md",
-      "size": 855,
-      "sha256": "e0663ac0870772a907b413001bebd1c7e26230584532f7030f23f512b01687a1"
+      "path": "SUPABASE_UPDATE_V90_RU.md",
+      "size": 1272,
+      "sha256": "532f4691120d27e0ce87efbebdb089e9fbd7a855ec24fbe547829023fc9434bc"
     },
     {
       "path": "assets/README.md",
@@ -490,6 +490,11 @@
       "sha256": "1d9c829b7aebe7906bc4a5b8a50835906e1567ea73e11a0895e91a3c24cf51f2"
     },
     {
+      "path": "css/53-v90-pack-compact-grid.css",
+      "size": 7962,
+      "sha256": "24d5dc89d0e2e1e20696f2d34675479ae486bd2caf212342b3400b0bbed73eff"
+    },
+    {
       "path": "docs/AD_INTEGRATION.md",
       "size": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -511,13 +516,13 @@
     },
     {
       "path": "index.html",
-      "size": 4767,
-      "sha256": "a3009ee356d874bcc1a124bd963ca7048e9a096b690b118890cdc0d8f90c1cf0"
+      "size": 4838,
+      "sha256": "401738f1797537b016a9103cbf6d2fd58eef42068947eea1586b0c4e7676f82a"
     },
     {
       "path": "js/app.js",
-      "size": 634374,
-      "sha256": "656d80cc6eb46470213b055f200334252a19edfd7d2671310c12e6f5e1fc11a9"
+      "size": 636361,
+      "sha256": "559e5ae71fef92c59d690f740f4e03d0f648c0e6b04b397bcf131d9478ea2029"
     },
     {
       "path": "js/data/economy.js",

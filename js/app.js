@@ -21,7 +21,7 @@
     cards.filter(card=>card.classList.contains('opponent-star-card')||card.closest('.opponent-best-grid')).forEach(loadPlayerImage);
     cards.filter(card=>card.closest('.pack-opening')).forEach(loadPlayerImage);
     if(!PLAYER_IMAGE_OBSERVER&&'IntersectionObserver' in window)PLAYER_IMAGE_OBSERVER=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){PLAYER_IMAGE_OBSERVER.unobserve(entry.target);loadPlayerImage(entry.target);}}),{rootMargin:'320px'});
-    cards.forEach(card=>{if(PLAYER_IMAGE_OBSERVER){if(!card.dataset.imageObserved){card.dataset.imageObserved='1';PLAYER_IMAGE_OBSERVER.observe(card);}}else loadPlayerImage(card);});
+    cards.filter(card=>!card.closest('.pack-opening')).forEach(card=>{if(PLAYER_IMAGE_OBSERVER){if(!card.dataset.imageObserved){card.dataset.imageObserved='1';PLAYER_IMAGE_OBSERVER.observe(card);}}else loadPlayerImage(card);});
   }
   function makeFallbackPortrait(seed){
     let h=0;for(let i=0;i<String(seed).length;i++)h=(h*31+String(seed).charCodeAt(i))>>>0;
@@ -62,36 +62,63 @@
     img.style.display='block';
     const card=img.closest('.player-card');card?.querySelector('.portrait-circle')?.classList.add('photo-hidden');
   }
+  async function fetchPortraitData(url,timeoutMs=6500){
+    const controller=typeof AbortController!=='undefined'?new AbortController():null;
+    const timeout=controller?setTimeout(()=>controller.abort(),timeoutMs):null;
+    try{
+      const response=await fetch(url,{headers:{accept:'application/json'},...(controller?{signal:controller.signal}:{})});
+      if(!response.ok)return null;
+      return await response.json();
+    }catch(error){return null;}
+    finally{if(timeout)clearTimeout(timeout);}
+  }
   async function findPlayerPortrait(key){
-    const title=String(key).replaceAll(' ','_');
-    try{
-      const r=await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(title),{headers:{'accept':'application/json'}});
-      if(r.ok){const d=await r.json();if(d?.thumbnail?.source)return d.thumbnail.source;}
-    }catch(e){}
-    try{
-      const u='https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=pageimages&piprop=thumbnail&pithumbsize=300&titles='+encodeURIComponent(key);
-      const r=await fetch(u);if(r.ok){const d=await r.json();const pages=Object.values(d?.query?.pages||{});const url=pages.find(x=>x?.thumbnail?.source)?.thumbnail?.source;if(url)return url;}
-    }catch(e){}
+    const raw=String(key||'').trim();if(!raw)return null;
+    const title=raw.replaceAll(' ','_');
+    const deadline=Date.now()+8500;
+    const read=url=>fetchPortraitData(url,Math.max(250,Math.min(4500,deadline-Date.now())));
+    // First use the page summary: it returns the actual lead photograph, not a generated avatar.
+    const summary=await read('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(title));
+    const summaryImage=summary?.originalimage?.source||summary?.thumbnail?.source;
+    if(summaryImage&&/^https?:\/\//i.test(summaryImage))return summaryImage;
+    // Some footballers have a different canonical article title. Ask the Action API for a matching page image.
+    const exactUrl='https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages&piprop=thumbnail&pithumbsize=640&titles='+encodeURIComponent(raw);
+    const exact=await read(exactUrl);
+    const exactImage=Object.values(exact?.query?.pages||{}).find(page=>page?.thumbnail?.source)?.thumbnail?.source;
+    if(exactImage&&/^https?:\/\//i.test(exactImage))return exactImage;
+    // Last attempt: resolve a nearby article title before giving up on the real photo.
+    const searchUrl='https://en.wikipedia.org/w/api.php?action=opensearch&format=json&origin=*&namespace=0&limit=1&search='+encodeURIComponent(raw);
+    const search=await read(searchUrl);
+    const matchedTitle=Array.isArray(search?.[1])?search[1][0]:'';
+    if(matchedTitle&&matchedTitle.replaceAll('_',' ').toLowerCase()!==raw.replaceAll('_',' ').toLowerCase()){
+      const matched=await read('https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages&piprop=thumbnail&pithumbsize=640&titles='+encodeURIComponent(matchedTitle));
+      const matchedImage=Object.values(matched?.query?.pages||{}).find(page=>page?.thumbnail?.source)?.thumbnail?.source;
+      if(matchedImage&&/^https?:\/\//i.test(matchedImage))return matchedImage;
+    }
     return null;
   }
   function loadPlayerImage(card){
-    const key=card.dataset.wiki||card.dataset.portraitKey;const img=card.querySelector('.portrait-photo,.squad-photo');if(!key||!img)return;
+    const key=card.dataset.wiki||card.dataset.portraitKey;
+    const img=card.querySelector('.portrait-photo,.squad-photo');
+    if(!key||!img)return;
     const direct=PLAYER_PHOTOS[key] || (String(key).includes('Зубков') ? 'https://img.tsn.ua/cached/507/tsn-51cb131e/thumbs/1200x630/19/05/29b9acbff3ddc18cfb96adebbbf20519.jpg' : null);
     if(direct){showPortrait(img,direct,key);return;}
-    const fallback=makeFallbackPortrait(key);if(!img.dataset.fallbackShown){img.dataset.fallbackShown='1';if(card.classList.contains('opponent-star-card'))img.loading='eager';showPortrait(img,fallback,key);if(card.classList.contains('opponent-star-card'))card.querySelector('.opponent-star-photo')?.classList.add('has-photo');}
-    if(!card.dataset.wiki)return;
+    const fallback=makeFallbackPortrait(key);
+    // Show a local portrait immediately; the real photograph replaces it when the lookup finishes.
+    if(!img.dataset.fallbackShown){img.dataset.fallbackShown='1';showPortrait(img,fallback,key);}
     const cached=PLAYER_IMAGE_CACHE[key];
-    if(cached&&cached!=='pending'){showPortrait(img,cached,key);return;}
+    if(cached&&cached!=='pending'){if(cached!==fallback)showPortrait(img,cached,key);return;}
     if(cached==='pending')return;
     PLAYER_IMAGE_CACHE[key]='pending';
     findPlayerPortrait(key).then(url=>{
-      // Keep real player photos where Wikipedia provides them; use a built-in illustrated portrait if not.
-      const finalUrl=url||makeFallbackPortrait(key);PLAYER_IMAGE_CACHE[key]=finalUrl;
-      $$('[data-wiki]').forEach(c=>{if(c.dataset.wiki===key){const target=c.querySelector('.portrait-photo,.squad-photo');if(target)showPortrait(target,finalUrl,key);}});
-    }).catch(()=>{
-      const fallback=makeFallbackPortrait(key);PLAYER_IMAGE_CACHE[key]=fallback;
-      $$('[data-wiki]').forEach(c=>{if(c.dataset.wiki===key){const target=c.querySelector('.portrait-photo,.squad-photo');if(target)showPortrait(target,fallback,key);}});
-    });
+      const finalUrl=url||fallback;PLAYER_IMAGE_CACHE[key]=finalUrl;
+      $$('[data-wiki], [data-portrait-key]').forEach(targetCard=>{
+        const targetKey=targetCard.dataset.wiki||targetCard.dataset.portraitKey;
+        if(targetKey!==key)return;
+        const target=targetCard.querySelector('.portrait-photo,.squad-photo');
+        if(target&&target.dataset.resolvedPortrait!==finalUrl){target.dataset.resolvedPortrait=finalUrl;showPortrait(target,finalUrl,key);}
+      });
+    }).catch(()=>{PLAYER_IMAGE_CACHE[key]=fallback;});
   }
 
   const SYMBOLS = window.ZF_DATA.SYMBOLS;
@@ -1228,10 +1255,10 @@
     return `<div class="section-heading"><div><div class="eyebrow">Pack market</div><h1 class="h1">МАГАЗИН ПАКОВ</h1><p class="page-subtitle">Покупай наборы заранее. Все приобретённые паки хранятся в инвентаре.</p></div><div class="actions"><span class="coin-chip">${formatMoney(club.coins)}</span></div></div>${renderPromoPanel(club)}<section class="card daily-player-shop" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ЕЖЕДНЕВНЫЙ МАГАЗИН</div><h2 class="h2">КАРТОЧКИ ДЛЯ ПОКУПКИ</h2><p>Каждую из трёх карточек можно купить один раз. Весь ассортимент обновляется ежедневно в 00:00.</p></div><span class="pill pill-lime">Обновление · 00:00</span></div><div class="daily-player-cards player-grid">${dailyCards||'<p class="muted">Все доступные футболисты уже в твоём клубе.</p>'}</div></section><section class="card pack-inventory" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ТВОИ ПОКУПКИ</div><h2 class="h2">ИНВЕНТАРЬ ПАКОВ</h2><p>Открывай наборы в любое удобное время.</p></div><span class="pill">${Object.values(inventory).reduce((a,b)=>a+b,0)} паков</span></div><div class="pack-inventory-list">${inventoryMarkup||'<p class="muted small">Инвентарь пока пуст. Купленные паки появятся здесь.</p>'}</div></section><section class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="eyebrow">ПАКИ ДЛЯ КОМАНДЫ</div><h2 class="h2">НАБОРЫ КАРТОЧЕК</h2><p>Выбери количество и добавь наборы в инвентарь. Открытие не происходит автоматически.</p></div></div></section><div class="pack-grid">${ZF_PACK_OPTIONS.map(p=>`<article class="pack-card" style="--pack-color:${p.color};--pack-glow:${p.glow}"><div class="pack-art pack-art-image"><img src="${packImageSource(p.id,p.image)}" alt="${esc(p.name)}" loading="eager" decoding="async" onerror="this.onerror=null;this.src='${p.image}'"></div><div class="pack-type">${p.type}</div><h3>${p.name}</h3><p>${p.desc}</p><div class="pack-bottom"><span class="pack-price">${p.id==='daily'?'БЕСПЛАТНО':formatMoney(p.price)}</span><label class="pack-quantity-label">Количество <select class="select-compact pack-quantity" data-pack-quantity="${p.id}" ${p.id==='daily'?'disabled':''}>${[1,2,3,5,10].map(n=>`<option value="${n}">${n}</option>`).join('')}</select></label><button class="btn btn-primary btn-sm pack-purchase-button" type="button" data-action="buy-pack" data-pack="${p.id}" aria-label="${p.id==='daily'?'Получить бесплатный пак':`Купить ${p.name} за ${formatMoney(p.price)}`}" ${p.id==='daily'&&!freeReady?'disabled':(p.id!=='daily'&&club.coins<p.price)?'disabled':''}>${p.id==='daily'?(freeReady?'Забрать бесплатно':'Получен сегодня'):`Купить за ${formatMoney(p.price)}`}</button></div><div class="pack-footnote">${p.meta} · В инвентарь</div></article>`).join('')}</div>`;
   }
   function renderPlayerCard(p,actions=false,clickable=false,eagerPortrait=false){
-    const activeClub=currentClub();const lineupIndex=p.id&&activeClub?.lineup?activeClub.lineup.indexOf(p.id):-1;const assignedRole=lineupIndex>=0?(FORMATIONS[activeClub.formation]||FORMATIONS['4-3-3'])[lineupIndex]?.role:null;const shownRating=lineupIndex>=0?playerOVRAt(p,assignedRole||p.position,activeClub):(p.id&&activeClub?.captainId===p.id&&activeClub?.lineup?.includes(p.id)?p.rating+1:p.rating);const r=rarityFor(shownRating);const country=playerCountryData(p.country);const displayName=playerDisplayName(p);const displayPositions=playerPositionsLabel(p);const displayClub=playerClubLabel(p);
+    const activeClub=currentClub();const lineupIndex=p.id&&activeClub?.lineup?activeClub.lineup.indexOf(p.id):-1;const assignedRole=lineupIndex>=0?(FORMATIONS[activeClub.formation]||FORMATIONS['4-3-3'])[lineupIndex]?.role:null;const shownRating=lineupIndex>=0?playerOVRAt(p,assignedRole||p.position,activeClub):(p.id&&activeClub?.captainId===p.id&&activeClub?.lineup?.includes(p.id)?p.rating+1:p.rating);const r=rarityFor(shownRating);const country=playerCountryData(p.country);const displayName=playerDisplayName(p);const displayPositions=playerPositionsLabel(p);const displayClub=playerClubLabel(p);const portraitKey=p.wiki||p.name||displayName;const eagerFallbackSrc=eagerPortrait?makeFallbackPortrait(portraitKey):'';const eagerPortraitSrc=eagerPortrait?(PLAYER_PHOTOS[portraitKey]||eagerFallbackSrc):'';
     const owned=currentClub()?.players?.some(x=>x.id===p.id);const isStarter=owned&&currentClub().lineup.includes(p.id);
     const action=actions&&owned?`<div class="player-card-actions">${isStarter?'<button class="btn btn-quiet btn-sm" disabled>В стартовом составе</button>':`<button class="btn btn-secondary btn-sm" data-action="sell-player" data-player-id="${esc(p.id)}">Продать · ${formatSaleRange(p,false,1.5)}</button>`}</div>`:'';
-    return `<article class="player-card" data-portrait-key="${esc(p.wiki||p.name)}" ${p.wiki?`data-wiki="${esc(p.wiki)}"`:''} style="--rarity-color:${r.color};--player-glow:${r.color}22"><div class="player-card-head"><div><div class="player-overall">${shownRating}</div><span class="player-position">${esc(lineupIndex>=0?positionLabel(assignedRole):displayPositions)}</span></div><span class="rarity-badge">${r.name}</span></div><div class="player-portrait${eagerPortrait?' has-photo':''}"><div class="portrait-circle">${esc(avatarLetters(displayName))}</div><img class="portrait-photo" alt="${esc(displayName)}" ${eagerPortrait?`src="${makeFallbackPortrait(p.wiki||p.name||displayName)}" loading="eager" decoding="sync"`:`loading="lazy"`} style="display:block"/></div><div class="player-card-body"><strong data-no-translate>${esc(displayName)}</strong><div class="player-meta"><span>${country.flag} ${esc(country.name)}</span></div><div class="player-market-value">${formatMoney(marketValue(p.rating))}</div>${p.realClub||p.club?`<div class="player-meta"><span class="real-club" data-no-translate>${esc(displayClub)}</span></div>`:''}<div class="player-status">${p.injuryMatches>0?`<span class="status-tag injury">🤕 ${p.injuryMatches}</span>`:''}${p.redCardMatches>0?`<span class="status-tag redcard">🟥 ${p.redCardMatches}</span>`:''}${p.yellowBanMatches>0?`<span class="status-tag redcard">⛔ ${p.yellowBanMatches}</span>`:p.yellowCards>0?`<span class="status-tag yellow">🟨 ${p.yellowCards}/5</span>`:''}</div>${action}</div></article>`;
+    return `<article class="player-card" data-portrait-key="${esc(p.wiki||p.name)}" ${p.wiki?`data-wiki="${esc(p.wiki)}"`:''} style="--rarity-color:${r.color};--player-glow:${r.color}22"><div class="player-card-head"><div><div class="player-overall">${shownRating}</div><span class="player-position">${esc(lineupIndex>=0?positionLabel(assignedRole):displayPositions)}</span></div><span class="rarity-badge">${r.name}</span></div><div class="player-portrait${eagerPortrait?' eager-portrait':''}" ${eagerPortrait?`style="--portrait-fallback:url('${eagerFallbackSrc}')"`:''}><div class="portrait-circle">${esc(avatarLetters(displayName))}</div><img class="portrait-photo" alt="${esc(displayName)}" ${eagerPortrait?`src="${esc(eagerPortraitSrc)}" loading="eager" fetchpriority="high" decoding="async" referrerpolicy="no-referrer"`:`loading="lazy" referrerpolicy="no-referrer"`} style="display:block"/></div><div class="player-card-body"><strong data-no-translate>${esc(displayName)}</strong><div class="player-meta"><span>${country.flag} ${esc(country.name)}</span></div><div class="player-market-value">${formatMoney(marketValue(p.rating))}</div>${p.realClub||p.club?`<div class="player-meta"><span class="real-club" data-no-translate>${esc(displayClub)}</span></div>`:''}<div class="player-status">${p.injuryMatches>0?`<span class="status-tag injury">🤕 ${p.injuryMatches}</span>`:''}${p.redCardMatches>0?`<span class="status-tag redcard">🟥 ${p.redCardMatches}</span>`:''}${p.yellowBanMatches>0?`<span class="status-tag redcard">⛔ ${p.yellowBanMatches}</span>`:p.yellowCards>0?`<span class="status-tag yellow">🟨 ${p.yellowCards}/5</span>`:''}</div>${action}</div></article>`;
   }
   function renderPlayerModal(club){
     if(!playerModalRef)return '';
