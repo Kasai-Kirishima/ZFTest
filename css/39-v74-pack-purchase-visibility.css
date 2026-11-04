@@ -1,0 +1,7 @@
+/* v74: keep pack purchase actions clearly visible on desktop and mobile */
+.pack-card .pack-bottom{position:relative;z-index:2;display:flex;flex-direction:column;align-items:stretch;gap:10px}
+.pack-card .pack-bottom .pack-purchase-button{display:flex!important;visibility:visible!important;opacity:1!important;position:relative;z-index:5;align-items:center;justify-content:center;width:100%;min-height:44px;flex:0 0 auto;padding:11px 14px;border:1px solid rgba(200,255,68,.42);border-radius:10px;background:linear-gradient(135deg,var(--lime,#c8ff44),#8eae2d);color:#11170c;font-size:12px;font-weight:900;line-height:1.25;white-space:normal;text-align:center;cursor:pointer}
+.pack-card .pack-bottom .pack-purchase-button:disabled{display:flex!important;visibility:visible!important;opacity:.58!important;cursor:not-allowed;filter:grayscale(.25)}
+.pack-card .pack-bottom .pack-purchase-button:not(:disabled):active{transform:translateY(1px) scale(.99)}
+.pack-card .pack-bottom .pack-quantity-label{width:100%;justify-content:space-between;margin:0}
+.pack-card .pack-bottom .pack-price{align-self:flex-start}

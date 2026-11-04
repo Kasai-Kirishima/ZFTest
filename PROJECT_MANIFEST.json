@@ -1,8 +1,8 @@
 {
   "project": "Zero Football",
-  "version": "v73",
-  "name": "Zero Football v73 Release",
-  "description": "Restored the Reliz promo redemption form while hiding the promo code and reward details from the interface; preserved all v72 fixes.",
+  "version": "v74",
+  "name": "Zero Football v74 Release",
+  "description": "Restored and made pack purchase buttons explicitly visible and accessible in the pack catalogue; preserved v73 features.",
   "files": [
     {
       "path": "ONLINE_CONNECT_RU_v63.md",
@@ -450,6 +450,11 @@
       "sha256": "c6dd2e28d301a558f2ef8b5e59854810a17c6b91fa9c3c94df8093fe9adddd8e"
     },
     {
+      "path": "css/39-v74-pack-purchase-visibility.css",
+      "size": 1107,
+      "sha256": "782ad4bf3d642bd17885e685e63388abc4eca78c33cd01a3f7b727ffd8c56ae7"
+    },
+    {
       "path": "docs/AD_INTEGRATION.md",
       "size": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -471,13 +476,13 @@
     },
     {
       "path": "index.html",
-      "size": 3669,
-      "sha256": "02e2f36da2e2e52f6a4973f28347502a58cd3b52988e5796bc3b6c6b93ea06c5"
+      "size": 3747,
+      "sha256": "ef6e36dc1c50089c1fd7eb99fbebf3f25643cd839fa8e46e3fdb63c285840d18"
     },
     {
       "path": "js/app.js",
-      "size": 609882,
-      "sha256": "bf2fc7c14f0bde4508d38aef583cb7ab37944cd33241e62f9f5115d86cf13eed"
+      "size": 610092,
+      "sha256": "6a2c94d460153b4ae81e8e2e22880c8ac0322d59e92eb3b56219d6fac5fce7a7"
     },
     {
       "path": "js/data/economy.js",

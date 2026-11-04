@@ -1,6 +1,3 @@
-# Assets
+# Audio assets
 
-Player portraits supplied by the user are currently referenced by their original HTTPS URLs in `js/data/players.js` (`PLAYER_PHOTOS`). They are not downloaded into this folder because the working environment could not retrieve external image files. To make portraits fully offline later, download the images into this folder and replace the corresponding URLs with relative asset paths.
-
-
-Pack artwork added in v65: `packs/starter.webp`, `national.webp`, `pro.webp`, `elite.webp`, `legend.webp`, and `daily.webp`. These were cropped from the six-pack reference image supplied for Zero Football.
+The v50 music tracks are streamed from the CC0 OpenGameArt source URLs listed in `docs/MUSIC_SOURCES.md`. No third-party audio binaries are stored in this folder. If the external audio host is unavailable, the game falls back to its built-in Web Audio music generator.
