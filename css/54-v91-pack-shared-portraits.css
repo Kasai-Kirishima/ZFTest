@@ -1,0 +1,21 @@
+/* Zero Football v91 — pack portraits now use the exact shared image lifecycle as the collection. */
+.pack-opening .revealed-card .player-portrait .portrait-photo{
+  display:block!important;
+  opacity:0!important;
+  visibility:visible!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:50% 18%!important;
+  transform:none!important;
+  filter:none!important;
+}
+.pack-opening .revealed-card .player-portrait.has-photo .portrait-photo{opacity:1!important;}
+.pack-opening .revealed-card .player-portrait .portrait-circle{
+  display:grid!important;
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+}
+.pack-opening .revealed-card .player-portrait.has-photo .portrait-circle{display:none!important;}
