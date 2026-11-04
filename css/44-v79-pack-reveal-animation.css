@@ -1,0 +1,58 @@
+/* v79 — restore the original pack reveal feel without roulette/spinning and without scrolling. */
+.pack-opening:not(.is-skipped){
+  animation:zfV79OverlayFade 260ms ease-out both!important;
+}
+.pack-opening:not(.is-skipped) .opening-box{
+  animation:zfV79PanelFade var(--pack-panel-duration,320ms) cubic-bezier(.2,.8,.2,1) both!important;
+}
+.pack-opening:not(.is-skipped) .opening-result-pack img{
+  animation:zfV79PackArtGlow 1.15s ease-out 80ms both!important;
+}
+.pack-opening:not(.is-skipped) .revealed-card{
+  opacity:0;
+  animation:zfV79CardReveal var(--pack-card-duration,470ms) cubic-bezier(.18,.78,.24,1) var(--card-delay,0ms) both!important;
+  will-change:opacity,filter;
+}
+.pack-opening:not(.is-skipped) .revealed-card:before{
+  animation:zfV79RarityFlash 720ms ease-out calc(var(--card-delay,0ms) + 90ms) both!important;
+}
+.pack-opening:not(.is-skipped) .revealed-card:after{
+  animation:zfV79CardSheen 760ms ease-out calc(var(--card-delay,0ms) + 170ms) both!important;
+}
+/* Motion uses opacity/filter/shine only: no card rotation, no spinning wheel, no layout shift. */
+@keyframes zfV79OverlayFade{
+  from{opacity:0;filter:blur(3px)}
+  to{opacity:1;filter:blur(0)}
+}
+@keyframes zfV79PanelFade{
+  from{opacity:0;filter:brightness(.72) blur(4px)}
+  to{opacity:1;filter:brightness(1) blur(0)}
+}
+@keyframes zfV79PackArtGlow{
+  0%{filter:brightness(.72) drop-shadow(0 0 0 transparent)}
+  55%{filter:brightness(1.35) drop-shadow(0 0 10px var(--pack-glow))}
+  100%{filter:brightness(1) drop-shadow(0 0 3px var(--pack-glow))}
+}
+@keyframes zfV79CardReveal{
+  0%{opacity:0;filter:brightness(1.8) blur(7px)}
+  62%{opacity:1;filter:brightness(1.22) blur(0)}
+  100%{opacity:1;filter:brightness(1) blur(0)}
+}
+@keyframes zfV79RarityFlash{
+  0%{opacity:0;box-shadow:0 0 0 transparent}
+  30%{opacity:1;box-shadow:0 0 20px var(--rarity-glow)}
+  100%{opacity:0;box-shadow:0 0 0 transparent}
+}
+@keyframes zfV79CardSheen{
+  0%{left:-70%;opacity:0}
+  18%{opacity:1}
+  100%{left:130%;opacity:0}
+}
+@media(prefers-reduced-motion:reduce){
+  .pack-opening:not(.is-skipped),
+  .pack-opening:not(.is-skipped) .opening-box,
+  .pack-opening:not(.is-skipped) .opening-result-pack img,
+  .pack-opening:not(.is-skipped) .revealed-card,
+  .pack-opening:not(.is-skipped) .revealed-card:before,
+  .pack-opening:not(.is-skipped) .revealed-card:after{animation-duration:1ms!important;animation-delay:0ms!important}
+}
