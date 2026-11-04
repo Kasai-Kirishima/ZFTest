@@ -1,0 +1,4 @@
+/* v89: guarantee visible portraits in pack results while remote player photos load. */
+.pack-opening .revealed-card .player-portrait{position:relative!important;overflow:hidden!important;background:linear-gradient(145deg,#26372d,#111a15)!important;}
+.pack-opening .revealed-card .player-portrait .portrait-photo{display:block!important;opacity:1!important;visibility:visible!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center 18%!important;}
+.pack-opening .revealed-card .player-portrait .portrait-circle{display:none!important;}

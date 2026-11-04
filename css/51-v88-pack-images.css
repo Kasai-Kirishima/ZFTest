@@ -1,0 +1,13 @@
+/* Zero Football v88 — pack images are embedded, eagerly decoded and always visible. */
+.pack-art-image img,
+.pack-inventory-image,
+.pack-opening .opening-result-pack img{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  object-fit:contain!important;
+  object-position:center!important;
+}
+.pack-art-image img{width:auto!important;height:100%!important;max-width:100%!important;min-width:1px!important;}
+.pack-inventory-image{width:68px!important;height:88px!important;flex:0 0 68px!important;}
+.pack-opening .opening-result-pack img{flex:0 0 auto!important;}
