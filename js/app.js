@@ -35,7 +35,18 @@
   function showPortrait(img,url,key){
     if(!img)return;
     const portraitKey=String(key||img.alt||'player');
-    const markLoaded=()=>{img.closest('.player-portrait')?.classList.add('has-photo');img.closest('.opponent-star-photo')?.classList.add('has-photo');};
+    const markLoaded=()=>{
+      const portrait=img.closest('.player-portrait');
+      if(portrait){
+        const aspect=(img.naturalWidth>0&&img.naturalHeight>0)?img.naturalWidth/img.naturalHeight:1;
+        // Wide/square photos crop horizontally and stay centered. Very tall portraits
+        // need a slight top bias so the player's head remains inside the 3:4 frame.
+        const focusY=aspect<0.74?'16%':'50%';
+        img.style.setProperty('--pack-portrait-focus',`50% ${focusY}`);
+        portrait.classList.add('has-photo');
+      }
+      img.closest('.opponent-star-photo')?.classList.add('has-photo');
+    };
     img.onload=markLoaded;
     img.onerror=()=>{
       img.onerror=null;
@@ -1358,11 +1369,11 @@
     {min:90,max:99,label:'90+',name:'Топовые'}
   ];
   const ZF_PACK_OPTIONS=[
-    {id:'starter',image:'assets/packs/starter.webp',name:'Агентство ★',type:'Агентство · 1 звезда',price:1.6,count:3,minRating:50,maxRating:99,unlockLevel:1,weights:[47,31,18.5,3.45,.05],color:'#c8ff44',glow:'rgba(200,255,68,.13)',desc:'3 футболиста. Даже топовая карточка возможна, но шанс в стартовом паке крайне мал.',meta:'3 КАРТОЧКИ'},
-    {id:'national',image:'assets/packs/national.webp',name:'Агентство ★★',type:'Агентство · 2 звезды',price:6.5,count:4,minRating:50,maxRating:99,unlockLevel:3,weights:[34,30,24,11.8,.2],color:'#79c9ff',glow:'rgba(121,201,255,.16)',desc:'4 футболиста. Небольшой шанс на игрока 90+, при этом основа пака — развитие состава.',meta:'4 КАРТОЧКИ'},
-    {id:'pro',image:'assets/packs/pro.webp',name:'Агентство ★★★',type:'Агентство · 3 звезды',price:20,count:5,minRating:50,maxRating:99,unlockLevel:6,weights:[24,28.5,28,18.9,.6],color:'#c296ff',glow:'rgba(194,150,255,.17)',desc:'5 футболистов. Сбалансированное агентство с редким шансом на элитную карточку.',meta:'5 КАРТОЧЕК'},
-    {id:'elite',image:'assets/packs/elite.webp',name:'Агентство ★★★★',type:'Агентство · 4 звезды',price:60,count:5,minRating:50,maxRating:99,unlockLevel:10,weights:[19,24,28,27.5,1.5],color:'#ffb45e',glow:'rgba(255,180,94,.17)',desc:'5 футболистов. Повышенный шанс на топовых игроков, но без гарантии.',meta:'5 КАРТОЧЕК'},
-    {id:'legend',image:'assets/packs/legend.webp',name:'Агентство ★★★★★',type:'Агентство · 5 звёзд',price:160,count:6,minRating:50,maxRating:99,unlockLevel:16,weights:[8,16,27,45.5,3.5],color:'#ff6f9e',glow:'rgba(255,111,158,.17)',desc:'6 футболистов. Максимальный шанс на рейтинг 90+, но топовая карточка всё ещё редкая.',meta:'6 КАРТОЧЕК'},
+    {id:'starter',image:'assets/packs/starter.webp',name:'Агентство ★',type:'Агентство · 1 звезда',price:2.4,count:3,minRating:50,maxRating:99,unlockLevel:1,weights:[47,31,18.5,3.45,.05],color:'#c8ff44',glow:'rgba(200,255,68,.13)',desc:'3 футболиста. Даже топовая карточка возможна, но шанс в стартовом паке крайне мал.',meta:'3 КАРТОЧКИ'},
+    {id:'national',image:'assets/packs/national.webp',name:'Агентство ★★',type:'Агентство · 2 звезды',price:9.5,count:4,minRating:50,maxRating:99,unlockLevel:3,weights:[34,30,24,11.8,.2],color:'#79c9ff',glow:'rgba(121,201,255,.16)',desc:'4 футболиста. Небольшой шанс на игрока 90+, при этом основа пака — развитие состава.',meta:'4 КАРТОЧКИ'},
+    {id:'pro',image:'assets/packs/pro.webp',name:'Агентство ★★★',type:'Агентство · 3 звезды',price:30,count:5,minRating:50,maxRating:99,unlockLevel:6,weights:[24,28.5,28,18.9,.6],color:'#c296ff',glow:'rgba(194,150,255,.17)',desc:'5 футболистов. Сбалансированное агентство с редким шансом на элитную карточку.',meta:'5 КАРТОЧЕК'},
+    {id:'elite',image:'assets/packs/elite.webp',name:'Агентство ★★★★',type:'Агентство · 4 звезды',price:90,count:5,minRating:50,maxRating:99,unlockLevel:10,weights:[19,24,28,27.5,1.5],color:'#ffb45e',glow:'rgba(255,180,94,.17)',desc:'5 футболистов. Повышенный шанс на топовых игроков, но без гарантии.',meta:'5 КАРТОЧЕК'},
+    {id:'legend',image:'assets/packs/legend.webp',name:'Агентство ★★★★★',type:'Агентство · 5 звёзд',price:240,count:6,minRating:50,maxRating:99,unlockLevel:16,weights:[8,16,27,45.5,3.5],color:'#ff6f9e',glow:'rgba(255,111,158,.17)',desc:'6 футболистов. Максимальный шанс на рейтинг 90+, но топовая карточка всё ещё редкая.',meta:'6 КАРТОЧЕК'},
     {id:'daily',image:'assets/packs/daily.webp',name:'Ежедневный бесплатный пак',type:'Ежедневный бонус',price:0,count:2,minRating:50,maxRating:99,unlockLevel:1,weights:[49.98,32,16.5,1.5,.02],color:'#f6ce58',glow:'rgba(246,206,88,.17)',desc:'2 футболиста. Даже в бесплатном наборе остаётся крошечный шанс на карточку 90+.',meta:'БЕСПЛАТНО · 1 РАЗ В ДЕНЬ'}
   ];
   function packUnlocked(club,pack){return progressionState(club).level>=Number(pack?.unlockLevel||1);}
