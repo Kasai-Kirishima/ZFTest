@@ -546,15 +546,23 @@
   }
   function playerIsUnavailable(p){return !!unavailableReason(p);}
   function benchPlayers(club){return (club?.players||[]).filter(p=>!club.lineup.includes(p.id)).sort((a,b)=>b.rating-a.rating);}
-  function contractDays(p){const until=Number(p?.contractUntil)||0;return Math.max(0,Math.ceil((until-Date.now())/86400000));}
+  // Player contracts use elapsed real time: one game-day is exactly 24 hours.
+  // The visible day count decreases only when a complete 24-hour interval has passed.
+  function contractDays(p,now=Date.now()){
+    const until=Number(p?.contractUntil)||0;
+    return until>now?Math.ceil((until-now)/86400000):0;
+  }
   function contractCountdownText(p,now=Date.now()){
     const until=Number(p?.contractUntil)||0,remaining=until-now;
     if(!until||remaining<=0)return 'Истёк';
-    const days=Math.floor(remaining/86400000),hours=Math.floor((remaining%86400000)/3600000);
-    if(days>0)return `${days} дн. ${hours} ч.`;
-    const minutes=Math.floor((remaining%3600000)/60000);
-    if(hours>0)return `${hours} ч. ${minutes} мин.`;
-    return `${Math.max(1,minutes)} мин.`;
+    const days=Math.ceil(remaining/86400000);
+    // At an exact 24-hour boundary, the next decrease is in another full 24 hours.
+    const untilNextDecrease=(remaining%86400000)||86400000;
+    const hours=Math.floor(untilNextDecrease/3600000);
+    const minutes=Math.floor((untilNextDecrease%3600000)/60000);
+    const seconds=Math.floor((untilNextDecrease%60000)/1000);
+    const clock=[hours,minutes,seconds].map(v=>String(v).padStart(2,'0')).join(':');
+    return `${days} дн. · −1 через ${clock}`;
   }
   function playerIdentityKey(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase().replace(/[^a-zа-яё0-9]+/giu,'');}
   function recordTrophies(club){
@@ -1261,7 +1269,7 @@
 
   function renderTeamContracts(club){
     const players=club.players.slice().sort((a,b)=>contractDays(a)-contractDays(b));
-    return `<section class="card team-contracts" style="margin-top:16px"><div class="card-header"><div><div class="eyebrow">${translateUIText('КОНТРАКТЫ ИГРОКОВ')}</div><h2 class="h2">КОНТРАКТЫ ИГРОКОВ</h2><p>Каждый контракт действует 30 календарных дней с момента получения футболиста. Счётчик обновляется автоматически; матчи срок не списывают.</p></div><span class="pill">${players.length} игроков</span></div><div class="contract-list">${players.map(p=>{const days=contractDays(p),until=Number(p.contractUntil)||0;return `<div class="contract-row"><div><b data-no-translate>${esc(playerDisplayName(p))}</b><small>${esc(playerPositionsLabel(p))} · ${p.rating} OVR · ${esc(playerClubLabel(p))}</small></div><span class="contract-days ${days<=7?'danger':''}" data-contract-until="${until}" title="${until?new Date(until).toLocaleString('ru-RU'):''}">${contractCountdownText(p)}</span></div>`;}).join('')}</div></section>`;
+    return `<section class="card team-contracts" style="margin-top:16px"><div class="card-header"><div><div class="eyebrow">${translateUIText('КОНТРАКТЫ ИГРОКОВ')}</div><h2 class="h2">КОНТРАКТЫ ИГРОКОВ</h2><p>Каждый контракт действует 30 реальных суток (720 часов) с момента получения футболиста. За каждые полные 24 часа остаток уменьшается на 1 день. Счётчик обновляется автоматически; матчи срок не списывают.</p></div><span class="pill">${players.length} игроков</span></div><div class="contract-list">${players.map(p=>{const days=contractDays(p),until=Number(p.contractUntil)||0;return `<div class="contract-row"><div><b data-no-translate>${esc(playerDisplayName(p))}</b><small>${esc(playerPositionsLabel(p))} · ${p.rating} OVR · ${esc(playerClubLabel(p))}</small></div><span class="contract-days ${days<=7?'danger':''}" data-contract-until="${until}" title="${until?new Date(until).toLocaleString('ru-RU'):''}">${contractCountdownText(p)}</span></div>`;}).join('')}</div></section>`;
   }
   const ZF_INJURY_TYPES=[
     {name:'Ушиб голеностопа',min:1,max:2,detail:'Болезненность и отёк после столкновения.'},
