@@ -1,0 +1,35 @@
+/* Zero Football v97 — results stat + fixed portrait pack cards. */
+.pack-opening .revealed-cards > .revealed-card{
+  display:block!important;
+  width:min(100%,230px)!important;
+  max-width:100%!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:3 / 4!important;
+  box-sizing:border-box!important;
+  flex:0 0 auto!important;
+  align-self:start!important;
+  overflow:hidden!important;
+}
+.pack-opening .revealed-cards > .revealed-card > .player-card{
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+.pack-opening .revealed-cards > .revealed-card .player-portrait{
+  flex:1 1 0!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:hidden!important;
+}
+@media(max-width:700px){
+  .pack-opening .revealed-cards > .revealed-card{width:100%!important;max-width:100%!important;aspect-ratio:3 / 4!important;}
+}
