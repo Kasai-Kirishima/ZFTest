@@ -1,0 +1,187 @@
+/* Zero Football v98 — use the exact collection player-card composition inside pack results.
+   The portrait is its own 3:4 block in normal document flow; text always starts below it. */
+.pack-opening .revealed-cards.collection-grid{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fill,minmax(155px,1fr))!important;
+  grid-auto-rows:auto!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  justify-content:stretch!important;
+  align-content:start!important;
+  gap:14px!important;
+  width:100%!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-height:100%!important;
+  margin:0!important;
+  padding:5px!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  box-sizing:border-box!important;
+  overscroll-behavior:contain!important;
+  touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+.pack-opening .revealed-cards.collection-grid>.revealed-card{
+  display:block!important;
+  position:relative!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  align-self:stretch!important;
+  justify-self:stretch!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+}
+.pack-opening .revealed-cards.collection-grid>.revealed-card>.player-card{
+  display:flex!important;
+  flex:0 0 auto!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+}
+
+/* Match collection header and rating. */
+.pack-opening .revealed-cards.collection-grid .player-card-head{
+  position:relative!important;
+  inset:auto!important;
+  z-index:2!important;
+  display:flex!important;
+  flex:0 0 auto!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:5px!important;
+  padding:9px 10px 6px!important;
+  background:transparent!important;
+}
+.pack-opening .revealed-cards.collection-grid .player-overall{
+  min-width:42px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  text-align:left!important;
+  font-size:22px!important;
+  line-height:1!important;
+}
+.pack-opening .revealed-cards.collection-grid .player-position{font-size:9px!important;margin-top:3px!important;}
+.pack-opening .revealed-cards.collection-grid .rarity-badge{
+  display:inline-block!important;
+  padding:4px 6px!important;
+  font-size:8px!important;
+  line-height:1.1!important;
+}
+
+/* Same portrait frame and crop as the collection. It has a real 3:4 height
+   and remains in normal flow, so the following text cannot be covered. */
+.pack-opening .revealed-cards.collection-grid .player-portrait{
+  position:relative!important;
+  display:block!important;
+  flex:0 0 auto!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:3/4!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,#111a14,#26372b)!important;
+}
+.pack-opening .revealed-cards.collection-grid .player-portrait .portrait-photo{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  object-fit:cover!important;
+  object-position:center 18%!important;
+  opacity:0!important;
+  visibility:visible!important;
+  transform:none!important;
+  filter:none!important;
+}
+.pack-opening .revealed-cards.collection-grid .player-portrait.has-photo .portrait-photo{opacity:1!important;}
+.pack-opening .revealed-cards.collection-grid .player-portrait .portrait-circle{
+  display:grid!important;
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+}
+.pack-opening .revealed-cards.collection-grid .player-portrait.has-photo .portrait-circle{display:none!important;}
+
+/* Same information block, wrapping, spacing and price treatment as collection. */
+.pack-opening .revealed-cards.collection-grid .player-card-body{
+  display:block!important;
+  flex:1 0 auto!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:10px 11px 12px!important;
+  overflow:visible!important;
+}
+.pack-opening .revealed-cards.collection-grid .player-card-body>strong{
+  display:block!important;
+  min-height:2.4em!important;
+  max-height:none!important;
+  margin:0!important;
+  overflow:visible!important;
+  overflow-wrap:anywhere!important;
+  white-space:normal!important;
+  text-overflow:clip!important;
+  font-size:13px!important;
+  line-height:1.2!important;
+  -webkit-line-clamp:unset!important;
+}
+.pack-opening .revealed-cards.collection-grid .player-meta{
+  display:flex!important;
+  justify-content:space-between!important;
+  flex-wrap:wrap!important;
+  gap:8px!important;
+  margin-top:5px!important;
+  font-size:9px!important;
+  line-height:1.35!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+.pack-opening .revealed-cards.collection-grid .player-market-value{
+  display:inline-block!important;
+  margin-top:7px!important;
+  padding:4px 7px!important;
+  border-radius:6px!important;
+  background:rgba(200,255,68,.1)!important;
+  color:var(--lime)!important;
+  font-size:12px!important;
+  font-weight:900!important;
+}
+.pack-opening .revealed-cards.collection-grid .player-status{display:flex!important;flex-wrap:wrap!important;gap:4px!important;margin-top:5px!important;}
+
+@media(max-width:760px){
+  .pack-opening .revealed-cards.collection-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:9px!important;
+    padding:3px!important;
+  }
+  .pack-opening .revealed-cards.collection-grid .player-card-head{padding:10px 9px 2px!important;}
+  .pack-opening .revealed-cards.collection-grid .player-portrait{aspect-ratio:3/4!important;}
+  .pack-opening .revealed-cards.collection-grid .player-card-body{padding:8px!important;}
+  .pack-opening .revealed-cards.collection-grid .player-card-body>strong{font-size:13px!important;}
+}
+@media(max-width:390px){
+  .pack-opening .revealed-cards.collection-grid{gap:7px!important;}
+  .pack-opening .revealed-cards.collection-grid .player-card-body{padding:8px!important;}
+}

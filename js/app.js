@@ -2293,7 +2293,7 @@ function renderProgressionAndMissions(club){
       <div class="opening-box">
         <div class="opening-topline"><span>ZERO FOOTBALL · РЕЗУЛЬТАТ ОТКРЫТИЯ</span><span class="opening-pack-count">${cards.length} ${cards.length===1?'КАРТОЧКА':'КАРТОЧЕК'}</span></div>
         ${openingResultHeader}
-        <div class="opening-main">${duplicateMarkup}<div class="revealed-cards cards-ready" data-reveal-count="${cards.length}" style="--reveal-cols:${revealCols};--reveal-rows:${revealRows};--reveal-grid-columns:${revealCols}">${cardMarkup}</div></div>
+        <div class="opening-main">${duplicateMarkup}<div class="revealed-cards collection-grid cards-ready" data-reveal-count="${cards.length}" style="--reveal-cols:${revealCols};--reveal-rows:${revealRows};--reveal-grid-columns:${revealCols}">${cardMarkup}</div></div>
         <div class="opening-actions">${nextPackControls}<button class="btn btn-primary" data-action="close-opening">Продолжить →</button></div>
       </div>
     </div>`;
