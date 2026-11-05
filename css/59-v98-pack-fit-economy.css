@@ -1,0 +1,24 @@
+/* Zero Football v98 — pack cards fully visible without scrolling the card itself. */
+.pack-opening{height:100dvh!important;min-height:0!important;overflow:hidden!important;padding:clamp(4px,.8vh,10px)!important;}
+.pack-opening .opening-box{height:100%!important;max-height:100%!important;min-height:0!important;overflow:hidden!important;padding:clamp(5px,.8vw,12px)!important;gap:clamp(3px,.5vh,6px)!important;}
+.pack-opening .opening-main{min-height:0!important;overflow:hidden!important;}
+.pack-opening .revealed-cards{min-height:0!important;max-height:100%!important;align-content:start!important;align-items:start!important;grid-auto-rows:max-content!important;padding:3px!important;gap:clamp(3px,.45vw,6px)!important;}
+.pack-opening .revealed-card{width:100%!important;max-width:100%!important;aspect-ratio:4/5!important;height:auto!important;max-height:min(40dvh,340px)!important;min-height:0!important;overflow:hidden!important;}
+.pack-opening .revealed-card .player-card{height:100%!important;min-height:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;}
+.pack-opening .revealed-card .player-card-head{flex:0 0 auto!important;padding:4px 5px 2px!important;}
+.pack-opening .revealed-card .player-portrait{flex:1 1 auto!important;min-height:0!important;height:auto!important;max-height:none!important;overflow:hidden!important;}
+.pack-opening .revealed-card .player-portrait .portrait-photo{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:50% 16%!important;}
+.pack-opening .revealed-card .player-card-body{flex:0 0 auto!important;padding:4px 5px!important;min-height:0!important;}
+.pack-opening .revealed-card .player-card-body>strong{font-size:clamp(8px,.85vw,12px)!important;line-height:1.1!important;max-height:2.2em!important;}
+.pack-opening .revealed-card .player-meta{font-size:clamp(6px,.58vw,8px)!important;line-height:1.1!important;}
+@media(max-width:700px){
+ .pack-opening .opening-box{padding:3px!important;gap:3px!important;}
+ .pack-opening .opening-result-header{padding:3px!important;margin:0!important;}
+ .pack-opening .revealed-cards{gap:3px!important;padding:2px!important;}
+ .pack-opening .revealed-card{max-height:min(38dvh,260px)!important;}
+ .pack-opening .revealed-card .player-card-head{padding:2px 3px 1px!important;}
+ .pack-opening .revealed-card .player-card-body{padding:2px 3px!important;}
+ .pack-opening .revealed-card .player-card-body>strong{font-size:clamp(7px,1.7vw,10px)!important;}
+ .pack-opening .revealed-card .player-meta{font-size:5px!important;}
+}
+@media(max-height:650px){.pack-opening .revealed-card{max-height:min(34dvh,220px)!important;}}

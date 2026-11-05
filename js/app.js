@@ -427,7 +427,7 @@
   // Transfermarkt-style estimated market value in millions of euros.
   function marketValue(rating){return Math.pow(200,Math.max(0,(Number(rating||50)-50)/40));}
   function formatMoney(value){const n=Number(value)||0;return `€${n>=100?Math.round(n):n>=10?n.toFixed(1):n.toFixed(2)} млн`; }
-  function saleValue(player,duplicate=false){const base=marketValue(player.rating)*0.05;return Math.max(0.01,base*(duplicate?0.5:1));}
+  function saleValue(player,duplicate=false){const base=marketValue(player.rating)*0.04;return Math.max(0.01,base*(duplicate?0.35:1));}
   function saleRange(player,duplicate=false,multiplier=1){
     const base=saleValue(player,duplicate)*multiplier;
     return {min:Math.round(base*.8*100)/100,max:Math.round(base*1.35*100)/100};
@@ -1313,11 +1313,11 @@
     return club.dailyShop;
   }
   const ZF_PACK_OPTIONS=[
-    {id:'starter',image:'assets/packs/starter.webp',name:'Агентство ★',type:'Агентство · 1 звезда',price:2,count:3,color:'#c8ff44',glow:'rgba(200,255,68,.13)',desc:'3 футболиста. Базовый шанс на сильную карточку.',meta:'3 КАРТОЧКИ'},
-    {id:'national',image:'assets/packs/national.webp',name:'Агентство ★★',type:'Агентство · 2 звезды',price:8,count:4,color:'#79c9ff',glow:'rgba(121,201,255,.16)',desc:'4 футболиста. Более высокий шанс на рейтинг 70+.',meta:'4 КАРТОЧКИ'},
-    {id:'pro',image:'assets/packs/pro.webp',name:'Агентство ★★★',type:'Агентство · 3 звезды',price:25,count:5,color:'#c296ff',glow:'rgba(194,150,255,.17)',desc:'5 футболистов. Повышенный шанс на рейтинг 75+.',meta:'5 КАРТОЧЕК'},
-    {id:'elite',image:'assets/packs/elite.webp',name:'Агентство ★★★★',type:'Агентство · 4 звезды',price:75,count:5,color:'#ffb45e',glow:'rgba(255,180,94,.17)',desc:'5 футболистов. Высокий шанс на рейтинг 80+.',meta:'5 КАРТОЧЕК'},
-    {id:'legend',image:'assets/packs/legend.webp',name:'Агентство ★★★★★',type:'Агентство · 5 звёзд',price:200,count:6,color:'#ff6f9e',glow:'rgba(255,111,158,.17)',desc:'6 футболистов. Лучшие шансы на элитных игроков.',meta:'6 КАРТОЧЕК'},
+    {id:'starter',image:'assets/packs/starter.webp',name:'Агентство ★',type:'Агентство · 1 звезда',price:3,count:3,color:'#c8ff44',glow:'rgba(200,255,68,.13)',desc:'3 футболиста. Базовый шанс на сильную карточку.',meta:'3 КАРТОЧКИ'},
+    {id:'national',image:'assets/packs/national.webp',name:'Агентство ★★',type:'Агентство · 2 звезды',price:10,count:4,color:'#79c9ff',glow:'rgba(121,201,255,.16)',desc:'4 футболиста. Более высокий шанс на рейтинг 70+.',meta:'4 КАРТОЧКИ'},
+    {id:'pro',image:'assets/packs/pro.webp',name:'Агентство ★★★',type:'Агентство · 3 звезды',price:30,count:5,color:'#c296ff',glow:'rgba(194,150,255,.17)',desc:'5 футболистов. Повышенный шанс на рейтинг 75+.',meta:'5 КАРТОЧЕК'},
+    {id:'elite',image:'assets/packs/elite.webp',name:'Агентство ★★★★',type:'Агентство · 4 звезды',price:85,count:5,color:'#ffb45e',glow:'rgba(255,180,94,.17)',desc:'5 футболистов. Высокий шанс на рейтинг 80+.',meta:'5 КАРТОЧЕК'},
+    {id:'legend',image:'assets/packs/legend.webp',name:'Агентство ★★★★★',type:'Агентство · 5 звёзд',price:220,count:6,color:'#ff6f9e',glow:'rgba(255,111,158,.17)',desc:'6 футболистов. Лучшие шансы на элитных игроков.',meta:'6 КАРТОЧЕК'},
     {id:'daily',image:'assets/packs/daily.webp',name:'Ежедневный бесплатный пак',type:'Ежедневный бонус',price:0,count:2,color:'#f6ce58',glow:'rgba(246,206,88,.17)',desc:'2 футболиста. Один бесплатный набор каждые сутки.',meta:'БЕСПЛАТНО · 1 РАЗ В ДЕНЬ'}
   ];
   function packImageSource(packId,fallback){
@@ -2407,7 +2407,7 @@ function renderProgressionAndMissions(club){
   }
   function openPack(type,fromInventory=false,requestedQuantity=1){
     const club=currentClub();if(!club)return;
-    const packs={starter:{price:2,count:3,min:50,max:88,weights:[55,28,12,4,1]},national:{price:8,count:4,min:55,max:91,weights:[35,32,20,10,3]},pro:{price:25,count:5,min:60,max:94,weights:[20,30,27,17,6]},elite:{price:75,count:5,min:65,max:96,weights:[10,22,30,25,13]},legend:{price:200,count:6,min:70,max:99,weights:[4,14,27,32,23]},daily:{price:0,count:2,min:50,max:90,weights:[42,30,18,8,2]}};const pack=packs[type];if(!pack)return;
+    const packs={starter:{price:3,count:3,min:50,max:88,weights:[55,28,12,4,1]},national:{price:10,count:4,min:55,max:91,weights:[35,32,20,10,3]},pro:{price:30,count:5,min:60,max:94,weights:[20,30,27,17,6]},elite:{price:85,count:5,min:65,max:96,weights:[10,22,30,25,13]},legend:{price:220,count:6,min:70,max:99,weights:[4,14,27,32,23]},daily:{price:0,count:2,min:50,max:90,weights:[42,30,18,8,2]}};const pack=packs[type];if(!pack)return;
     if(!fromInventory){toast('Сначала купи пак — он появится в инвентаре.','error');return;}const inventory=ensurePackInventory(club);const requested=Math.max(1,Math.min(20,Math.floor(Number(requestedQuantity)||1)));const quantity=Math.min(requested,Math.max(0,Number(inventory[type])||0));if(quantity<1){toast('Такого пака нет в инвентаре.','error');return;}if(quantity<requested)toast(`В инвентаре доступно только ${quantity} паков.`,'error');inventory[type]-=quantity;saveDB();
     const newPlayers=[];const packBatches=[];
     for(let packIndex=0;packIndex<quantity;packIndex++){
@@ -2417,7 +2417,7 @@ function renderProgressionAndMissions(club){
       const candidates=pool.filter(p=>p.rating>=pack.min&&p.rating<=pack.max);const roll=Math.random()*100;let cumulative=0;const band=pack.weights.findIndex(w=>(cumulative+=w)>=roll);const ranges=[[50,64],[65,74],[75,84],[85,89],[90,99]];const [lo,hi]=ranges[Math.max(0,band)];const bandPool=candidates.filter(p=>p.rating>=lo&&p.rating<=hi);let base=pick(bandPool.length?bandPool:(candidates.length?candidates:pool));const rating=base.rating;base={...base,rating};
       const position=base.position;
       const localizedBase=REAL_PLAYERS.find(p=>p.wiki===base.wiki)||base;const created=createPlayer(position,localizedBase.rating,localizedBase.name,localizedBase.country, {id:'card-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7),wiki:base.wiki,realClub:base.club,realPlayer:true,displayPosition:({'GK':'ВР','LB':'ЛЗ','CB':'ЦЗ','RB':'ПЗ','CDM':'ОП','CM':'ЦП','CAM':'АП','LW':'ЛВ','RW':'ПВ','ST':'ЦН'})[position]||position});
-      created.positions=({'Nico Paz':['CAM','CM','RW'],'Jude Bellingham':['CAM','CM'],'Federico Valverde':['CM','CDM','RM'],'Joško Gvardiol':['CB','LB'],'Achraf Hakimi':['RB','RWB'],'Nuno Mendes':['LB','LWB'],'Pedri':['CM','CAM'],'Kai Havertz':['ST','CAM'],'Lamine Yamal':['RW','LW'],'Raphinha':['RW','LW'],'Harry Kane':['ST','CF'],'Julián Álvarez':['ST','CF','CAM'],'Cristiano Ronaldo':['ST','LW'],'Andriy Yarmolenko':['RW','CAM'],'Neymar':['LW','CAM']})[base.wiki]||REAL_PLAYER_POSITIONS[base.wiki]||[base.position];created.name=localizedBase.name;created.rating=localizedBase.rating;created.country=localizedBase.country;created.realClub=base.club;created.wiki=base.wiki;created.realPlayer=true;created.displayPosition=({GK:'ВР',LB:'ЛЗ',CB:'ЦЗ',RB:'ПЗ',CDM:'ОП',CM:'ЦП',CAM:'АП',LW:'ЛВ',RW:'ПВ',ST:'ЦН'})[base.position]||base.position;
+      created.positions=({'Nico Paz':['CAM','CM','RW'],'Jude Bellingham':['CAM','CM'],'Federico Valverde':['CM','CDM','RM'],'Joško Gvardiol':['CB','LB'],'Achraf Hakimi':['RB','RWB'],'Nuno Mendes':['LB','LWB'],'Pedri':['CM','CAM'],'Kai Havertz':['ST','CAM'],'Lamine Yamal':['RW','LW'],'Raphinha':['RW','LW'],'Harry Kane':['ST','CF'],'Julián Álvarez':['ST','CF','CAM'],'Cristiano Ronaldo':['ST','LW'],'Andriy Yarmolenko':['RW','CAM'],'Neymar':['LW','CAM']})[base.wiki]||REAL_PLAYER_POSITIONS[base.wiki]||[base.position];created.name=localizedBase.name;created.rating=rating;created.country=localizedBase.country;created.realClub=base.club;created.wiki=base.wiki;created.realPlayer=true;created.displayPosition=({GK:'ВР',LB:'ЛЗ',CB:'ЦЗ',RB:'ПЗ',CDM:'ОП',CM:'ЦП',CAM:'АП',LW:'ЛВ',RW:'ПВ',ST:'ЦН'})[base.position]||base.position;
       const duplicate=club.players.find(p=>p.name===created.name)||newPlayers.find(p=>p.name===created.name);if(duplicate){created.duplicateOf=duplicate.id;created.duplicate=true;}created.contractUntil=Date.now()+30*86400000;newPlayers.push(created);batchPlayers.push(created);
       }
       packBatches.push(batchPlayers.map(player=>player.id));
