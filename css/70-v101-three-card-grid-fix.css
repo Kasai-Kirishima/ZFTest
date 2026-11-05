@@ -1,0 +1,8 @@
+/* Zero Football v101 — keep all three cards the same size in a 2+1 pack result.
+   Older pack CSS made the third card span the whole grid row; let it occupy one normal cell. */
+.pack-opening .revealed-cards[data-reveal-count="3"] > .revealed-card:last-child{
+  grid-column:auto!important;
+  grid-row:auto!important;
+  justify-self:stretch!important;
+  align-self:stretch!important;
+}
