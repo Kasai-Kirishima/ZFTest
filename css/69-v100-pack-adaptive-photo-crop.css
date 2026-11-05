@@ -1,0 +1,30 @@
+/* Zero Football v100 — pack player photos: adaptive 3:4 cover crop. */
+.pack-opening .revealed-cards.collection-grid .player-portrait{
+  position:relative!important;
+  display:block!important;
+  flex:0 0 auto!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:3/4!important;
+  overflow:hidden!important;
+}
+.pack-opening .revealed-cards.collection-grid .player-portrait .portrait-photo{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  object-position:var(--pack-portrait-focus,50% 50%)!important;
+  transform:none!important;
+  filter:none!important;
+}
+.pack-opening .revealed-cards.collection-grid .player-portrait.has-photo .portrait-photo{
+  opacity:1!important;
+}
