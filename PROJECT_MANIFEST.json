@@ -1,8 +1,5 @@
 {
-  "project": "Zero Football",
-  "version": "v93",
-  "name": "Zero Football v93 Release",
-  "description": "Pack opening improvements: independent multi-pack batches, configurable player-card grid, scroll slider and larger controls.",
+  "version": "v96",
   "files": [
     {
       "path": "ONLINE_CONNECT_RU_v63.md",
@@ -11,8 +8,8 @@
     },
     {
       "path": "README.md",
-      "size": 14295,
-      "sha256": "0f063a202e29e17bd1e48207f8d585c5ab05d1fb2a2ef4660e2f3015e4e52ffd"
+      "size": 16264,
+      "sha256": "a43a180b65e9120c4c387b52f37c84c1ef5c88e27c7edad767d9d57261bb2fc6"
     },
     {
       "path": "SUPABASE_SETUP_RU.md",
@@ -33,6 +30,21 @@
       "path": "SUPABASE_UPDATE_V93_RU.md",
       "size": 1327,
       "sha256": "5102ac88cd588d265d8db90c90e601ab76dbb8f93aecbdce1d6b326adb99b705"
+    },
+    {
+      "path": "SUPABASE_UPDATE_V94_RU.md",
+      "size": 757,
+      "sha256": "b8dadfdb2de053ba0bcba629dab98705152f28c6bd182c16c9bb9ab6abc488be"
+    },
+    {
+      "path": "SUPABASE_UPDATE_V95_RU.md",
+      "size": 650,
+      "sha256": "2beab3bf33508660b80e181203dc872acf07f9e1fd72219a7d24bc114e836f88"
+    },
+    {
+      "path": "SUPABASE_UPDATE_V96_RU.md",
+      "size": 952,
+      "sha256": "a6a2605759a87260140f688071be15b0ad73b30f4c5baf0b169aac944032000b"
     },
     {
       "path": "assets/README.md",
@@ -520,6 +532,11 @@
       "sha256": "480a2bc9caa584997d0a84fc4c9dd8e74c80f35faf75b15cb84d618048593270"
     },
     {
+      "path": "css/57-v94-pack-tight-grid.css",
+      "size": 3859,
+      "sha256": "ab6fd61dfb1a7295e6ed198c380b99906b4c16c36233bdcfa92bfae07d4aef4c"
+    },
+    {
       "path": "docs/AD_INTEGRATION.md",
       "size": 1237,
       "sha256": "478fb82a5c07e3d5ddde3072c586e36edd625be41e2d02795ca685442c0fdf5c"
@@ -541,13 +558,13 @@
     },
     {
       "path": "index.html",
-      "size": 5059,
-      "sha256": "b5badcf04d04b0c5d5f36d4baa6a9bdb557c97c3adaa36ae88712556fe13d6cd"
+      "size": 5132,
+      "sha256": "7ec96eaf66267acb475af7cf355251acbabe729137e84ff749d4be730e6ef35e"
     },
     {
       "path": "js/app.js",
-      "size": 651038,
-      "sha256": "391bad71c3675081a2c5400516d3b82808461621d89b9b15bf857aaa7b666f65"
+      "size": 649928,
+      "sha256": "d7bc9053b6ac5574eb0b7f4d43bc70efaee8ce528194e7454418f46cc9027841"
     },
     {
       "path": "js/data/economy.js",
