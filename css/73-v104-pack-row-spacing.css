@@ -1,0 +1,32 @@
+/* Zero Football v104 — real content height for pack cards and clear row spacing.
+   Keep the portrait at 3:4, but let the complete card determine each grid row height. */
+.pack-opening.is-batch .revealed-cards.collection-grid{
+  grid-auto-rows:max-content!important;
+  row-gap:22px!important;
+  align-content:start!important;
+  padding-bottom:22px!important;
+}
+.pack-opening.is-batch .revealed-cards.collection-grid>.revealed-card{
+  height:auto!important;
+  min-height:0!important;
+  aspect-ratio:auto!important;
+  overflow:visible!important;
+  align-self:start!important;
+}
+.pack-opening.is-batch .revealed-cards.collection-grid>.revealed-card>.player-card{
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  overflow:hidden!important;
+}
+.pack-opening.is-batch .revealed-cards.collection-grid .player-portrait{
+  flex:0 0 auto!important;
+  aspect-ratio:3/4!important;
+}
+@media(max-width:760px){
+  .pack-opening.is-batch .revealed-cards.collection-grid{row-gap:18px!important;padding-bottom:20px!important;}
+}
+@media(max-width:390px){
+  .pack-opening.is-batch .revealed-cards.collection-grid{row-gap:16px!important;}
+}
