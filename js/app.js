@@ -2199,12 +2199,17 @@ function renderProgressionAndMissions(club){
     const speedProfiles={cinematic:{panel:560,card:820,stagger:205},normal:{panel:430,card:650,stagger:155},fast:{panel:260,card:430,stagger:90}};
     const speedProfile=speedProfiles[db.packAnimationSpeed]||speedProfiles.normal;
     const cards=(reveal.players||[]).filter(p=>!p.duplicate||(reveal.duplicateRewards||[]).some(d=>d.id===p.id));
+    const revealRowSize=6;
     const revealStagger=cards.length>15?Math.max(14,Math.floor(2400/Math.max(1,cards.length-1))):speedProfile.stagger;
+    const revealRowDelay=(revealRowSize-1)*revealStagger+speedProfile.card+180;
     const cardMarkup=cards.map((p,i)=>{
       const rating=Number(p.rating)||50;
       const rarity=rarityFor(rating);
       const rarityKey=rating>=90?'icon':rating>=85?'elite':rating>=75?'gold':rating>=65?'silver':'bronze';
-      return `<div class="revealed-card rarity-reveal-${rarityKey}" data-reveal-card="${i}" style="--rarity-color:${rarity.color};--rarity-glow:${rarity.color}88;--card-delay:${i*revealStagger}ms">${renderPlayerCard(p,false,false)}</div>`;
+      const rowIndex=Math.floor(i/revealRowSize);
+      const positionInRow=i%revealRowSize;
+      const cardDelay=rowIndex*revealRowDelay+positionInRow*revealStagger;
+      return `<div class="revealed-card rarity-reveal-${rarityKey}" data-reveal-card="${i}" data-reveal-row="${rowIndex}" style="--rarity-color:${rarity.color};--rarity-glow:${rarity.color}88;--card-delay:${cardDelay}ms">${renderPlayerCard(p,false,false)}</div>`;
     }).join('');
     const openingClub=currentClub(),openingInventory=openingClub?ensurePackInventory(openingClub):{};
     const openedPackMeta=ZF_PACK_OPTIONS.find(p=>p.id===reveal.type)||ZF_PACK_OPTIONS[0];

@@ -1,0 +1,16 @@
+/* Zero Football v101 — fill each six-card row from left to right before revealing the next row. */
+.pack-opening .revealed-cards{
+  grid-auto-flow:row!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-template-rows:none!important;
+  grid-auto-rows:max-content!important;
+  grid-auto-columns:minmax(0,1fr)!important;
+  align-content:start!important;
+  justify-content:stretch!important;
+}
+.pack-opening .revealed-cards>.revealed-card{
+  grid-area:auto!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  order:0!important;
+}
