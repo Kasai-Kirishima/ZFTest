@@ -1,0 +1,194 @@
+/* Zero Football v105 — multiple packs use one continuous result layout.
+   No player slider and no nested player-grid scrolling: the result overlay itself grows and scrolls. */
+html:has(.pack-opening.is-batch),
+body:has(.pack-opening.is-batch),
+#app:has(.pack-opening.is-batch){
+  height:auto!important;
+  min-height:100%!important;
+  max-height:none!important;
+  overflow:visible!important;
+  overscroll-behavior:auto!important;
+}
+body.zf-pack-opening-active,
+body.zf-pack-opening-active #app{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+}
+.pack-opening.is-batch{
+  position:fixed!important;
+  inset:0!important;
+  z-index:1000!important;
+  display:block!important;
+  width:100vw!important;
+  height:100vh!important;
+  height:100dvh!important;
+  min-height:0!important;
+  max-height:none!important;
+  padding:max(4px,env(safe-area-inset-top)) max(4px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(4px,env(safe-area-inset-left))!important;
+  box-sizing:border-box!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+  scrollbar-width:thin!important;
+  scrollbar-color:rgba(200,255,68,.58) rgba(255,255,255,.07)!important;
+}
+.pack-opening.is-batch::-webkit-scrollbar{display:block!important;width:8px!important;}
+.pack-opening.is-batch::-webkit-scrollbar-thumb{background:rgba(200,255,68,.58)!important;border-radius:8px!important;}
+.pack-opening.is-batch .opening-box{
+  position:relative!important;
+  inset:auto!important;
+  display:flex!important;
+  flex:0 0 auto!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  gap:clamp(7px,.9vh,12px)!important;
+  width:min(100%,1400px)!important;
+  height:auto!important;
+  min-height:100dvh!important;
+  max-height:none!important;
+  min-width:0!important;
+  margin:0 auto!important;
+  padding:clamp(6px,1vw,14px)!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+.pack-opening.is-batch .opening-topline,
+.pack-opening.is-batch .opening-result-header,
+.pack-opening.is-batch .opening-actions{
+  position:relative!important;
+  inset:auto!important;
+  flex:0 0 auto!important;
+  min-width:0!important;
+}
+.pack-opening.is-batch .opening-main{
+  position:relative!important;
+  display:flex!important;
+  flex:0 0 auto!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  gap:clamp(8px,1vh,13px)!important;
+  width:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+}
+.pack-opening.is-batch .reveal-scroll-control{display:none!important;}
+.pack-opening.is-batch .revealed-cards.collection-grid{
+  position:relative!important;
+  inset:auto!important;
+  display:grid!important;
+  flex:0 0 auto!important;
+  grid-template-columns:repeat(var(--reveal-grid-columns,4),minmax(0,1fr))!important;
+  grid-template-rows:none!important;
+  grid-auto-flow:row!important;
+  grid-auto-rows:max-content!important;
+  align-content:start!important;
+  align-items:start!important;
+  justify-content:stretch!important;
+  justify-items:stretch!important;
+  column-gap:clamp(8px,.85vw,13px)!important;
+  row-gap:22px!important;
+  width:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:8px 7px 22px!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+  overscroll-behavior:auto!important;
+  touch-action:pan-y!important;
+  scrollbar-width:none!important;
+}
+.pack-opening.is-batch .revealed-cards.collection-grid::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;}
+.pack-opening.is-batch .revealed-cards.collection-grid>.revealed-card{
+  position:relative!important;
+  inset:auto!important;
+  grid-area:auto!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  order:0!important;
+  align-self:start!important;
+  justify-self:stretch!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:0!important;
+  height:auto!important;
+  aspect-ratio:auto!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+}
+.pack-opening.is-batch .revealed-cards.collection-grid>.revealed-card>.player-card{
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+}
+.pack-opening.is-batch .revealed-cards.collection-grid .player-portrait{
+  flex:0 0 auto!important;
+  aspect-ratio:3/4!important;
+}
+.pack-opening.is-batch .revealed-cards.collection-grid .player-portrait .portrait-photo{object-fit:cover!important;}
+.pack-opening.is-batch:not(.is-skipped) .revealed-cards.collection-grid>.revealed-card{
+  animation:zfBatchCardIn .32s ease-out var(--card-delay,0ms) both!important;
+  transform-origin:center center!important;
+}
+.pack-opening.is-batch.is-skipped .revealed-card{opacity:1!important;animation:none!important;transform:none!important;}
+@keyframes zfBatchCardIn{
+  from{opacity:0;transform:translateY(7px) scale(.992);filter:brightness(1.12);}
+  to{opacity:1;transform:none;filter:none;}
+}
+@media(max-width:760px){
+  .pack-opening.is-batch .opening-box{gap:7px!important;padding:5px!important;}
+  .pack-opening.is-batch .revealed-cards.collection-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    column-gap:8px!important;
+    row-gap:18px!important;
+    padding:5px 3px 20px!important;
+  }
+}
+@media(max-width:390px){
+  .pack-opening.is-batch .revealed-cards.collection-grid{column-gap:6px!important;row-gap:16px!important;}
+}
+/* Duplicate choices also join the same vertical page flow; no sideways mini-scroller. */
+.pack-opening.is-batch .duplicate-rewards-panel{
+  position:relative!important;
+  flex:0 0 auto!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  overscroll-behavior:auto!important;
+}
+.pack-opening.is-batch .duplicate-choice-list{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))!important;
+  align-items:stretch!important;
+  gap:7px!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:visible!important;
+  padding:0 1px 3px!important;
+  scrollbar-width:none!important;
+}
+.pack-opening.is-batch .duplicate-choice-list::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;}
+.pack-opening.is-batch .duplicate-choice-row{width:100%!important;max-width:none!important;min-width:0!important;flex:initial!important;}

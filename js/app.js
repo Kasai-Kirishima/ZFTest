@@ -746,10 +746,7 @@
         appRoot.insertAdjacentHTML('beforeend',renderReveal());
         document.body.classList.add('zf-pack-opening-active');
         const activeReveal=appRoot.querySelector('.pack-opening');
-        const resultGrid=activeReveal?.querySelector('.revealed-cards');
-        const resultRange=activeReveal?.querySelector('[data-reveal-scroll-range]');
-        if(resultGrid)resultGrid.scrollTop=0;
-        if(resultRange)resultRange.value='0';
+        if(activeReveal)activeReveal.scrollTop=0;
       }
       if(editSlotIndex!==null)$('#app').insertAdjacentHTML('beforeend',renderAssignModal(club,editSlotIndex));
       if(playerModalRef)$('#app').insertAdjacentHTML('beforeend',renderPlayerModal(club));
@@ -2305,7 +2302,9 @@ function renderProgressionAndMissions(club){
     const openedPackMeta=ZF_PACK_OPTIONS.find(p=>p.id===reveal.type)||ZF_PACK_OPTIONS[0];
     const droppedNames=cards.map(p=>playerDisplayName(p)).join(' · ');
     const requestedColumns=clamp(Math.floor(Number(db.packGridColumns)||4),2,4);
-    const revealCols=cards.length===3?Math.min(2,requestedColumns):Math.max(1,Math.min(requestedColumns,cards.length||1));
+    // Keep the same columns-per-row as a single pack; opening more packs only adds rows.
+    const cardsPerPack=Math.max(1,Number(revealPackOption.count)||cards.length||1);
+    const revealCols=cardsPerPack===3?Math.min(2,requestedColumns):Math.max(1,Math.min(requestedColumns,cardsPerPack));
     const revealRows=Math.max(1,Math.ceil(cards.length/revealCols));
     const openedCount=Number(reveal.packCount)||1;const packCountWord=(openedCount%100>=11&&openedCount%100<=14)?'паков':openedCount%10===1?'пак':openedCount%10>=2&&openedCount%10<=4?'пака':'паков';
     const openingResultHeader=`<section class="opening-result-header"><div class="opening-result-pack"><img src="${packArt}" alt="${esc(openedPackMeta.name)}" loading="eager" decoding="async" onerror="this.onerror=null;this.src='${openedPackMeta.image}'"><div><span class="eyebrow">ПАКИ ОТКРЫТЫ</span><h2>${esc(openedPackMeta.name)}</h2><p>${esc(openedPackMeta.type||'Агентство')} · ${openedCount} ${packCountWord} · ${cards.length} карточек</p></div></div><div class="opening-result-list"><span class="eyebrow">ЧТО ВЫПАЛО</span><strong>${esc(droppedNames||'Нет новых карточек')}</strong></div></section>`;
@@ -2313,13 +2312,12 @@ function renderProgressionAndMissions(club){
     const nextPackControls=availableNextPacks.length?`<div class="opening-next-pack"><label for="opening-next-pack">Следующий пак</label><div class="opening-next-pack-controls"><select id="opening-next-pack" class="select-compact">${availableNextPacks.map(p=>`<option value="${p.id}">${p.name} · ×${openingInventory[p.id]}</option>`).join('')}</select><button class="btn btn-secondary btn-sm" data-action="open-next-pack" ${reveal.duplicateRewards?.length?'disabled title="Сначала разбери повторные карточки"':''}>Открыть</button></div></div>`:'';
     const duplicates=(reveal.duplicateRewards||[]);
     const duplicateMarkup=duplicates.length?`<section class="duplicate-rewards-panel" aria-label="Действия с повторными карточками"><div class="duplicate-panel-heading"><strong>ПОВТОРНЫЕ КАРТОЧКИ</strong><span>${duplicates.length} · выбери действие для каждой</span></div><div class="duplicate-choice-list">${duplicates.map(p=>{const price=formatSaleRange(p,true,1);return `<article class="duplicate-choice-row"><div class="duplicate-choice-top"><div class="duplicate-player-info"><strong title="${esc(playerDisplayName(p))}">${esc(playerDisplayName(p))}</strong><small>${p.rating} OVR · ДУБЛИКАТ</small></div><div class="duplicate-choice-price"><span>Продажа</span><strong>${esc(price)}</strong></div></div><div class="duplicate-choice-actions"><button class="btn btn-secondary btn-sm" title="Продать за случайную сумму из диапазона ${esc(price)}" aria-label="Продать ${esc(playerDisplayName(p))} за случайную сумму из диапазона ${esc(price)}" data-action="duplicate-sell" data-player-id="${esc(p.id)}">Продать</button><button class="btn btn-primary btn-sm" title="Продлить контракт исходной карточки на 5 дней" aria-label="Продлить ${esc(playerDisplayName(p))} на 5 дней" data-action="duplicate-renew" data-player-id="${esc(p.id)}">Продлить +5 дн.</button></div></article>`;}).join('')}</div></section>`:'';
-    const batchScrollControl=cards.length>6?`<div class="reveal-scroll-control" aria-label="Прокрутка результатов"><span class="reveal-scroll-label">ПРОКРУТКА КАРТОЧЕК</span><input type="range" min="0" max="1000" step="1" value="0" data-reveal-scroll-range aria-label="Прокрутить карточки"><span class="reveal-scroll-total">${cards.length} шт.</span></div>`:'';
     const openingClass=[reveal.skipAnimation?'is-skipped':'',openedCount>1?'is-batch':''].filter(Boolean).join(' ');
     return `<div class="pack-opening${openingClass?' '+openingClass:''}" style="--pack-color:${meta.color};--pack-accent:${meta.accent};--pack-glow:${meta.glow};--pack-panel-duration:${speedProfile.panel}ms;--pack-card-duration:${speedProfile.card}ms">
       <div class="opening-box">
         <div class="opening-topline"><span>ZERO FOOTBALL · РЕЗУЛЬТАТ ОТКРЫТИЯ</span><span class="opening-pack-count">${cards.length} ${cards.length===1?'КАРТОЧКА':'КАРТОЧЕК'}</span></div>
         ${openingResultHeader}
-        <div class="opening-main">${duplicateMarkup}${batchScrollControl}<div class="revealed-cards collection-grid cards-ready" data-reveal-count="${cards.length}" style="--reveal-cols:${revealCols};--reveal-rows:${revealRows};--reveal-grid-columns:${revealCols}">${cardMarkup}</div></div>
+        <div class="opening-main">${duplicateMarkup}<div class="revealed-cards collection-grid cards-ready" data-reveal-count="${cards.length}" style="--reveal-cols:${revealCols};--reveal-rows:${revealRows};--reveal-grid-columns:${revealCols}">${cardMarkup}</div></div>
         <div class="opening-actions">${nextPackControls}<button class="btn btn-primary" data-action="close-opening">Продолжить →</button></div>
       </div>
     </div>`;
@@ -3117,22 +3115,6 @@ function renderProgressionAndMissions(club){
   let logoDrag=null;
   $('#app').addEventListener('input',e=>{const price=e.target.closest('.market-transfer-price');if(!price)return;const card=price.closest('.market-sell-card');const mode=card?.querySelector('.market-transfer-mode');if(mode&&mode.value!=='custom')mode.value='custom';});
   $('#app').addEventListener('input',e=>{if(e.target.matches('#market-filter-rating,#market-filter-price'))applyMarketFilters();});
-  $('#app').addEventListener('input',e=>{
-    const range=e.target.closest?.('[data-reveal-scroll-range]');
-    if(!range)return;
-    const grid=range.closest('.opening-main')?.querySelector('.revealed-cards');
-    if(!grid)return;
-    const maxScroll=Math.max(0,grid.scrollHeight-grid.clientHeight);
-    grid.scrollTop=maxScroll*(Number(range.value||0)/1000);
-  });
-  $('#app').addEventListener('scroll',e=>{
-    const grid=e.target?.closest?.('.revealed-cards');
-    if(!grid)return;
-    const range=grid.closest('.opening-main')?.querySelector('[data-reveal-scroll-range]');
-    if(!range)return;
-    const maxScroll=Math.max(0,grid.scrollHeight-grid.clientHeight);
-    if(document.activeElement!==range)range.value=maxScroll?Math.round(grid.scrollTop/maxScroll*1000):0;
-  },true);
   $('#app').addEventListener('change',e=>{if(e.target.matches('#market-filter-position,#market-filter-duplicate'))applyMarketFilters();});
   $('#app').addEventListener('change',e=>{if(e.target.matches('#careerPosition,#careerGroup,#careerMinMatches,#careerSort'))applyPlayerCareerFilters();});
   $('#app').addEventListener('change',e=>{const mode=e.target.closest('.market-transfer-mode');if(!mode)return;const card=mode.closest('.market-sell-card');if(!card)return;const price=card.querySelector('.market-transfer-price');if(!price)return;const rating=Number(card.querySelector('.market-ovr')?.textContent)||0;const player=currentClub()?.players?.find(p=>String(p.id)===String(card.dataset.marketCardId));if(mode.value==='custom'){price.focus();return;}const factor=mode.value==='quick'?.8:mode.value==='premium'?1.25:1;price.value=(Math.max(.01,Number(marketValue(player?.rating??rating))||.01)*factor).toFixed(2);});
