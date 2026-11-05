@@ -1,0 +1,29 @@
+/* v92 — team management, sponsor missions and loading facts */
+.football-fact-box{
+  max-width:620px;margin:18px auto 0;padding:13px 16px;text-align:left;
+  border:1px solid rgba(200,255,68,.24);border-radius:12px;
+  background:linear-gradient(135deg,rgba(200,255,68,.075),rgba(255,255,255,.025));
+}
+.football-fact-box>span{display:block;margin-bottom:6px;color:var(--lime,#c8ff44);font-size:9px;font-weight:900;letter-spacing:.15em}
+.football-fact-box p{margin:0;color:var(--text,#edf1e8);font-size:12px;line-height:1.5}
+.sponsor-task-group{padding:17px 0 5px;border-top:1px solid var(--line);margin-top:14px}
+.sponsor-task-group:first-of-type{border-top:0;margin-top:0;padding-top:0}
+.sponsor-task-heading{display:flex;align-items:center;gap:11px;margin-bottom:13px;min-width:0}
+.sponsor-task-heading>div{display:grid;gap:3px;min-width:0}
+.sponsor-task-heading strong{font-size:13px;overflow-wrap:anywhere}
+.sponsor-task-heading small{font-size:10px;color:var(--muted)}
+.sponsor-task-heading .sponsor-logo{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.035);overflow:hidden}
+.sponsor-task-heading .sponsor-logo :is(svg,img){max-width:32px;max-height:32px}
+.bench-stamina{display:inline-block;margin-top:4px;color:var(--lime,#c8ff44);font-size:9px;font-weight:800}
+.bench-card .bench-stamina{display:block}
+.squad-info>.bench-stamina{margin-right:8px}
+.player-slot .slot-stamina-compact{display:block;min-height:10px}
+.team-contracts .contract-days{white-space:nowrap}
+@media(max-width:620px){
+  .sponsor-task-group{padding-top:13px;margin-top:12px}
+  .sponsor-task-heading .sponsor-logo{width:36px;height:36px;flex-basis:36px}
+  .sponsor-task-heading .sponsor-logo :is(svg,img){max-width:28px;max-height:28px}
+  .football-fact-box{padding:11px 12px;margin-top:14px}
+  .football-fact-box p{font-size:11px}
+  .bench-stamina{font-size:8px}
+}
