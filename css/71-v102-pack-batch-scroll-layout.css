@@ -1,0 +1,131 @@
+/* Zero Football v102 — multi-pack results get a dedicated scroll control and a lower, non-overlapping grid. */
+.pack-opening.is-batch .opening-box{
+  display:grid!important;
+  grid-template-rows:min-content min-content minmax(0,1fr) min-content!important;
+  align-content:stretch!important;
+  align-items:stretch!important;
+  gap:clamp(7px,.9vh,12px)!important;
+}
+.pack-opening.is-batch .opening-result-header{
+  flex:0 0 auto!important;
+  margin-bottom:clamp(2px,.5vh,7px)!important;
+}
+.pack-opening.is-batch .opening-main{
+  display:flex!important;
+  flex:1 1 0!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
+  align-items:stretch!important;
+  gap:clamp(8px,1vh,13px)!important;
+  min-width:0!important;
+  min-height:0!important;
+  height:100%!important;
+  overflow:hidden!important;
+}
+.pack-opening.is-batch .reveal-scroll-control{
+  order:1!important;
+  display:grid!important;
+  grid-template-columns:minmax(90px,auto) minmax(80px,1fr) auto!important;
+  align-items:center!important;
+  gap:clamp(7px,1vw,12px)!important;
+  flex:0 0 auto!important;
+  width:100%!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding:5px 10px!important;
+  border:1px solid rgba(200,255,68,.22)!important;
+  border-radius:11px!important;
+  background:linear-gradient(90deg,rgba(200,255,68,.07),rgba(255,255,255,.035))!important;
+  box-sizing:border-box!important;
+  position:relative!important;
+  z-index:2!important;
+}
+.pack-opening.is-batch .reveal-scroll-label,
+.pack-opening.is-batch .reveal-scroll-total{
+  display:block!important;
+  color:var(--muted,#a4afa5)!important;
+  font-size:clamp(8px,.75vw,11px)!important;
+  font-weight:800!important;
+  line-height:1.1!important;
+  white-space:nowrap!important;
+  font-variant-numeric:tabular-nums!important;
+}
+.pack-opening.is-batch .reveal-scroll-total{text-align:right!important;}
+.pack-opening.is-batch .reveal-scroll-control input[type=range]{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  height:28px!important;
+  margin:0!important;
+  accent-color:var(--lime,#c8ff44)!important;
+  cursor:pointer!important;
+  touch-action:pan-x!important;
+}
+.pack-opening.is-batch .revealed-cards.collection-grid{
+  order:2!important;
+  flex:1 1 0!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:8px 6px 14px!important;
+  display:grid!important;
+  grid-template-columns:repeat(var(--reveal-grid-columns,4),minmax(0,1fr))!important;
+  grid-template-rows:none!important;
+  grid-auto-flow:row!important;
+  grid-auto-rows:max-content!important;
+  align-content:start!important;
+  align-items:start!important;
+  justify-content:stretch!important;
+  justify-items:stretch!important;
+  column-gap:clamp(8px,.85vw,13px)!important;
+  row-gap:clamp(10px,1.1vw,16px)!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+  scrollbar-width:thin!important;
+  scrollbar-color:rgba(200,255,68,.58) rgba(255,255,255,.07)!important;
+  box-sizing:border-box!important;
+}
+.pack-opening.is-batch .revealed-cards.collection-grid::-webkit-scrollbar{display:block!important;width:8px!important;height:8px!important;}
+.pack-opening.is-batch .revealed-cards.collection-grid::-webkit-scrollbar-thumb{background:rgba(200,255,68,.58)!important;border-radius:8px!important;}
+.pack-opening.is-batch .revealed-cards.collection-grid>.revealed-card{
+  position:relative!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  order:0!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:0!important;
+  height:auto!important;
+  align-self:start!important;
+  justify-self:stretch!important;
+  overflow:visible!important;
+}
+/* Avoid the large falling transform that made cards from neighboring rows overlap. */
+.pack-opening.is-batch:not(.is-skipped) .revealed-card{
+  animation:zfBatchCardIn .32s ease-out var(--card-delay,0ms) both!important;
+  transform-origin:center center!important;
+}
+@keyframes zfBatchCardIn{
+  from{opacity:0;transform:translateY(7px) scale(.992);filter:brightness(1.12);}
+  to{opacity:1;transform:none;filter:none;}
+}
+.pack-opening.is-batch.is-skipped .revealed-card{opacity:1!important;animation:none!important;transform:none!important;}
+@media(max-width:760px){
+  .pack-opening.is-batch .opening-box{gap:7px!important;padding:5px!important;}
+  .pack-opening.is-batch .opening-main{gap:7px!important;}
+  .pack-opening.is-batch .revealed-cards.collection-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;padding:5px 3px 12px!important;}
+  .pack-opening.is-batch .reveal-scroll-control{grid-template-columns:minmax(74px,auto) minmax(50px,1fr) auto!important;gap:6px!important;min-height:40px!important;padding:4px 7px!important;}
+  .pack-opening.is-batch .reveal-scroll-label,.pack-opening.is-batch .reveal-scroll-total{font-size:7px!important;}
+}
+@media(max-width:390px){
+  .pack-opening.is-batch .revealed-cards.collection-grid{column-gap:7px!important;row-gap:8px!important;}
+  .pack-opening.is-batch .reveal-scroll-control{grid-template-columns:minmax(66px,auto) minmax(42px,1fr) auto!important;min-height:36px!important;}
+  .pack-opening.is-batch .reveal-scroll-label,.pack-opening.is-batch .reveal-scroll-total{font-size:6px!important;}
+}
