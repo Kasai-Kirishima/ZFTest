@@ -1,0 +1,23 @@
+/* Zero Football v94 — career filters, exact mobile card ratio and native pack scrolling. */
+.player-career-filters{display:grid;grid-template-columns:minmax(180px,1.5fr) repeat(4,minmax(135px,1fr));gap:8px;margin:0 0 10px;align-items:center}
+.player-career-filters input,.player-career-filters select{width:100%;min-width:0;min-height:40px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--panel-2,var(--panel));color:var(--text);font:inherit;font-size:12px}
+.career-filter-summary{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 7px;color:var(--muted);font-size:10px}
+#playerCareerList [data-stat-player-row][hidden],#careerNoRows[hidden]{display:none!important}
+.pack-opening .opening-main{min-height:0;overflow:hidden}
+.pack-opening .revealed-cards{gap:4px!important;column-gap:4px!important;row-gap:4px!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important}
+.pack-opening .revealed-card{width:100%!important;max-width:none!important;min-width:0!important;height:auto!important;aspect-ratio:3 / 4!important;overflow:hidden!important;justify-self:stretch!important}
+.pack-opening .revealed-card .player-card{width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;overflow:hidden!important}
+.pack-opening .reveal-scroll-control{display:none!important}
+@media(max-width:700px){
+ .player-career-filters{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .player-career-filters input{grid-column:1/-1}
+ .player-career-filters input,.player-career-filters select{min-height:39px;font-size:12px}
+ .career-filter-summary{font-size:9px;gap:4px}
+ .pack-opening .revealed-cards{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-auto-rows:max-content!important;grid-template-rows:none!important;align-content:start!important;align-items:start!important;justify-items:stretch!important;gap:3px!important;column-gap:3px!important;row-gap:3px!important;padding:2px!important}
+ .pack-opening .revealed-card{width:100%!important;max-width:none!important;aspect-ratio:3 / 4!important;height:auto!important;min-height:0!important}
+ .pack-opening .revealed-cards[data-reveal-count="3"] .revealed-card:last-child,.pack-opening .revealed-cards[data-reveal-count="5"] .revealed-card:last-child{grid-column:auto!important;justify-self:stretch!important}
+ .pack-opening .revealed-cards[data-reveal-count="1"]{grid-template-columns:minmax(0,1fr)!important}
+ .pack-opening .revealed-cards[data-reveal-count="2"]{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .pack-opening .revealed-cards[data-reveal-count="1"] .revealed-card{width:min(100%,220px)!important;justify-self:center!important}
+ .pack-opening .revealed-card .player-card-head,.pack-opening .revealed-card .player-card-body{padding:2px!important}
+}
