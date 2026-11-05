@@ -1,0 +1,30 @@
+/* Zero Football v99 — pack portraits use the same crop behavior as the Collection. */
+.pack-opening .revealed-cards.collection-grid .player-portrait{
+  position:relative!important;
+  display:block!important;
+  flex:0 0 auto!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:3/4!important;
+  overflow:hidden!important;
+}
+.pack-opening .revealed-cards.collection-grid .player-portrait .portrait-photo{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:100%!important;
+  max-width:none!important;
+  min-height:100%!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  object-position:50% 18%!important;
+  transform:none!important;
+  filter:none!important;
+}
+.pack-opening .revealed-cards.collection-grid .player-portrait.has-photo .portrait-photo{
+  opacity:1!important;
+}
