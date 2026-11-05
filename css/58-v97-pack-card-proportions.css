@@ -1,0 +1,23 @@
+/* Zero Football v97 — less elongated player cards in pack opening only. */
+.pack-opening .revealed-card{
+  aspect-ratio:6/7!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:285px!important;
+}
+.pack-opening .revealed-card .player-card{
+  height:100%!important;
+  min-height:0!important;
+}
+.pack-opening .revealed-card .player-portrait{
+  min-height:0!important;
+  flex:1 1 0!important;
+  overflow:hidden!important;
+}
+.pack-opening .revealed-card .player-card-head,
+.pack-opening .revealed-card .player-card-body{
+  flex-shrink:0!important;
+}
+@media(max-width:700px){
+  .pack-opening .revealed-card{max-height:220px!important;}
+}
