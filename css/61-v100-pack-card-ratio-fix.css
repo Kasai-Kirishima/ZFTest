@@ -1,0 +1,141 @@
+/* Zero Football v100 — true portrait geometry for pack cards.
+   The card height is derived from its width, never from the grid row.
+   Six columns remain fixed; the results viewport shows two rows and scrolls internally. */
+.pack-opening .opening-box{
+  display:grid!important;
+  grid-template-rows:min-content min-content minmax(0,1fr) min-content!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.pack-opening .opening-main{
+  display:flex!important;
+  flex:1 1 auto!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.pack-opening .revealed-cards{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-template-rows:none!important;
+  grid-auto-rows:max-content!important;
+  align-content:start!important;
+  align-items:start!important;
+  justify-content:stretch!important;
+  justify-items:center!important;
+  flex:1 1 0!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-height:100%!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:3px!important;
+  column-gap:3px!important;
+  row-gap:4px!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+  scrollbar-width:thin!important;
+  scrollbar-color:rgba(200,255,68,.58) rgba(255,255,255,.07)!important;
+}
+.pack-opening .revealed-cards::-webkit-scrollbar{display:block!important;width:7px!important;height:7px!important}
+.pack-opening .revealed-cards::-webkit-scrollbar-thumb{background:rgba(200,255,68,.58)!important;border-radius:8px!important}
+.pack-opening .revealed-card{
+  position:relative!important;
+  display:block!important;
+  width:min(100%,calc((100dvh - 240px)*.375))!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:3/4!important;
+  box-sizing:border-box!important;
+  justify-self:center!important;
+  align-self:start!important;
+  overflow:hidden!important;
+}
+.pack-opening .revealed-card .player-card{
+  display:flex!important;
+  flex:0 0 auto!important;
+  flex-direction:column!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+.pack-opening .revealed-card .player-card-head{flex:0 0 auto!important;min-width:0!important;padding:4px 5px 2px!important}
+.pack-opening .revealed-card .player-overall{font-size:clamp(12px,1.8vh,22px)!important;line-height:1!important}
+.pack-opening .revealed-card .player-position{font-size:clamp(6px,.6vw,9px)!important}
+.pack-opening .revealed-card .rarity-badge{font-size:clamp(6px,.6vw,9px)!important;padding:2px 4px!important}
+.pack-opening .revealed-card .player-portrait{
+  position:relative!important;
+  display:block!important;
+  flex:1 1 0!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  overflow:hidden!important;
+}
+.pack-opening .revealed-card .player-portrait .portrait-photo{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  object-fit:cover!important;
+  object-position:50% 16%!important;
+}
+.pack-opening .revealed-card .player-card-body{
+  display:block!important;
+  flex:0 0 auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:4px 5px!important;
+  overflow:hidden!important;
+}
+.pack-opening .revealed-card .player-card-body>strong{
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;
+  max-height:2.2em!important;
+  font-size:clamp(8px,.85vw,12px)!important;
+  line-height:1.1!important;
+  overflow:hidden!important;
+  overflow-wrap:anywhere!important;
+}
+.pack-opening .revealed-card .player-meta{font-size:clamp(6px,.58vw,8px)!important;line-height:1.1!important;margin-top:3px!important}
+.pack-opening .revealed-card .player-market-value{font-size:clamp(7px,.65vw,10px)!important;margin-top:3px!important}
+.pack-opening .opening-actions{flex:0 0 auto!important;min-height:0!important}
+@media(max-width:700px){
+  .pack-opening .revealed-cards{column-gap:2px!important;row-gap:3px!important;padding:2px!important}
+  .pack-opening .revealed-card{width:min(100%,calc((100dvh - 240px)*.375))!important}
+  .pack-opening .revealed-card .player-card-head{padding:2px 3px 1px!important}
+  .pack-opening .revealed-card .player-overall{font-size:clamp(9px,2.4vw,14px)!important}
+  .pack-opening .revealed-card .player-position,.pack-opening .revealed-card .rarity-badge{font-size:5px!important}
+  .pack-opening .revealed-card .player-card-body{padding:2px!important}
+  .pack-opening .revealed-card .player-card-body>strong{font-size:clamp(6px,1.7vw,9px)!important}
+  .pack-opening .revealed-card .player-meta{font-size:5px!important;margin-top:2px!important}
+  .pack-opening .revealed-card .player-market-value{font-size:6px!important;margin-top:2px!important}
+}
+@media(max-height:600px){
+  .pack-opening .revealed-card{width:min(100%,calc((100dvh - 240px)*.375))!important}
+}
