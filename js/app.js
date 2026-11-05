@@ -2200,22 +2200,26 @@ function renderProgressionAndMissions(club){
     const speedProfile=speedProfiles[db.packAnimationSpeed]||speedProfiles.normal;
     const cards=(reveal.players||[]).filter(p=>!p.duplicate||(reveal.duplicateRewards||[]).some(d=>d.id===p.id));
     const revealRowSize=6;
-    const revealStagger=cards.length>15?Math.max(14,Math.floor(2400/Math.max(1,cards.length-1))):speedProfile.stagger;
-    const revealRowDelay=(revealRowSize-1)*revealStagger+speedProfile.card+180;
+    // Each card must finish its reveal before the next card starts. The final
+    // card in a row also finishes before the following row begins.
+    const revealPause=cards.length>15?Math.max(12,Math.floor(1800/cards.length)):speedProfile.stagger;
+    const revealCardDuration=cards.length>15?Math.max(80,Math.min(speedProfile.card,Math.floor(10000/cards.length))):speedProfile.card;
+    const revealStep=revealCardDuration+revealPause;
+    const revealRowDelay=revealRowSize*revealStep+180;
     const cardMarkup=cards.map((p,i)=>{
       const rating=Number(p.rating)||50;
       const rarity=rarityFor(rating);
       const rarityKey=rating>=90?'icon':rating>=85?'elite':rating>=75?'gold':rating>=65?'silver':'bronze';
       const rowIndex=Math.floor(i/revealRowSize);
       const positionInRow=i%revealRowSize;
-      const cardDelay=rowIndex*revealRowDelay+positionInRow*revealStagger;
-      return `<div class="revealed-card rarity-reveal-${rarityKey}" data-reveal-card="${i}" data-reveal-row="${rowIndex}" style="--rarity-color:${rarity.color};--rarity-glow:${rarity.color}88;--card-delay:${cardDelay}ms">${renderPlayerCard(p,false,false)}</div>`;
+      const cardDelay=rowIndex*revealRowDelay+positionInRow*revealStep;
+      return `<div class="revealed-card rarity-reveal-${rarityKey}" data-reveal-card="${i}" data-reveal-row="${rowIndex}" style="--rarity-color:${rarity.color};--rarity-glow:${rarity.color}88;--reveal-col:${positionInRow+1};--reveal-row:${rowIndex+1};--pack-card-duration:${revealCardDuration}ms;--card-delay:${cardDelay}ms">${renderPlayerCard(p,false,false)}</div>`;
     }).join('');
     const openingClub=currentClub(),openingInventory=openingClub?ensurePackInventory(openingClub):{};
     const openedPackMeta=ZF_PACK_OPTIONS.find(p=>p.id===reveal.type)||ZF_PACK_OPTIONS[0];
     const droppedNames=cards.map(p=>playerDisplayName(p)).join(' · ');
-    const revealCols=Math.max(1,Math.min(6,cards.length||1));
-    const revealRows=Math.max(1,Math.ceil(cards.length/revealCols));
+    const revealCols=6;
+    const revealRows=Math.max(1,Math.ceil(cards.length/6));
     const revealScrollControl='';
     const openedCount=Number(reveal.packCount)||1;const packCountWord=(openedCount%100>=11&&openedCount%100<=14)?'паков':openedCount%10===1?'пак':openedCount%10>=2&&openedCount%10<=4?'пака':'паков';
     const openingResultHeader=`<section class="opening-result-header"><div class="opening-result-pack"><img src="${packArt}" alt="${esc(openedPackMeta.name)}" loading="eager" decoding="async" onerror="this.onerror=null;this.src='${openedPackMeta.image}'"><div><span class="eyebrow">ПАКИ ОТКРЫТЫ</span><h2>${esc(openedPackMeta.name)}</h2><p>${esc(openedPackMeta.type||'Агентство')} · ${openedCount} ${packCountWord} · ${cards.length} карточек</p></div></div><div class="opening-result-list"><span class="eyebrow">ЧТО ВЫПАЛО</span><strong>${esc(droppedNames||'Нет новых карточек')}</strong></div></section>`;
