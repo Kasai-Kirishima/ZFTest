@@ -1,0 +1,27 @@
+/* Zero Football v106 — make crest symbols scale consistently with their crest on every screen. */
+.crest-builder-preview,
+.club-crest,
+.banner-crest{
+  container-type:inline-size;
+}
+.crest-builder-preview .crest-layer,
+.club-crest .crest-layer,
+.banner-crest .crest-layer{
+  font-size:clamp(4px,calc(var(--crest-layer-size,24) * 1.32cqw),96px)!important;
+  scale:1!important;
+}
+.crest-builder-preview .crest-layer .crest-glyph-svg,
+.club-crest .crest-layer .crest-glyph-svg,
+.banner-crest .crest-layer .crest-glyph-svg{
+  display:block;
+  width:1em;
+  height:1em;
+}
+@supports not (font-size:1cqw){
+  .crest-builder-preview .crest-layer,
+  .club-crest .crest-layer,
+  .banner-crest .crest-layer{font-size:inherit;}
+}
+/* Old mobile-only scaling is no longer needed: icon size follows the crest width. */
+.match-team .club-crest .crest-layer,
+.found-side .club-crest .crest-layer{scale:1!important;}
