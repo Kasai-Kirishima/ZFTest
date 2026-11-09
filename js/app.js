@@ -365,7 +365,7 @@
         const statDefaults={matches:0,wins:0,draws:0,losses:0,goalsFor:0,goalsAgainst:0,packsOpened:0,cleanSheets:0,captainMatches:0};
         c.stats={...statDefaults,...(c.stats&&typeof c.stats==='object'?c.stats:{})};
         Object.keys(statDefaults).forEach(key=>{const value=Number(c.stats[key]);c.stats[key]=Number.isFinite(value)?Math.max(0,value):0;});
-        if (!c.trophyUnlocks || typeof c.trophyUnlocks !== 'object') c.trophyUnlocks = {};if(!c.progression||typeof c.progression!=='object')c.progression={totalXp:(Number(c.stats?.matches)||0)*45};if(!Number.isFinite(Number(c.progression.totalXp)))c.progression.totalXp=0;delete c.trophyUnlocks.rich_1000;delete c.trophyUnlocks.rich_5000;
+        if (!c.trophyUnlocks || typeof c.trophyUnlocks !== 'object') c.trophyUnlocks = {};if(Number(c.rosterTrophyRevision||0)<3){Object.keys(c.trophyUnlocks).filter(id=>/^players_\d+$/.test(id)).forEach(id=>delete c.trophyUnlocks[id]);if(c.missionClaims&&typeof c.missionClaims==='object')Object.keys(c.missionClaims).filter(id=>/^players_\d+$/.test(id)).forEach(id=>delete c.missionClaims[id]);c.rosterTrophyRevision=3;}if(!c.progression||typeof c.progression!=='object')c.progression={totalXp:(Number(c.stats?.matches)||0)*45};if(!Number.isFinite(Number(c.progression.totalXp)))c.progression.totalXp=0;delete c.trophyUnlocks.rich_1000;delete c.trophyUnlocks.rich_5000;
         if (!Array.isArray(c.history)) c.history = [];
         if (!c.style) c.style = 'balanced';
         if (!Number.isFinite(c.energy)) c.energy = 5; c.energy=Math.min(5,Math.max(0,c.energy)); if (!Number.isFinite(c.energyAt)) c.energyAt = Date.now(); if (!Array.isArray(c.sponsors)) c.sponsors = [];
@@ -973,6 +973,24 @@
   }
   function collectionFilterValue(id){return esc(String(collectionFilterMemory[id]??''));}
   function collectionFilterSelected(id,value){return String(collectionFilterMemory[id]??'')===String(value)?'selected':'';}
+  function refreshOwnedPlayersFromDatabase(club){
+    if(!club||!Array.isArray(club.players))return false;
+    const canonicalByKey=new Map();
+    REAL_PLAYERS.forEach(player=>{if(player?.wiki){canonicalByKey.set(playerIdentityKey(player.wiki),player);canonicalByKey.set(playerIdentityKey(player.name),player);}});
+    let changed=false;
+    club.players.forEach(player=>{
+      if(!player)return;
+      const canonical=canonicalByKey.get(playerIdentityKey(player.wiki))||canonicalByKey.get(playerIdentityKey(player.name));
+      if(!canonical)return;
+      const positions=REAL_PLAYER_POSITIONS[canonical.wiki]||[canonical.position];
+      const next={name:canonical.name,rating:Number(canonical.rating)||player.rating,country:canonical.country||player.country,position:canonical.position,positions,realClub:canonicalPlayerClubName(canonical.club||player.realClub||'')};
+      Object.entries(next).forEach(([key,value])=>{
+        if(JSON.stringify(player[key])!==JSON.stringify(value)){player[key]=Array.isArray(value)?value.slice():value;changed=true;}
+      });
+    });
+    if(changed)saveDB();
+    return changed;
+  }
   function renderCollection(club){
     const owned=collectionMode==='owned';
     const players=owned?club.players.slice().sort((a,b)=>b.rating-a.rating):REAL_PLAYERS.map((p,i)=>({id:p.id,name:p.name,wiki:p.wiki,country:p.country,realClub:p.club,position:p.position,positions:REAL_PLAYER_POSITIONS[p.wiki]||[p.position],rating:p.rating,contractUntil:Date.now()+30*86400000,injuryMatches:0,redCardMatches:0}));
@@ -1944,7 +1962,7 @@ const MILESTONE_MISSIONS = [
   ...[1,3,5,10,20].map(n=>({id:`wins_${n}`,icon:'🏆',name:`Одержать ${n} побед`,desc:`Выиграй ${n} официальных матчей.`,metric:'wins',target:n,reward:.5+n*.06})),
   ...[5,10,25,50,100].map(n=>({id:`goals_${n}`,icon:'🥅',name:`Забить ${n} голов`,desc:`Забей ${n} голов в матчах.`,metric:'goalsFor',target:n,reward:.4+n*.015})),
   ...[1,3,5,10,20].map(n=>({id:`packs_${n}`,icon:'🎴',name:`Открыть ${n} паков`,desc:`Открой ${n} паков в агентстве.`,metric:'packsOpened',target:n,reward:.4+n*.04})),
-  ...[16,20,24,28,32].map(n=>({id:`players_${n}`,icon:'👥',name:`Собрать ${n} игроков`,desc:`Добавь в коллекцию ${n} футболистов.`,metric:'players',target:n,reward:.4+n*.02})),
+  ...[30,35,40,45,50,55,60,65,70,75,80,85,90,95,100].map(n=>({id:`players_${n}`,icon:'👥',name:`Собрать ${n} игроков`,desc:`Подпиши и сохрани в клубе ${n} футболистов.`,metric:'players',target:n,reward:Number((.65+(n-30)*.025).toFixed(2))})),
   ...[60,65,70,75,80].map(n=>({id:`rating_${n}`,icon:'📈',name:`Достичь рейтинга ${n}`,desc:`Подними средний рейтинг основы до ${n}.`,metric:'teamRating',target:n,reward:.5+(n-60)*.04}))
 ];
 const DAILY_QUEST_POOL=[
@@ -2037,7 +2055,7 @@ function renderMissionCard(club,mission,type,sponsorId=null){
 function renderProgressionAndMissions(club){
   const p=progressionState(club);
   return `<section class="card progression-card"><div class="progression-top"><div><div class="eyebrow">${translateUIText('УРОВЕНЬ КЛУБА')}</div><h2 class="h2">${translateUIText('Уровень')} ${p.level} / 30</h2><p>${translateUIText('Опыт за сыгранные матчи, победы и удачные решения.')}</p></div><div class="progression-level">${p.level}<small>LVL</small></div></div><div class="progression-bar"><span style="width:${p.percent}%"></span></div><div class="progression-footer"><span>${p.level>=30?translateUIText('Максимальный уровень'):`${p.xp} / ${p.need} XP`}</span><span>${p.total} XP · ${translateUIText('До уровня')} ${Math.min(30,p.level+1)}</span></div></section>
-  <section class="card milestone-section"><div class="card-header"><div><div class="eyebrow">${translateUIText('Долгосрочные цели')}</div><h2 class="h2">${translateUIText('30 ЗАДАНИЙ КЛУБА')}</h2><p>${translateUIText('Выполняй цели и забирай награды за прогресс клуба.')}</p></div><span class="pill pill-lime">30</span></div><div class="mission-grid">${MILESTONE_MISSIONS.map(q=>renderMissionCard(club,q,'milestone')).join('')}</div></section>`;
+  <section class="card milestone-section"><div class="card-header"><div><div class="eyebrow">${translateUIText('Долгосрочные цели')}</div><h2 class="h2">${MILESTONE_MISSIONS.length} ЗАДАНИЙ КЛУБА</h2><p>${translateUIText('Выполняй цели и забирай награды за прогресс клуба.')}</p></div><span class="pill pill-lime">${MILESTONE_MISSIONS.length}</span></div><div class="mission-grid">${MILESTONE_MISSIONS.map(q=>renderMissionCard(club,q,'milestone')).join('')}</div></section>`;
 }
 
   function sponsorRewardMultiplier(club){
@@ -2284,7 +2302,7 @@ function renderProgressionAndMissions(club){
   }
   function renderMatchResult(club){
     const m=matchState;const won=m.score[0]>m.score[1],draw=m.score[0]===m.score[1];const title=won?'ПОБЕДА!':draw?'БОЕВАЯ НИЧЬЯ':'В ЭТОТ РАЗ НЕ ПОВЕЗЛО';const result=won?'W':draw?'D':'L';
-    return `<div class="section-heading"><div><div class="eyebrow">Финальный свисток</div><h1 class="h1">ФИНАЛЬНЫЙ СВИСТОК</h1><p class="page-subtitle">Матч закончен. Результат записан в историю клуба.</p></div><span class="pill ${won?'pill-lime':''}">${won?'🏆 Победа':draw?'🤝 Ничья':'Матч завершён'}</span></div><div class="match-shell">${matchBoard(club)}<section class="card" style="text-align:center;padding:29px"><div class="eyebrow">Отчёт о матче</div><h2 class="h1" style="font-size:44px;margin-top:9px">${title}</h2><div class="result-stamp">${m.score[0]} : ${m.score[1]}</div><p class="muted small" style="max-width:470px;margin:0 auto">${won?'Отличная работа! Твои решения помогли забрать три очка.':draw?'Равная игра — ни одна команда не смогла дожать соперника.':'Поражение — повод разобрать решения и вернуться сильнее.'}</p><div class="scorers-box"><strong>⚽ Автор(ы) голов</strong><div>${(m.scorers||[]).length?(m.scorers||[]).map(g=>`<span>${g.minute}′ · ${g.side==='user'?esc(g.playerName):`${esc(g.playerName)} · ${esc(m.opponent.name||'Соперник')}`}</span>`).join(''):'<span>Голов в матче не было</span>'}</div></div><div class="result-details"><div class="result-metric"><span>Награда</span><strong style="color:var(--gold)">+${formatMoney(m.reward)}</strong></div></div><div class="match-stat-grid"><div><b>${m.stats.user.shots}</b><span>Удары</span></div><div><b>${m.stats.user.onTarget}</b><span>В створ</span></div><div><b>${m.stats.user.passes}</b><span>Пасы</span></div><div><b>${m.stats.user.defensiveActions}</b><span>Оборона</span></div><div><b>${m.stats.opponent.shots}</b><span>Удары соперника</span></div><div><b>${m.stats.user.attacks}</b><span>Твои эпизоды</span></div></div><div class="divider"></div><div class="match-log" style="text-align:left;margin-bottom:20px">${m.log.map(l=>`<div class="log-row"><span class="log-minute">${l.minute}′</span><span>${esc(l.text)}</span></div>`).join('')}</div><div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap"><button class="btn btn-primary" data-action="match-return-search">🔎 Вернуться к поиску матча</button><button class="btn btn-secondary" data-action="nav" data-view="home">В главное меню</button></div></section></div>`;
+    return `<div class="section-heading"><div><div class="eyebrow">Финальный свисток</div><h1 class="h1">ФИНАЛЬНЫЙ СВИСТОК</h1><p class="page-subtitle">Матч закончен. Результат записан в историю клуба.</p></div><span class="pill ${won?'pill-lime':''}">${won?'🏆 Победа':draw?'🤝 Ничья':'Матч завершён'}</span></div><div class="match-shell">${matchBoard(club)}<section class="card" style="text-align:center;padding:29px"><div class="eyebrow">Отчёт о матче</div><h2 class="h1" style="font-size:44px;margin-top:9px">${title}</h2><div class="result-stamp">${m.score[0]} : ${m.score[1]}</div><p class="muted small" style="max-width:470px;margin:0 auto">${won?'Отличная работа! Твои решения помогли забрать три очка.':draw?'Равная игра — ни одна команда не смогла дожать соперника.':'Поражение — повод разобрать решения и вернуться сильнее.'}</p><div class="scorers-box"><strong>⚽ Автор(ы) голов</strong><div>${(m.scorers||[]).length?(m.scorers||[]).map(g=>`<span>${g.minute}′ · ${g.side==='user'?esc(g.playerName):`${esc(g.playerName)} · ${esc(m.opponent.name||'Соперник')}`} · ${esc(g.method||'гол')}</span>`).join(''):'<span>Голов в матче не было</span>'}</div></div><div class="result-details"><div class="result-metric"><span>Награда</span><strong style="color:var(--gold)">+${formatMoney(m.reward)}</strong></div></div><div class="match-stat-grid"><div><b>${m.stats.user.shots}</b><span>Удары</span></div><div><b>${m.stats.user.onTarget}</b><span>В створ</span></div><div><b>${m.stats.user.passes}</b><span>Пасы</span></div><div><b>${m.stats.user.defensiveActions}</b><span>Оборона</span></div><div><b>${m.stats.opponent.shots}</b><span>Удары соперника</span></div><div><b>${m.stats.user.attacks}</b><span>Твои эпизоды</span></div></div><div class="divider"></div><div class="match-log" style="text-align:left;margin-bottom:20px">${m.log.map(l=>`<div class="log-row"><span class="log-minute">${l.minute}′</span><span>${esc(l.text)}</span></div>`).join('')}</div><div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap"><button class="btn btn-primary" data-action="match-return-search">🔎 Вернуться к поиску матча</button><button class="btn btn-secondary" data-action="nav" data-view="home">В главное меню</button></div></section></div>`;
   }
   function renderReveal(){
     if(!reveal)return '';
@@ -2462,7 +2480,7 @@ function renderProgressionAndMissions(club){
     return false;
   }
   // ----- User actions -----
-  function go(viewName){view=viewName;editSlotIndex=null;reveal=null;render();if(COMMUNITY_VIEWS.has(viewName))refreshCommunityPage(viewName);if(viewName==='multiplayer')loadPublicRooms().then(()=>{if(view==='multiplayer'&&!activeOnlineRoom)render();}).catch(error=>{console.warn('Could not load public rooms:',error);toast('Не удалось загрузить список комнат. Проверь SQL-настройку мультиплеера.','error');});window.scrollTo({top:0,behavior:'smooth'});}
+  function go(viewName){view=viewName;editSlotIndex=null;reveal=null;if(viewName==='collection')refreshOwnedPlayersFromDatabase(currentClub());render();if(COMMUNITY_VIEWS.has(viewName))refreshCommunityPage(viewName);if(viewName==='multiplayer')loadPublicRooms().then(()=>{if(view==='multiplayer'&&!activeOnlineRoom)render();}).catch(error=>{console.warn('Could not load public rooms:',error);toast('Не удалось загрузить список комнат. Проверь SQL-настройку мультиплеера.','error');});window.scrollTo({top:0,behavior:'smooth'});}
   function chooseClub(id){const c=db.clubs.find(x=>x.id===id);if(!c)return;db.activeClubId=id;view='home';matchState={stage:'idle'};saveDB();render();toast(`Добро пожаловать в ${c.name}!`);}
   async function createClubFromForm(form){
     if(form.dataset.submitting==='1')return false;
@@ -2687,22 +2705,35 @@ function renderProgressionAndMissions(club){
     m.currentEvent={side:userAttacks?'user':'opponent',attacker:userAttacks?'user':'opponent',defender:userAttacks?'opponent':'user',turnIndex:m.eventIndex||0,minute,zone:e.zone,title:e.title,description:e.description,imageKey:e.image,scenario:pick(e.scenarios)};
   }
   function pickGoalScorer(club){
-    const starters=activePlayers(club).filter(p=>!playerIsUnavailable(p));
-    const ordered=starters.slice().sort((a,b)=>{
-      const score=p=>Number(p.shooting||p.rating||60)+(p.position==='ST'||p.position==='CF'?18:0)+(p.position==='LW'||p.position==='RW'?10:0)+(p.position==='CAM'?6:0);
-      return score(b)-score(a);
-    });
-    return ordered[0]||starters[0]||null;
+    // Any player currently on the pitch can score, including players from the starter pack.
+    // Use a weighted draw rather than always selecting the highest-rated striker.
+    const onPitch=activePlayers(club).filter(p=>!playerIsUnavailable(p));
+    if(!onPitch.length)return null;
+    const weight=p=>{
+      const pos=p.assignedPosition||p.position||'CM';
+      const attackBonus=({ST:8,CF:7,LW:5,RW:5,CAM:3,LM:2,RM:2,CM:1,CDM:.7,CB:.45,LB:.55,RB:.55,LWB:.7,RWB:.7,GK:.05})[pos]??.8;
+      return Math.max(.25,1+(Number(p.shooting)||Number(p.rating)||60)/18+attackBonus);
+    };
+    const weighted=onPitch.map(player=>({player,weight:weight(player)}));
+    const total=weighted.reduce((sum,item)=>sum+item.weight,0);
+    let roll=Math.random()*total;
+    for(const item of weighted){roll-=item.weight;if(roll<=0)return item.player;}
+    return weighted[weighted.length-1].player;
   }
-  function recordMatchGoal(side,scorer=null){
+  function recordMatchGoal(side,scorer=null,method='игровой эпизод'){
     const m=matchState,club=currentClub();if(!m||!Array.isArray(m.score))return null;
-    const own=side==='user';const player=own?(scorer||pickGoalScorer(club)):null;
+    const own=side==='user';
+    const onPitch=own?activePlayers(club):[];
+    const validScorer=own&&scorer&&onPitch.some(p=>String(p.id)===String(scorer.id))?scorer:null;
+    const player=own?(validScorer||pickGoalScorer(club)):null;
+    // This is the only function allowed to change the live score. Every goal also
+    // creates a scorer entry, so the scoreboard, match report and career stats agree.
     m.score[own?0:1]++;
     const botPlayers=Array.isArray(m.opponent?.players)?m.opponent.players:[];
     const activeBotIds=Array.isArray(m.opponent?.lineup)&&m.opponent.lineup.length?new Set(m.opponent.lineup.map(String)):null;
     const opponentNames=botPlayers.filter(x=>!activeBotIds||activeBotIds.has(String(x?.id||x?.wiki||x))).map(x=>typeof x==='string'?x:(x?.name||'')).filter(Boolean);
     const opponentScorer=own?'':(opponentNames.length?pick(opponentNames):'Нападающий соперника');
-    const item={side,playerId:player?.id||null,playerName:own?(player?playerDisplayName(player):'Игрок команды'):opponentScorer,minute:Number(m.minute)||0};
+    const item={side,playerId:player?.id||null,playerName:own?(player?playerDisplayName(player):'Игрок команды'):opponentScorer,minute:Number(m.minute)||0,method};
     m.scorers=Array.isArray(m.scorers)?m.scorers:[];m.scorers.push(item);
     return item;
   }
@@ -2802,7 +2833,7 @@ function renderProgressionAndMissions(club){
         if(choice==='pen-place')goalChance=mismatch?.92:.62;
         goalChance=clamp(goalChance+(diceTotal-12)*.012,.22,.98);
         success=Math.random()<goalChance;sideStats.onTarget++;
-        if(success){const scorer=recordMatchGoal('user',chosenPlayer);text=`⚽ ${scorer?.playerName||'Игрок'} реализовал пенальти — ${choice==='pen-chip'?'паненка':choice==='pen-power'?'мощный удар':choice==='pen-place'?'точный удар':`удар в ${target} угол`}! Вратарь выбрал ${keeper} угол.`;m.goodChoices++;}
+        if(success){const scorer=recordMatchGoal('user',chosenPlayer,'пенальти');text=`⚽ ${scorer?.playerName||'Игрок'} реализовал пенальти — ${choice==='pen-chip'?'паненка':choice==='pen-power'?'мощный удар':choice==='pen-place'?'точный удар':`удар в ${target} угол`}! Вратарь выбрал ${keeper} угол.`;m.goodChoices++;}
         else{text=`🧤 Вратарь угадал направление (${keeper} угол) и отразил пенальти.`;}
       }else{
         const target=pick(lanes);
@@ -2813,12 +2844,12 @@ function renderProgressionAndMissions(club){
         saveChance=clamp(saveChance+(diceTotal-12)*.009,.08,.84);
         success=Math.random()<saveChance;sideStats.onTarget++;
         if(success){m.goodChoices++;text=`🧤 Вратарь прочитал удар ${target} и спас команду от гола!`;} 
-        else{const scorer=recordMatchGoal('opponent');text=`⚽ ${scorer?.playerName||'Соперник'} реализовал пенальти ударом в ${target} угол.`;}
+        else{const scorer=recordMatchGoal('opponent',null,'пенальти');text=`⚽ ${scorer?.playerName||'Соперник'} реализовал пенальти ударом в ${target} угол.`;}
       }
     }else if(ev.kind==='corner'){
       const cornerChance=clamp((choice==='corner-shot'?.10:choice==='corner-short'?.17:choice==='corner-edge'?.14:choice==='corner-low'?.18:.22)+(diceTotal-10)*.008,.04,.38);
       success=Math.random()<cornerChance;
-      if(success){const scorer=recordMatchGoal(ev.side==='user'?'user':'opponent',ev.side==='user'?chosenPlayer:null);sideStats.onTarget++;m.goodChoices++;text=`⚽ ${scorer?.playerName||'Игрок'} забивает после углового! Выбран вариант: ${choice==='corner-near'?'ближняя штанга':choice==='corner-far'?'дальняя штанга':choice==='corner-short'?'короткий розыгрыш':'прямой удар'}.`;}
+      if(success){const scorer=recordMatchGoal(ev.side==='user'?'user':'opponent',ev.side==='user'?chosenPlayer:null,'угловой');sideStats.onTarget++;m.goodChoices++;text=`⚽ ${scorer?.playerName||'Игрок'} забивает после углового! Выбран вариант: ${choice==='corner-near'?'ближняя штанга':choice==='corner-far'?'дальняя штанга':choice==='corner-short'?'короткий розыгрыш':'прямой удар'}.`;}
       else{text=`Угловой разыгран (${choice==='corner-near'?'ближняя штанга':choice==='corner-far'?'дальняя штанга':choice==='corner-short'?'короткий пас':'удар с закруткой'}), но защита вынесла мяч.`;}
     }else if(ev.kind==='freekick'&&ev.side==='user'){
       const fkChance={ 'fk-near':.15,'fk-far':.17,'fk-over':.19,'fk-under':.12,'fk-power':.14,'fk-curl':.21,'fk-short':.085,'fk-cross':.11 }[choice]??.14;
@@ -2826,7 +2857,7 @@ function renderProgressionAndMissions(club){
       if(onTarget)sideStats.onTarget++;
       const goalChance=clamp(fkChance+(diceTotal-12)*.009,.035,.38);
       success=onTarget&&Math.random()<goalChance;
-      if(success){const scorer=recordMatchGoal('user',chosenPlayer);text=`⚽ ${scorer?.playerName||'Игрок'} забивает прямым ударом со штрафного (${choice==='fk-near'?'ближний угол':choice==='fk-far'?'дальний угол':choice==='fk-over'?'над стенкой':choice==='fk-under'?'под стенкой':choice==='fk-power'?'силовой удар':choice==='fk-curl'?'удар с подкруткой':choice==='fk-short'?'розыгрыш в пас':'навес в штрафную'})!`;m.goodChoices++;}
+      if(success){const scorer=recordMatchGoal('user',chosenPlayer,'штрафной');text=`⚽ ${scorer?.playerName||'Игрок'} забивает прямым ударом со штрафного (${choice==='fk-near'?'ближний угол':choice==='fk-far'?'дальний угол':choice==='fk-over'?'над стенкой':choice==='fk-under'?'под стенкой':choice==='fk-power'?'силовой удар':choice==='fk-curl'?'удар с подкруткой':choice==='fk-short'?'розыгрыш в пас':'навес в штрафную'})!`;m.goodChoices++;}
       else{text=`Штрафной разыгран: ${choice==='fk-near'?'удар в ближний угол':choice==='fk-far'?'обводящий удар в дальний':choice==='fk-over'?'попытка над стенкой':choice==='fk-under'?'низом под стенкой':choice==='fk-power'?'силовой удар':choice==='fk-curl'?'закрученный удар':choice==='fk-short'?'короткий розыгрыш':'навес в штрафную'}. ${onTarget?'Вратарь отбил мяч.':'Мяч прошёл мимо ворот или был заблокирован.'}`;}
     }else if(ev.kind==='freekick'){
       const wall=choice==='wall2'?2:choice==='wall3'?3:choice==='wall5'?5:4;
@@ -2838,7 +2869,7 @@ function renderProgressionAndMissions(club){
       saved=clamp(saved+(diceTotal-12)*.009,.12,.88);
       success=Math.random()<saved;sideStats.onTarget++;
       if(success){m.goodChoices++;text=`🧤 Защита справилась со штрафным: стенка из ${wall} игроков и выбранная позиция вратаря закрыли удар ${target}.`;}
-      else{const scorer=recordMatchGoal('opponent');text=`⚽ ${scorer?.playerName||'Соперник'} забивает со штрафного! Стенка из ${wall} игроков не перекрыла удар ${target}.`;}
+      else{const scorer=recordMatchGoal('opponent',null,'штрафной');text=`⚽ ${scorer?.playerName||'Соперник'} забивает со штрафного! Стенка из ${wall} игроков не перекрыла удар ${target}.`;}
     }else if(ev.side==='user'){
       const base={through:.36,wing:.34,dribble:.31,shot:.20,switch:.32,hold:.42,'one-two':.38,longshot:.16}[choice]??.30;
       const styleBoost=style.attack;
@@ -2855,12 +2886,12 @@ function renderProgressionAndMissions(club){
           const conversion=clamp((choice==='shot'?.38:choice==='longshot'?.20:.31)+diff*.0015+(shooting-70)*.0025,.07,.48);
           const onTarget=Math.random()<(choice==='longshot'?.48:.68);
           if(onTarget)sideStats.onTarget++;
-          if(onTarget&&Math.random()<conversion){recordMatchGoal('user',chosenPlayer);text=`ГОЛ! ${playerDisplayName(chosenPlayer)} завершает эпизод (${names[choice]||choice}). Точная комбинация и хладнокровный удар!`;}
+          if(onTarget&&Math.random()<conversion){recordMatchGoal('user',chosenPlayer,choice==='longshot'?'дальний удар':choice==='shot'?'удар':'завершение атаки');text=`ГОЛ! ${playerDisplayName(chosenPlayer)} завершает эпизод (${names[choice]||choice}). Точная комбинация и хладнокровный удар!`;}
           else{text=`${club.name}: ${names[choice]||choice} сработал и привёл к удару. ${onTarget?'Вратарь соперника спасает команду.':'Мяч проходит мимо ворот.'}`;}
         }else{text=`${club.name}: ${names[choice]||choice} помог сохранить владение и подготовить следующую атаку.`;}
       }else if(Math.random()<.12){
         text=`${club.name}: ${names[choice]||choice} не прошёл. Соперник перехватил мяч и готовит ответную атаку.`;
-        if(Math.random()<clamp(.08+(m.opponent.rating-teamRating(club))*.004,.03,.18)){sideStats.shots++;if(Math.random()<.25){const scorer=recordMatchGoal('opponent');text+=` Контратака заканчивается голом ${scorer?.playerName||'соперника'}!`;}else{text+=' Удар соперника — вратарь на месте.';}}
+        if(Math.random()<clamp(.08+(m.opponent.rating-teamRating(club))*.004,.03,.18)){sideStats.shots++;if(Math.random()<.25){const scorer=recordMatchGoal('opponent',null,'контратака');text+=` Контратака заканчивается голом ${scorer?.playerName||'соперника'}!`;}else{text+=' Удар соперника — вратарь на месте.';}}
       }else{text=`${club.name}: ${names[choice]||choice} не принёс результата. Защита соперника успела перестроиться.`;}
     }else{
       const base={press:.53,block:.66,tackle:.55,intercept:.59,double:.56,offside:.43,clear:.65,counterpress:.51}[choice]??.54;
@@ -2870,11 +2901,11 @@ function renderProgressionAndMissions(club){
         sideStats.shots++;
         const onTarget=Math.random()<.62;if(onTarget)sideStats.onTarget++;
         const goalChance=clamp(.29+(m.opponent.rating-teamRating(club))*.0015,.16,.42);
-        if(onTarget&&Math.random()<goalChance){const scorer=recordMatchGoal('opponent');text=`Гол соперника (${scorer?.playerName||'игрок'}). ${names[choice]||choice} не сработал — противник завершил атаку точным ударом.`;}
+        if(onTarget&&Math.random()<goalChance){const scorer=recordMatchGoal('opponent',null,'атака соперника');text=`Гол соперника (${scorer?.playerName||'игрок'}). ${names[choice]||choice} не сработал — противник завершил атаку точным ударом.`;}
         else{text=`Соперник прошёл через ${names[choice]||choice} и пробил. ${onTarget?'Вратарь спасает команду.':'Мяч летит мимо ворот.'}`;}
       }else{
         success=true;m.goodChoices++;text=`Хорошая оборона! ${names[choice]||choice} сработал — атака соперника остановлена.`;
-        if(Math.random()<.085){text+=' Команда быстро вышла в контратаку, и…';if(Math.random()<.24+Math.max(-.1,Math.min(.1,diff*.004))){const scorer=recordMatchGoal('user');text+=` ГОЛ! ${scorer?.playerName||'Игрок'} завершает идеальный переход из обороны в атаку!`;}else{text+=' момент закончился без удара.';}}
+        if(Math.random()<.085){text+=' Команда быстро вышла в контратаку, и…';if(Math.random()<.24+Math.max(-.1,Math.min(.1,diff*.004))){const scorer=recordMatchGoal('user',null,'контратака');text+=` ГОЛ! ${scorer?.playerName||'Игрок'} завершает идеальный переход из обороны в атаку!`;}else{text+=' момент закончился без удара.';}}
       }
     }
     m.totalChoices++;
@@ -2896,16 +2927,22 @@ function renderProgressionAndMissions(club){
       else text+=` 🟨 Судья показывает жёлтую карточку игроку команды ${incidentTeam}.`;
     }
     else if(!ev.kind&&incidentRoll<.125){
-      sideStats.shots++;text+=` 🚩 Угловой: команда ${incidentTeam} подаёт в штрафную.`;
-      if(Math.random()<.20){m.score[incidentScoreIndex]++;sideStats.onTarget++;text+=` ГОЛ после углового в исполнении ${incidentTeam}!`;}
+      const setPieceSide=userIsDefending?'opponent':'user';
+      const setPieceTeam=setPieceSide==='user'?club.name:(m.opponent.name||'Соперник');
+      sideStats.shots++;text+=` 🚩 Угловой: команда ${setPieceTeam} подаёт в штрафную.`;
+      if(Math.random()<.20){const scorer=recordMatchGoal(setPieceSide,null,'угловой');sideStats.onTarget++;text+=` ГОЛ после углового! Отличился ${scorer?.playerName||'футболист'} команды ${setPieceTeam}.`;}
     }
     else if(!ev.kind&&incidentRoll<.145){
-      sideStats.shots++;text+=` 🎯 Штрафной у команды ${incidentTeam}.`;
-      if(Math.random()<.14){m.score[incidentScoreIndex]++;sideStats.onTarget++;text+=` Прямой удар — ГОЛ команды ${incidentTeam}!`;}
+      const setPieceSide=userIsDefending?'opponent':'user';
+      const setPieceTeam=setPieceSide==='user'?club.name:(m.opponent.name||'Соперник');
+      sideStats.shots++;text+=` 🎯 Штрафной у команды ${setPieceTeam}.`;
+      if(Math.random()<.14){const scorer=recordMatchGoal(setPieceSide,null,'штрафной');sideStats.onTarget++;text+=` Прямой удар — ГОЛ! ${scorer?.playerName||'Футболист'} забивает за ${setPieceTeam}.`;}
     }
     else if(!ev.kind&&incidentRoll<.152){
-      sideStats.shots++;sideStats.onTarget++;text+=` ⚽ Пенальти! Команда ${incidentTeam} у точки.`;
-      if(Math.random()<(userIsDefending?.70:.72)){m.score[incidentScoreIndex]++;text+=' Пенальти реализован!';}else text+=' Вратарь отбил удар!';
+      const setPieceSide=userIsDefending?'opponent':'user';
+      const setPieceTeam=setPieceSide==='user'?club.name:(m.opponent.name||'Соперник');
+      sideStats.shots++;sideStats.onTarget++;text+=` ⚽ Пенальти! Команда ${setPieceTeam} у точки.`;
+      if(Math.random()<(userIsDefending?.70:.72)){const scorer=recordMatchGoal(setPieceSide,null,'пенальти');text+=` Пенальти реализован! Гол забил ${scorer?.playerName||'футболист'} команды ${setPieceTeam}.`;}else text+=' Вратарь отбил удар!';
     }
     // User-team substitutions are never automatic; the manager must choose every change.
     const botSubText=maybeBotSubstitution(m);if(botSubText)text+=` 🔄 ${botSubText}`;
@@ -2934,6 +2971,35 @@ function renderProgressionAndMissions(club){
     Object.keys(statDefaults).forEach(key=>{const n=Number(club.stats[key]);club.stats[key]=Number.isFinite(n)?Math.max(0,n):0;});
     m.score=Array.isArray(m.score)?[Math.max(0,Number(m.score[0])||0),Math.max(0,Number(m.score[1])||0)]:[0,0];
     m.log=Array.isArray(m.log)?m.log:[];m.opponent=m.opponent||{name:'Соперник'};m.stats=m.stats||{user:{},opponent:{}};m.stats.user={attacks:0,shots:0,onTarget:0,passes:0,defensiveActions:0,...(m.stats.user||{})};m.stats.opponent={attacks:0,shots:0,onTarget:0,passes:0,defensiveActions:0,...(m.stats.opponent||{})};
+    // Safety net for older/incomplete match states: the scoreboard is authoritative.
+    // Backfill any missing scorer records before calculating career goals and rendering the report.
+    m.scorers=Array.isArray(m.scorers)?m.scorers:[];
+    for(const side of ['user','opponent']){
+      const target=m.score[side==='user'?0:1];
+      let sideGoals=m.scorers.filter(goal=>goal?.side===side);
+      if(sideGoals.length>target){
+        let remove=sideGoals.length-target;
+        for(let i=m.scorers.length-1;i>=0&&remove>0;i--){if(m.scorers[i]?.side===side){m.scorers.splice(i,1);remove--;}}
+        sideGoals=m.scorers.filter(goal=>goal?.side===side);
+      }
+      while(sideGoals.length<target){
+        let player=null,playerName='';
+        if(side==='user'){
+          player=pickGoalScorer(club);
+          playerName=player?playerDisplayName(player):'Игрок команды';
+        }else{
+          const bot=m.opponent||{};
+          const players=Array.isArray(bot.players)?bot.players:[];
+          const ids=Array.isArray(bot.lineup)&&bot.lineup.length?new Set(bot.lineup.map(String)):null;
+          const names=players.filter(item=>!ids||ids.has(String(item?.id||item?.wiki||item))).map(item=>typeof item==='string'?item:(item?.name||'')).filter(Boolean);
+          playerName=names.length?pick(names):'Игрок соперника';
+        }
+        const minute=clamp(Number(m.minute)||90,1,90);
+        const scorer={side,playerId:player?.id||null,playerName,minute,method:'гол, подтверждённый в протоколе'};
+        m.scorers.push(scorer);sideGoals.push(scorer);
+        m.log.push({minute,text:`⚽ ${side==='user'?club.name:(m.opponent.name||'Соперник')}: гол подтверждён в протоколе матча. Автор: ${playerName}.`});
+      }
+    }
     m.finalized=true;m.eventIndex=10;m.completedEvents=10;clearMatchTimers();m.actionTimer=null;m.actionDeadline=null;m.stage='result';m.minute=90;
     const won=m.score[0]>m.score[1],draw=m.score[0]===m.score[1];m.reward=won?0.8:draw?0.55:0.35;
     club.coins=(Number(club.coins)||0)+m.reward;club.stats.matches++;m.sponsorBonus=0;club.sponsorSlots=club.sponsorSlots||{kit:null,title:null,extra:null};Object.entries(club.sponsorSlots).forEach(([type,contract])=>{if(!contract)return;if(contract.until>Date.now()){const deal=SPONSOR_DEALS.find(x=>x.id===contract.id);if(deal){const bonus=(deal.match+(won?deal.win:0))*sponsorRewardMultiplier(club);club.coins+=bonus/1000;m.sponsorBonus+=bonus/1000;}}else club.sponsorSlots[type]=null;});club.sponsorContract=club.sponsorSlots.title||club.sponsorSlots.kit||club.sponsorSlots.extra||null;

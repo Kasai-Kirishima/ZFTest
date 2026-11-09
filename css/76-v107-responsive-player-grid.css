@@ -1,0 +1,163 @@
+/* Zero Football v107 — player cards always stay inside their responsive grid cells. */
+.player-grid,
+.collection-grid:not(.revealed-cards),
+.pack-opening .revealed-cards.collection-grid {
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))!important;
+  grid-auto-flow:row!important;
+  grid-auto-rows:max-content!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  align-content:start!important;
+  justify-content:stretch!important;
+  column-gap:clamp(8px,1.25vw,16px)!important;
+  row-gap:clamp(12px,1.6vw,20px)!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+.player-grid>.player-card,
+.collection-grid:not(.revealed-cards)>.player-card,
+.pack-opening .revealed-cards.collection-grid>.revealed-card {
+  position:relative!important;
+  inset:auto!important;
+  grid-area:auto!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  align-self:stretch!important;
+  justify-self:stretch!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+}
+.pack-opening .revealed-cards.collection-grid>.revealed-card>.player-card,
+.player-grid>.player-card,
+.collection-grid:not(.revealed-cards)>.player-card {
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:100%!important;
+  box-sizing:border-box!important;
+}
+.player-card,
+.player-card * {
+  min-width:0;
+  box-sizing:border-box;
+}
+.player-card-head,
+.player-card-body,
+.player-card-body>strong,
+.player-meta,
+.player-status {
+  max-width:100%!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+}
+.player-card-body>strong {
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;
+  overflow:hidden!important;
+}
+.player-portrait {
+  width:100%!important;
+  max-width:100%!important;
+  aspect-ratio:3/4!important;
+  height:auto!important;
+  flex:0 0 auto!important;
+  overflow:hidden!important;
+}
+.player-portrait .portrait-photo {
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  object-fit:cover!important;
+}
+@media(max-width:360px){
+  .player-grid,
+  .collection-grid:not(.revealed-cards),
+  .pack-opening .revealed-cards.collection-grid {
+    grid-template-columns:repeat(auto-fit,minmax(min(100%,132px),1fr))!important;
+    column-gap:7px!important;
+    row-gap:12px!important;
+  }
+  .player-card-head{padding:7px 7px 3px!important;}
+  .player-card-body{padding:7px!important;}
+  .player-card-body>strong{font-size:clamp(10px,3vw,13px)!important;}
+}
+@media(min-width:361px) and (max-width:760px){
+  .player-grid,
+  .collection-grid:not(.revealed-cards) {
+    grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr))!important;
+  }
+}
+
+/* Keep pack-opening card count consistent with a single pack while preventing
+   borders, hover transforms and reveal frames from intruding into neighbours. */
+.pack-opening .revealed-cards.collection-grid {
+  grid-template-columns:repeat(var(--reveal-grid-columns,var(--reveal-cols,4)),minmax(0,1fr))!important;
+  grid-auto-rows:max-content!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  column-gap:clamp(10px,1.2vw,18px)!important;
+  row-gap:clamp(18px,2vw,26px)!important;
+  padding:8px 8px 24px!important;
+}
+.pack-opening .revealed-cards.collection-grid>.revealed-card {
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  height:auto!important;
+  margin:0!important;
+  align-self:stretch!important;
+  justify-self:stretch!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+}
+.pack-opening .revealed-card:before {
+  inset:0!important;
+  pointer-events:none!important;
+}
+.pack-opening .revealed-cards.collection-grid>.revealed-card>.player-card {
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+.player-grid>.player-card,
+.collection-grid:not(.revealed-cards)>.player-card {
+  height:auto!important;
+  min-height:0!important;
+  align-self:stretch!important;
+  overflow:hidden!important;
+}
+
+@media(max-width:760px){
+  .pack-opening .revealed-cards.collection-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    column-gap:clamp(8px,2vw,12px)!important;
+    row-gap:18px!important;
+    padding:6px 4px 22px!important;
+  }
+}
+@media(max-width:330px){
+  .pack-opening .revealed-cards.collection-grid {
+    grid-template-columns:repeat(auto-fit,minmax(min(100%,132px),1fr))!important;
+    column-gap:7px!important;
+    row-gap:15px!important;
+    padding-inline:2px!important;
+  }
+}
+@media(max-width:330px){
+  .pack-opening.is-batch .revealed-cards.collection-grid,
+  .pack-opening:not(.is-batch) .revealed-cards.collection-grid {
+    grid-template-columns:1fr!important;
+  }
+}
