@@ -2302,7 +2302,7 @@ function renderProgressionAndMissions(club){
   }
   function renderMatchResult(club){
     const m=matchState;const won=m.score[0]>m.score[1],draw=m.score[0]===m.score[1];const title=won?'ПОБЕДА!':draw?'БОЕВАЯ НИЧЬЯ':'В ЭТОТ РАЗ НЕ ПОВЕЗЛО';const result=won?'W':draw?'D':'L';
-    return `<div class="section-heading"><div><div class="eyebrow">Финальный свисток</div><h1 class="h1">ФИНАЛЬНЫЙ СВИСТОК</h1><p class="page-subtitle">Матч закончен. Результат записан в историю клуба.</p></div><span class="pill ${won?'pill-lime':''}">${won?'🏆 Победа':draw?'🤝 Ничья':'Матч завершён'}</span></div><div class="match-shell">${matchBoard(club)}<section class="card" style="text-align:center;padding:29px"><div class="eyebrow">Отчёт о матче</div><h2 class="h1" style="font-size:44px;margin-top:9px">${title}</h2><div class="result-stamp">${m.score[0]} : ${m.score[1]}</div><p class="muted small" style="max-width:470px;margin:0 auto">${won?'Отличная работа! Твои решения помогли забрать три очка.':draw?'Равная игра — ни одна команда не смогла дожать соперника.':'Поражение — повод разобрать решения и вернуться сильнее.'}</p><div class="scorers-box"><strong>⚽ Автор(ы) голов</strong><div>${(m.scorers||[]).length?(m.scorers||[]).map(g=>`<span>${g.minute}′ · ${g.side==='user'?esc(g.playerName):`${esc(g.playerName)} · ${esc(m.opponent.name||'Соперник')}`} · ${esc(g.method||'гол')}</span>`).join(''):'<span>Голов в матче не было</span>'}</div></div><div class="result-details"><div class="result-metric"><span>Награда</span><strong style="color:var(--gold)">+${formatMoney(m.reward)}</strong></div></div><div class="match-stat-grid"><div><b>${m.stats.user.shots}</b><span>Удары</span></div><div><b>${m.stats.user.onTarget}</b><span>В створ</span></div><div><b>${m.stats.user.passes}</b><span>Пасы</span></div><div><b>${m.stats.user.defensiveActions}</b><span>Оборона</span></div><div><b>${m.stats.opponent.shots}</b><span>Удары соперника</span></div><div><b>${m.stats.user.attacks}</b><span>Твои эпизоды</span></div></div><div class="divider"></div><div class="match-log" style="text-align:left;margin-bottom:20px">${m.log.map(l=>`<div class="log-row"><span class="log-minute">${l.minute}′</span><span>${esc(l.text)}</span></div>`).join('')}</div><div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap"><button class="btn btn-primary" data-action="match-return-search">🔎 Вернуться к поиску матча</button><button class="btn btn-secondary" data-action="nav" data-view="home">В главное меню</button></div></section></div>`;
+    return `<div class="section-heading"><div><div class="eyebrow">Финальный свисток</div><h1 class="h1">ФИНАЛЬНЫЙ СВИСТОК</h1><p class="page-subtitle">Матч закончен. Результат записан в историю клуба.</p></div><span class="pill ${won?'pill-lime':''}">${won?'🏆 Победа':draw?'🤝 Ничья':'Матч завершён'}</span></div><div class="match-shell">${matchBoard(club)}<section class="card" style="text-align:center;padding:29px"><div class="eyebrow">Отчёт о матче</div><h2 class="h1" style="font-size:44px;margin-top:9px">${title}</h2><div class="result-stamp">${m.score[0]} : ${m.score[1]}</div><p class="muted small" style="max-width:470px;margin:0 auto">${won?'Отличная работа! Твои решения помогли забрать три очка.':draw?'Равная игра — ни одна команда не смогла дожать соперника.':'Поражение — повод разобрать решения и вернуться сильнее.'}</p><div class="scorers-box"><strong>⚽ Автор(ы) голов</strong><div>${(m.scorers||[]).length?(m.scorers||[]).map(g=>`<span>${g.minute}′ · ${g.side==='user'?esc(g.playerName):`${esc(g.playerName)} · ${esc(m.opponent.name||'Соперник')}`} · ${esc(g.method||'гол')}</span>`).join(''):'<span>Голов в матче не было</span>'}</div></div><div class="result-details"><div class="result-metric"><span>Награда</span><strong style="color:var(--gold)">+${formatMoney(m.reward)}</strong></div></div><div class="match-stat-grid"><div><b>${m.stats.user.shots}</b><span>Удары</span></div><div><b>${m.stats.user.onTarget}</b><span>В створ</span></div><div><b>${m.stats.user.passes}</b><span>Пасы</span></div><div><b>${m.stats.user.defensiveActions}</b><span>Оборона</span></div><div><b>${m.stats.opponent.shots}</b><span>Удары соперника</span></div><div><b>${m.stats.user.attacks}</b><span>Твои эпизоды</span></div></div><div class="divider"></div><div class="match-log match-result-log" style="text-align:left;margin-bottom:20px">${m.log.map(l=>{const t=String(l.text||'');const key=l.imageKey||(t.includes('Красн')?'Красная':t.includes('Жёлт')?'Жёлтая':t.includes('Травм')?'Травма':t.includes('замен')?'Замена':matchActionKey(t));const src=key?matchActionImage(key):'';return `<div class="log-row match-result-log-row"><span class="log-minute">${l.minute}′</span>${src?`<img class="match-log-thumb" src="${esc(src)}" ${matchActionImgAttrs(key)} alt="${esc(key)}" loading="lazy">`:''}<span class="match-result-log-text">${esc(t)}</span></div>`;}).join('')}</div><div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap"><button class="btn btn-primary" data-action="match-return-search">🔎 Вернуться к поиску матча</button><button class="btn btn-secondary" data-action="nav" data-view="home">В главное меню</button></div></section></div>`;
   }
   function renderReveal(){
     if(!reveal)return '';
@@ -2359,24 +2359,26 @@ function renderProgressionAndMissions(club){
 
   async function syncCommunityInventory(club=currentClub()){
     if(!ZF_SUPABASE||!zfAuthSession||!club)return false;
+    // The local club roster is authoritative. Older inventory_sync SQL versions only
+    // upserted cards and left sold cards marked as "owned" on the server; importing
+    // that server list here resurrected them on the next social/market visit.
     const cards=Array.isArray(club.players)?club.players:[];
     const starters=Array.isArray(club.lineup)?club.lineup:[];
     const synced=await ZF_SUPABASE.rpc('zf_card_inventory_sync',{p_cards:cards,p_starters:starters,p_club_id:String(club.id)});
     if(synced.error)throw synced.error;
-    const listed=await ZF_SUPABASE.rpc('zf_card_inventory_list',{p_club_id:String(club.id)});
-    if(listed.error)throw listed.error;
-    const rows=Array.isArray(listed.data)?listed.data:[];
-    const owned=rows.filter(x=>x.status==='owned'&&x.card_snapshot&&typeof x.card_snapshot==='object');
-    const byId=new Map(cards.map(p=>[String(p.id),p]));
-    const next=owned.map(row=>{
-      const card=byId.get(String(row.card_id))||row.card_snapshot;
+    // Keep the existing duplicate-card marker, but never append a server snapshot
+    // whose ID is no longer present in the active local club.
+    const identities=new Map();
+    cards.forEach(card=>{
       const identity=card?.wiki||card?.name?.trim()?.toLocaleLowerCase('ru');
-      const duplicate=cards.some(other=>String(other.id)!==String(row.card_id)&&identity&&(other.wiki||other.name?.trim()?.toLocaleLowerCase('ru'))===identity);
-      return duplicate&&!card.marketResaleOnly?{...card,marketResaleOnly:true}:card;
+      if(identity)identities.set(identity,(identities.get(identity)||0)+1);
     });
-    const nextIds=new Set(next.map(p=>String(p.id)));
-    const changed=next.length!==cards.length||next.some((p,i)=>String(p.id)!==String(cards[i]?.id)||!!p.marketResaleOnly!==!!cards[i]?.marketResaleOnly);
-    if(changed){club.players=next;club.lineup=(club.lineup||[]).filter(id=>nextIds.has(String(id)));if(club.captainId&&!nextIds.has(String(club.captainId)))club.captainId=null;saveDB();await syncCommunitySaveToCloud();}
+    const next=cards.map(card=>{
+      const identity=card?.wiki||card?.name?.trim()?.toLocaleLowerCase('ru');
+      return identity&&(identities.get(identity)||0)>1&&!card.marketResaleOnly?{...card,marketResaleOnly:true}:card;
+    });
+    const changed=next.some((card,i)=>!!card.marketResaleOnly!==!!cards[i]?.marketResaleOnly);
+    if(changed){club.players=next;saveDB();await syncCommunitySaveToCloud();}
     return true;
   }
   async function syncCommunitySaveToCloud(){

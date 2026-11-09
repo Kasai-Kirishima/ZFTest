@@ -1,0 +1,21 @@
+/* v108: keep match action images in the final report and keep opponent top-three cards in one row on phones. */
+.match-result-log-row{display:grid;grid-template-columns:34px 76px minmax(0,1fr);align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);min-width:0}
+.match-result-log-row .match-log-thumb{width:76px;height:43px;flex:0 0 76px}
+.match-result-log-text{min-width:0;overflow-wrap:anywhere;line-height:1.4}
+.opponent-best-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:clamp(5px,1.6vw,12px)!important;min-width:0}
+.opponent-best-grid>.player-card{min-width:0;width:100%;max-width:100%;}
+@media(max-width:540px){
+  .match-result-log-row{grid-template-columns:28px 66px minmax(0,1fr);gap:7px;padding:7px 0}
+  .match-result-log-row .match-log-thumb{width:66px;height:37px;flex-basis:66px}
+  .opponent-best-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
+  .opponent-best-grid .player-card-head{padding:8px 6px 3px;gap:3px}
+  .opponent-best-grid .player-overall{font-size:clamp(18px,5vw,25px)}
+  .opponent-best-grid .player-position{font-size:8px}
+  .opponent-best-grid .player-portrait{height:clamp(48px,16vw,76px)}
+  .opponent-best-grid .player-card-body{padding:7px 6px 8px}
+  .opponent-best-grid .player-card-body strong{font-size:clamp(8px,2.5vw,11px)}
+  .opponent-best-grid .player-meta{font-size:7px;gap:2px;flex-wrap:wrap}
+  .opponent-best-grid .player-mini-stats{gap:2px;margin-top:6px}
+  .opponent-best-grid .player-mini-stats span{font-size:7px;padding:3px 0}
+  .opponent-best-grid .player-mini-stats b{font-size:8px}
+}

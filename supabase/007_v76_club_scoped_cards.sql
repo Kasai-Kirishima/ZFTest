@@ -61,6 +61,16 @@ begin
   update public.zf_trade_offers set from_club_id=club_key,updated_at=now()
     where from_user_id=u and from_club_id='legacy';
 
+  -- Treat the submitted club roster as the source of truth. Remove stale owned rows
+  -- that are no longer present locally (for example, cards sold from the collection).
+  -- Keep listed/offered rows: those are intentionally outside the owned roster.
+  delete from public.zf_card_inventory as inventory
+    where inventory.user_id=u and inventory.club_id=club_key and inventory.status='owned'
+      and not exists (
+        select 1 from jsonb_array_elements(coalesce(p_cards,'[]'::jsonb)) as incoming(card)
+        where nullif(incoming.card->>'id','')=inventory.card_id
+      );
+
   for card in select value from jsonb_array_elements(coalesce(p_cards,'[]'::jsonb)) loop
     cid:=nullif(card->>'id','');
     if cid is null or length(cid)>160 or jsonb_typeof(card)<>'object' then continue; end if;
